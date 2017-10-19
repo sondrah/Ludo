@@ -28,7 +28,8 @@ public class Client extends Application {
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) {		// Sondre si hei
 		launch(args);
+		System.out.println("Din langhåra plommetjuv!");
 	}
 }
