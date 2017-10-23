@@ -2,10 +2,10 @@
 
 BM_SR_GS_SA
 
-Bjørn Ole Myrold, - BM
-Snorre Rogne,  - SR
-Guro Storlien, - GS
-Sondre Alghren - SA
+BM - Bjørn Ole Myrold,
+SR - Snorre Rogne,
+GS - Guro Storlien, 
+SA - Sondre Alghren
 
 
 
