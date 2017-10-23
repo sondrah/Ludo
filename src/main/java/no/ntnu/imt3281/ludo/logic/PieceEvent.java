@@ -42,59 +42,67 @@ public class PieceEvent extends java.util.EventObject {
 	}
 	
 	/**
-	 * @return
+	 * gets player in the current turn
+	 * @return integer player index
 	 */
 	public int getPlayer() {
 		return player;
 	}
 	
 	/**
-	 * @param player
+	 * sets the player in the current turn
+	 * @param player index of the player that is given the turn
 	 */
 	public void setPlayer(int player) {
 		this.player = player;
 	}
 	
 	/**
-	 * @return
+	 * gets chosen piece for the current players turn
+	 * @return integer, players chosen piece
 	 */
 	public int getPiece() {
-		return player;
+		return piece;
 	}
 	
 	/**
-	 * @param piece
+	 * sets chosen piece
+	 * @param piece index of piece chosen
 	 */
 	public void setPiece(int piece) {
-		this.player = piece;
+		this.piece = piece;
 	}
 	
 	/**
-	 * @return
+	 * gets the position from which a piece moves
+	 * @return integer, index of current position of a piece
 	 */
 	public int getFrom() {
-		return player;
+		return from;
 	}
 	
 	/**
-	 * @param from
+	 * sets the position where a piece is located before moving
+	 * @param from integer of field index with a piece
 	 */
 	public void setFrom(int from) {
-		this.player = from;
+		this.from = from;
 	}
 	
 	/**
-	 * @return
+	 * gets the position where a piece is supposed to move
+	 * @return integer, field index for a piece's intended destination
 	 */
 	public int getTo() {
-		return player;
+		return to;
 	}
 	
 	/**
-	 * @param to
+	 * sets the position to where the piece should move
+	 * @param to field index for intended destination of a piece
 	 */
 	public void setTo(int to) {
-		this.player = to;
+		this.to = to;
 	}
 	
 }
