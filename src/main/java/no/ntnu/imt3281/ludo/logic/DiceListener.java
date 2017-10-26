@@ -4,6 +4,7 @@ package no.ntnu.imt3281.ludo.logic;
  * @author Guro
  *
  */
-public interface DiceListener {
+public interface DiceListener extends EventListener{
 
+	public void diceThrown(DiceEvent diceEvent);
 }

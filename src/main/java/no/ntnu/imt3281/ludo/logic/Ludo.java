@@ -227,6 +227,7 @@ public class Ludo {
 		return dice;
 	}
 	
+
 	/**
 	 * Clientside dicethrow, returns the given value
 	 * @param value the value the throw should result in
@@ -248,6 +249,17 @@ public class Ludo {
 		}
 	}
 	
+
+	private boolean canMove() {					// TODO
+		
+		if(needASixToGetStarted()) {
+			// if(checkBlocAt()) 
+				 return false;
+		}
+		
+		return true;
+	}
+	
 	/**
 	 * Handles all movements of pieces in the game 
 	 * @param player the player whose piece we want to move 
@@ -258,12 +270,27 @@ public class Ludo {
 	 */
 	private boolean movePiece(int player, int from, int to) {
 		// FIXME
-		if (from == 0) {
-			if(dice == 6) {
-				playerPieces[player][0] = to;
-			}
+		if(canMove()) {
+			// TODO, hvilken brikke skal flyttes
+			playerPieces[player][0] = to;
+			// ??? playerPieces[player][x] = to;
 		}
 	}
+	/**
+	 * probably check on dice = 6
+	 */
+	private boolean needASixToGetStarted() {
+		if(allHome() && dice !=6)return false;
+		else return true;
+	}
+	
+	/*
+	 * 
+	 */
+	private void checkBlocAt(int a, int b, int c, int d) { 
+		
+	}
+	
 	
 	/**
 	 * Gets the current state of the game
@@ -336,9 +363,17 @@ public class Ludo {
 	/**
 	 * Checks if all the pieces are home?
 	 * @return true if all pieces are home, false otherwise
+	 * piecesInStart counts down for each pice in start
 	 */
 	private boolean allHome() {
-		
+		int piecesInHome = 4;
+		for(int piece = 0; piece < PIECES; piece++) {
+			if(playerPieces[activePlayer][piece] != 0) {
+				--piecesInHome;
+			}
+		}
+		if(piecesInHome==4) return true;
+		else return false;
 	}
 	
 	
@@ -352,19 +387,14 @@ public class Ludo {
 		else activePlayer++;
 	}
 	
-	/**
-	 * probably check on dice = 6
-	 */
-	private boolean canMove() {
-		
-	}
+	
 	
 	
 	private boolean blocked(int player, int piece, int to, int from) {
 		
 	}
 	
-	private boolean checkBlockAt(int player, int piece, int, int) {
+	private boolean checkBlockAt(int player, int piece, int a, int b) {
 		
 	}
 	

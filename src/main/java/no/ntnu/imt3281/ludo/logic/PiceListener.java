@@ -7,7 +7,7 @@ package no.ntnu.imt3281.ludo.logic;
  * @author Guro
  *
  */
-public interface PiceListener {
+public interface PiceListener extends EventListener {
 	
 	public void piceMoved(PieceEvent pieceEvent);
 

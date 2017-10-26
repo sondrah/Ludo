@@ -8,7 +8,7 @@ package no.ntnu.imt3281.ludo.logic;
  * @author Guro
  *
  */
-public interface PlayerListener {
+public interface PlayerListener extends EventListener {
 
 	public void playerStateChanged(PlayerEvent playerEvent);
 	
