@@ -72,7 +72,7 @@ public class Ludo {
 		players.add(p3);
 		players.add(p4);
 		
-		if(enoughPlayers()){
+		if(MIN_PLAYERS <= nrOfPlayers() && MAX_PLAYERS >= nrOfPlayers()){
 			players.clear();
 			throw new NotEnoughPlayersException(
 					  "Ludo#Ludo(String, String, String, String):"
@@ -418,6 +418,9 @@ public class Ludo {
 	 * Checks if enough actual players are in game
 	 * @return true if we have at least 2, false otherwise
 	 */
+
+	/*	mulig unødvendig funksjon
+	
 	private boolean enoughPlayers() {
 		int ps;
 		for (int i = 0; i < MAX_PLAYERS; i++) {
@@ -427,6 +430,8 @@ public class Ludo {
 		if(ps >= MIN_PLAYERS) return true;
 		else return false;
 	}
+ 		*/
+	
 	
 	/**
 	 * Sets up the common stuff for the constructors. Such as
