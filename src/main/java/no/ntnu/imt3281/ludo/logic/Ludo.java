@@ -39,7 +39,7 @@ public class Ludo {
 	private int[][] playerPieces;
 	
 	// make a type for this
-	private [][] userGridToPlayerGrid;
+	private int[][] userGridToPlayerGrid;
 	
 	/** A Vector with the different DiceListners */
 	private Vector<DiceListener> diceListeners;
@@ -71,7 +71,7 @@ public class Ludo {
 		players.add(p2);
 		players.add(p3);
 		players.add(p4);
-							// try-catch here istedet?
+							// try-catch her istedet?
 		if(MIN_PLAYERS <= nrOfPlayers() && MAX_PLAYERS >= nrOfPlayers()){
 			players.clear();
 			throw new NotEnoughPlayersException(
@@ -109,7 +109,7 @@ public class Ludo {
 	}
 	
 	/**
-	 * Returns the number og active players
+	 * Returns the number of active players
 	 * in this game
 	 * @return the number of active players
 	 */
@@ -268,13 +268,16 @@ public class Ludo {
 	 * 
 	 * @return true if the piece could move, false otherwise
 	 */
-	private boolean movePiece(int player, int from, int to) {
-		// FIXME
+	public boolean movePiece(int player, int from, int to) {	//FIXME
+																	
 		if(canMove()) {
 			// TODO, hvilken brikke skal flyttes
-			playerPieces[player][0] = to;
-			// ??? playerPieces[player][x] = to;
+			
+			playerPieces[player][x] = to;	// pos. må vel mappes også 
+			
+			return true;
 		}
+		else return false;	
 	}
 	/**
 	 * Checks if the current player must have a six 
