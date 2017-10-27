@@ -35,23 +35,23 @@ public class Ludo {
 	/** Used to simulate dicethrows */
 	private Random randomGenerator;
 	
-	/** A 2D int array to hold the different players pieces*/
+	/** A 2D integer array to hold the different players pieces*/
 	private int[][] playerPieces;
 	
 	// make a type for this
 	private [][] userGridToPlayerGrid;
 	
 	/** A Vector with the different DiceListners */
-	private Vector<DiceListner> diceListners;
+	private Vector<DiceListener> diceListeners;
 	
 	/** A Vector with the different PieceListners */
-	private Vector<PieceListner> pieceListners;
+	private Vector<PieceListener> pieceListeners;
 	
-	/** A Vector with the diffenet PlayerListners */
-	private Vector<PlayerListner> playerListners;
+	/** A Vector with the different PlayerListners */
+	private Vector<PlayerListener> playerListeners;
 	
 	/**
-	 * Default Constructor for the Ludo calss
+	 * Default Constructor for the Ludo class
 	 */
 	public Ludo(){
 		setUpGame();
@@ -71,7 +71,7 @@ public class Ludo {
 		players.add(p2);
 		players.add(p3);
 		players.add(p4);
-		
+							// try-catch here istedet?
 		if(MIN_PLAYERS <= nrOfPlayers() && MAX_PLAYERS >= nrOfPlayers()){
 			players.clear();
 			throw new NotEnoughPlayersException(
@@ -244,7 +244,7 @@ public class Ludo {
 	 * @param value of the dicethrow
 	 */
 	private void alertThrowDice(int value) {
-		for(DiceListner dl : diceListners) {
+		for(DiceListener dl : diceListeners) {
 			dl.diceThrown(new DiceEvent("Server", value, activePlayer));
 		}
 	}
@@ -277,7 +277,10 @@ public class Ludo {
 		}
 	}
 	/**
-	 * probably check on dice = 6
+	 * Checks if the current player must have a six 
+	 * to be allowed to move a piece
+	 * 
+	 * @return false if all pieces in home and no six on dice, true otherwise 
 	 */
 	private boolean needASixToGetStarted() {
 		if(allHome() && dice !=6)return false;
@@ -332,23 +335,23 @@ public class Ludo {
 	 * Adds a DiceListner to the game
 	 * @param diceListner to be added
 	 */
-	public void addDiceListner(DiceListner diceListner) {
-		diceListners.add(diceListner);
+	public void addDiceListner(DiceListener diceListner) {
+		diceListeners.add(diceListner);
 	}
 	
 	/**
 	 * Adds PlayerListner to the game
 	 * @param playerListner to be added
 	 */
-	public void addPlayerListner(PlayerListner playerListner) {
-		playerListners.add(playerListner);
+	public void addPlayerListner(PlayerListener playerListner) {
+		playerListeners.add(playerListner);
 	}
 	
 	/**
 	 * Adds a PieceListner to the game
 	 * @param pieceListner to be added
 	 */
-	public void addPieceListner(PieceListner pieceListner) {
+	public void addPieceListner(PieceListener pieceListner) {
 		pieceListeners.add(pieceListner);
 	}
 	
@@ -446,8 +449,8 @@ public class Ludo {
 		
 		activePlayer = RED;
 		
-		diceListners = new Vector<>();
-		pieceListners = new Vector<>();
-		playerListners = new Vector<>();
+		diceListeners = new Vector<>();
+		pieceListeners = new Vector<>();
+		playerListeners = new Vector<>();
 	}
 }
