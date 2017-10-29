@@ -260,7 +260,12 @@ public class Ludo {
 		// FIXME
 		if (from == 0) {
 			if(dice == 6) {
-				playerPieces[player][0] = to;
+				int i = 0;
+				boolean moved = false,
+				while(!moved && playerPieces[player][i] == 0) {
+					playerPieces[player][i] = to;
+					i++;
+				}
 			}
 		}
 	}
@@ -410,6 +415,7 @@ public class Ludo {
 		}
 		
 		activePlayer = RED;
+		dice = 0;
 		
 		diceListners = new Vector<>();
 		pieceListners = new Vector<>();
