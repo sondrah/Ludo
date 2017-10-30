@@ -39,24 +39,7 @@ public class Ludo {
 	private int[][] playerPieces;
 	
 	// make a type for this
-	private int[][] userGridToPlayerGrid =
-		{
-			/* Red Player    */ {  0, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34,
-							      35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54,
-							      55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 16, 68, 69, 70, 71, 72, 73},
-			
-			/* Blue Player   */ {  4, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
-		    				      48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67,
-							      16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 74, 75, 76, 77, 78, 79},
-			
-			/* Yellow Player */ {  8, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
-							      61, 62, 63, 64, 65, 66, 67, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
-							      29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 80, 81, 82, 83, 84, 85},
-			
-			/* Green Player */  { 12, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 16, 17, 18, 19, 20, 21,
-							      22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41,
-							      42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 86, 87, 88, 89, 90, 91}
-		};
+	private int[][] userGridToPlayerGrid;
 		
 	/** A Vector with the different DiceListners */
 	private Vector<DiceListener> diceListeners;
@@ -91,15 +74,14 @@ public class Ludo {
 		players.add(YELLOW, p3);
 		players.add(GREEN, p4);
 		
-		// ingen ting å catche her
-		if(MIN_PLAYERS > nrOfPlayers() && MAX_PLAYERS < nrOfPlayers()){
+		if(nrOfPlayers() >= MIN_PLAYERS && nrOfPlayers() <= MAX_PLAYERS){
+			//throw new NotEnoughPlayersException("No exception should be thrown");
+		}
+		else {
 			players.clear();
 			throw new NotEnoughPlayersException(
 					  "Ludo#Ludo(String, String, String, String):"
-					+ "The number of players must be more than 2");
-		}
-		else {
-			//throw new NotEnoughPlayersException("No exception should be thrown");
+					+ "The number of players must be more than 2!\n");
 		}
 	}
 	
@@ -123,10 +105,8 @@ public class Ludo {
 	public int nrOfPlayers(){
 		int ps = 0;
 		
-		if(players.size() != 0) {
-			for (int i = 0; i < MAX_PLAYERS; i++) {
-				if(players.get(i) != null) ps++;
-			}
+		for (int i = 0; i < players.size(); i++) {
+			if(players.get(i) != null) ps++;
 		}
 		
 		return ps;
@@ -139,8 +119,11 @@ public class Ludo {
 	 */
 	public int activePlayers(){
 		int ap = 0;
-		for(int i = 0; i < MAX_PLAYERS; i++) {
-			if(!players.get(i).startsWith("Inactive: ")) ap++;
+		for(int i = 0; i < players.size(); i++) {
+			if(players.get(i) == null) {
+				// do nothing
+			}
+			else if(!players.get(i).startsWith("Inactive: ")) ap++;
 		}
 		return ap;
 	}
@@ -154,7 +137,7 @@ public class Ludo {
 	 */
 	public String getPlayerName(int player){
 		// allowed numbers = 0, 1, 2, 3
-		if(player < 0 || player < nrOfPlayers() - 1){
+		if(player >= 0 && player <= nrOfPlayers()){
 			return players.get(player);
 		}
 		else{
@@ -171,25 +154,27 @@ public class Ludo {
 	 */
 	public void addPlayer(String player) throws IllegalPlayerNameException,
 												NoRoomForMorePlayersException {
-		if(nrOfPlayers() > MAX_PLAYERS) {
+		if(nrOfPlayers() >= MAX_PLAYERS) {
 			throw new NoRoomForMorePlayersException(
 					  "Ludo#addPlayer(String): Game already "
-					  + "has 4 players");
-			// a WILD return appeared
-			return;
+					  + "has 4 players\n");
 		}
 		else {
 			for(String p : players) {
-				if(p == player) throw new IllegalPlayerNameException(
-										  "Ludo#addPlayer(String): Name: "
-										+ player + ", is already taken!");
+				if(p == player)
+					throw new IllegalPlayerNameException(
+								  "Ludo#addPlayer(String): Name: "
+								+ player + ", is already taken!\n"
+										+ "");
 			}
+			
+			if(player.startsWith("****"))
+				throw new IllegalPlayerNameException(
+								  "Ludo#addPlayer(String): Can't"
+								+ " start with ****!");
+			
+			else players.add(player);
 		}
-
-		// TODO: sjekk om navnet starter med 4x*
-		
-		// TODO: bør legges i egen funksjon
-		// om vi trenger mer funksjonalitet her
 	}
 	
 	/**
@@ -260,6 +245,7 @@ public class Ludo {
 	 */
 	public int throwDice(int value) {
 		alertThrowDice(value);
+		dice = value;
 		return value;
 	}
 	
@@ -354,6 +340,7 @@ public class Ludo {
 	 */
 	public String getStatus() {
 		if(activePlayers() == 0) {
+			return "Created";
 		}
 		else if(activePlayers() >= 1){
 			if(dice == 0) {
@@ -367,6 +354,7 @@ public class Ludo {
 			if(getWinner() > 0) {
 				return "Finished";
 			}
+			else return null;
 		}
 	}
 	
@@ -527,7 +515,6 @@ public class Ludo {
 			if(colInt == 67) 
 			colInt++;
 		}
-		userGridToPlayerGrid[player][colInt]= mid;
 		
 		for(int i = startEnd; i <= 6; i++) {
 			userGridToPlayerGrid[player][colInt]= i;
