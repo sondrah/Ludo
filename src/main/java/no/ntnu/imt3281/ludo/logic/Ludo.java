@@ -22,8 +22,8 @@ public class Ludo {
 	private static final int MIN_PLAYERS = 2;
 	/** Number of pieces */
 	private static final int PIECES = 4;
-	/** Antall ruter i felles runde rundt brettet */
-	private static final int COMMON_GRID_COUNT = 53;
+	/** Number of shared/common squares on the board */
+	private static final int COMMON_GRID_COUNT = 54;
 	
 	/** An Vector with the current players */
 	private Vector<String> players;
@@ -40,7 +40,8 @@ public class Ludo {
 	/** A 2D integer array to hold the different players pieces*/
 	private int[][] playerPieces;
 	
-	// make a type for this
+	/** A 2D integer array to hold the different players
+	 * translated board positions */
 	private int[][] userGridToPlayerGrid;
 		
 	/** A Vector with the different DiceListners */
@@ -306,8 +307,6 @@ public class Ludo {
 		if(canMove(player, from, to)) {
 			// TODO, hvilken brikke skal flyttes
 			
-			for 
-			
 			playerPieces[player][0] = to;	// pos. må vel mappes også 
 			
 			return true;
@@ -500,7 +499,7 @@ public class Ludo {
 	 */
 	private void setUpGame(){
 		playerPieces = new int[MAX_PLAYERS][PIECES];
-		userGridToPlayerGrid = new int[MAX_PLAYERS][COMMON_GRID_COUNT + 1];
+		userGridToPlayerGrid = new int[MAX_PLAYERS][COMMON_GRID_COUNT];
 		
 		activePlayer = RED;
 		dice = 0;
@@ -534,14 +533,14 @@ public class Ludo {
 	 */
 	private void setUpPos(int player, int start, int startEnd) {
 		int blackInt = start;							// Setter startverdien til den svarte
-		for(int colInt = 1; colInt <= COMMON_GRID_COUNT; colInt++) {	// Går rundt hele ytre bane
+		for(int colInt = 1; colInt < COMMON_GRID_COUNT; colInt++) {	// Går rundt hele ytre bane
 			userGridToPlayerGrid[player][colInt] = blackInt;
 			if(blackInt == 67) blackInt=15;				// Spesialhådterer tallskifte
 			blackInt++;
 		}
 
 		blackInt=startEnd;  							//Setter startverdien på oppløpet
-		for(int colInt = COMMON_GRID_COUNT + 1; colInt <= 6; colInt++) {	// Går opp hele oppløpet
+		for(int colInt = COMMON_GRID_COUNT; colInt <= 6; colInt++) {	// Går opp hele oppløpet
 			userGridToPlayerGrid[player][colInt]= blackInt;
 			blackInt++;
 		}
