@@ -247,21 +247,11 @@ public class Ludo {
 	 * @return the given value
 	 */
 	public int throwDice(int value) {
-		alertThrowDice(value);
+		alertThrowDice(new DiceEvent(this, value, activePlayer));
 		dice = value;
 		return value;
 	}
-	
-	
-	/**
-	 * sends the DiceEvent to all registered DiceListners
-	 * @param value of the dicethrow
-	 */
-	private void alertThrowDice(int value) {
-		for(DiceListener dl : diceListeners) {
-			dl.diceThrown(new DiceEvent("Server", value, activePlayer));
-		}
-	}
+
 	
 	/**
 	 * Checks if the current move: 
@@ -565,7 +555,7 @@ public class Ludo {
 		int blackInt = start;							// Setter startverdien til den svarte
 		for(int colInt = 1; colInt < COMMON_GRID_COUNT; colInt++) {	// Går rundt hele ytre bane
 			userGridToPlayerGrid[player][colInt] = blackInt;
-			if(blackInt == 67) blackInt=15;				// Spesialhådterer tallskifte
+			if(blackInt == 67) blackInt = 15;					// Spesialhådterer tallskifte
 			blackInt++;
 		}
 
@@ -595,6 +585,17 @@ public class Ludo {
 	private void alertPieces(PieceEvent event) {
 		for(PieceListener pieceListener : pieceListeners) {
 			pieceListener.piceMoved(event);
+		}
+	}
+	
+	
+	/**
+	 * sends the DiceEvent to all registered DiceListners
+	 * @param event The DiceEvent that should be sent to the listeners.
+	 */
+	private void alertThrowDice(DiceEvent event) {
+		for(DiceListener dl : diceListeners) {
+			dl.diceThrown(event);
 		}
 	}
 }
