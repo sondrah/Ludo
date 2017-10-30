@@ -22,6 +22,8 @@ public class Ludo {
 	private static final int MIN_PLAYERS = 2;
 	/** Number of pieces */
 	private static final int PIECES = 4;
+	/** Antall ruter i felles runde rundt brettet */
+	private static final int COMMON_GRID_COUNT = 53;
 	
 	/** An Vector with the current players */
 	private Vector<String> players;
@@ -474,21 +476,21 @@ public class Ludo {
 	 * Checks if someone have won the game
 	 */
 	private void checkWinner() {
+		boolean won = false;
 		
-	}
-	
-	/**
-	 * Checks if enough actual players are in game
-	 * @return true if we have at least 2, false otherwise
-	 */
-	private boolean enoughPlayers() {
-		int ps = 0;
-		for (int i = 0; i < MAX_PLAYERS; i++) {
-			if(players.get(i) != null) ps++;
+		for(int pl = 0; pl < MAX_PLAYERS; pl++) {
+			for(int pi = 0; pi < PIECES; pi++) {
+				if(playerPieces[pl][pi] == 59) won = true;
+			}
 		}
 		
-		if(ps >= MIN_PLAYERS) return true;
-		else return false;
+		if(won) {
+			for(PlayerListener playerListener : playerListeners) {
+				playerListener.playerStateChanged(
+						new PlayerEvent("Ludo#checkWinner()", activePlayer, PlayerEvent.WON)
+					);
+			}
+		}
 	}
 	
 	
@@ -497,25 +499,31 @@ public class Ludo {
 	 * the playerPieces and empty vectors
 	 */
 	private void setUpGame(){
-		playerPieces = new int[4][4];
+		playerPieces = new int[MAX_PLAYERS][PIECES];
+		userGridToPlayerGrid = new int[MAX_PLAYERS][COMMON_GRID_COUNT + 1];
+		
+		activePlayer = RED;
+		dice = 0;
+		
+		// empty vectors != null
+		diceListeners = new Vector<>();
+		pieceListeners = new Vector<>();
+		playerListeners = new Vector<>();
 		players = new Vector<>();
 		
+		
+		// inits the playerPieces to be at home
 		for(int player = 0; player < MAX_PLAYERS; player++) {
-			if(player == RED) setUpPos(RED, 16, 68);
-			if(player == BLUE) setUpPos(BLUE, 29, 74);
-			if(player == GREEN) setUpPos(GREEN, 55, 86);
-			if(player == YELLOW) setUpPos(YELLOW, 42, 80);
 			for(int piece = 0; piece < PIECES; piece++) {
 				playerPieces[player][piece] = 0;				
 			}
 		}
 		
-		activePlayer = RED;
-		dice = 0;
-		
-		diceListeners = new Vector<>();
-		pieceListeners = new Vector<>();
-		playerListeners = new Vector<>();
+		// creates the playerToUserGrid
+		setUpPos(RED, 16, 68);
+		setUpPos(BLUE, 29, 74);
+		setUpPos(GREEN, 55, 86);
+		setUpPos(YELLOW, 42, 80);
 	}
 	/**
 	 * Set up each position in userGridToPlayerGrid
@@ -525,17 +533,39 @@ public class Ludo {
 	 * @param startEnd value for each players runway
 	 */
 	private void setUpPos(int player, int start, int startEnd) {
-		int blackInt = start;		// Setter startverdien til den svarte
-		for(int colInt =1 ; colInt <= 53; colInt++) {	// Går rundt hele ytre bane
-			userGridToPlayerGrid[player][colInt]= blackInt;
-			if(blackInt == 67) blackInt=15;		// Spesialhådterer tallskifte
+		int blackInt = start;							// Setter startverdien til den svarte
+		for(int colInt = 1; colInt <= COMMON_GRID_COUNT; colInt++) {	// Går rundt hele ytre bane
+			userGridToPlayerGrid[player][colInt] = blackInt;
+			if(blackInt == 67) blackInt=15;				// Spesialhådterer tallskifte
 			blackInt++;
 		}
 
-		blackInt=startEnd;  //Setter startverdien på oppløpet
-		for(int colInt = 54; colInt <= 6; colInt++) {	// Går opp hele oppløpet
+		blackInt=startEnd;  							//Setter startverdien på oppløpet
+		for(int colInt = COMMON_GRID_COUNT + 1; colInt <= 6; colInt++) {	// Går opp hele oppløpet
 			userGridToPlayerGrid[player][colInt]= blackInt;
 			blackInt++;
+		}
+	}
+	
+	
+	/**
+	 * Alerts all registered PlayerListeners of the given event.
+	 * @param event The PlayerEvent that should be sent to the listeners.
+	 */
+	private void alertPlayers(PlayerEvent event) {
+		for(PlayerListener playerListener : playerListeners) {
+			playerListener.playerStateChanged(event);
+		}
+	}
+	
+	
+	/**
+	 * Alerts all registered PieceEvents of the given event
+	 * @param event The PieceEvent that should be sent to the listeners.
+	 */
+	private void alertPieces(PieceEvent event) {
+		for(PieceListener pieceListener : pieceListeners) {
+			pieceListener.piceMoved(event);
 		}
 	}
 }
