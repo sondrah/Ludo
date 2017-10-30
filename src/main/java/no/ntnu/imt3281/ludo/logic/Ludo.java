@@ -314,13 +314,21 @@ public class Ludo {
 */
 	
 	public boolean movePiece(int player, int from, int to) {	//FIXME
-																	
+		
+		int pieceindex = 0;					// Trengs for å garantere at bare
+											// en brikke flyttes
 		if(canMove(player, from, to)) {
-			// TODO, hvilken brikke skal flyttes
 			
-			for 
+			for (int i = 0; i < PIECES; i++) {	// går igjennom alle brikkene til
+				if (playerPieces[player][i] == from) // en spiller
+					pieceindex = i;
+			}
+			new PieceEvent("Piece moved", activePlayer, pieceindex, from, to);
 			
-			playerPieces[player][0] = to;	// pos. må vel mappes også 
+			playerPieces[player][pieceindex] = to;
+			
+			nextPlayer();
+			new PlayerEvent("Neste spiller sin tur", activePlayer, PlayerEvent.PLAYING);
 			
 			return true;
 		}
