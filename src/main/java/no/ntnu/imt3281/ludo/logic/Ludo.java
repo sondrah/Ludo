@@ -22,6 +22,8 @@ public class Ludo {
 	private static final int MIN_PLAYERS = 2;
 	/** Number of pieces */
 	private static final int PIECES = 4;
+	/** Number of shared/common squares on the board */
+	private static final int COMMON_GRID_COUNT = 54;
 	
 	/** An Vector with the current players */
 	private Vector<String> players;
@@ -38,25 +40,9 @@ public class Ludo {
 	/** A 2D integer array to hold the different players pieces*/
 	private int[][] playerPieces;
 	
-	// make a type for this
-	private int[][] userGridToPlayerGrid =
-		{
-			/* Red Player    */ {  0, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34,
-							      35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54,
-							      55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 16, 68, 69, 70, 71, 72, 73},
-			
-			/* Blue Player   */ {  4, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
-		    				      48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67,
-							      16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 74, 75, 76, 77, 78, 79},
-			
-			/* Yellow Player */ {  8, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
-							      61, 62, 63, 64, 65, 66, 67, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
-							      29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 80, 81, 82, 83, 84, 85},
-			
-			/* Green Player */  { 12, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 16, 17, 18, 19, 20, 21,
-							      22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41,
-							      42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 86, 87, 88, 89, 90, 91}
-		};
+	/** A 2D integer array to hold the different players
+	 * translated board positions */
+	private int[][] userGridToPlayerGrid;
 		
 	/** A Vector with the different DiceListners */
 	private Vector<DiceListener> diceListeners;
@@ -91,15 +77,14 @@ public class Ludo {
 		players.add(YELLOW, p3);
 		players.add(GREEN, p4);
 		
-		// ingen ting å catche her
-		if(MIN_PLAYERS > nrOfPlayers() && MAX_PLAYERS < nrOfPlayers()){
+		if(nrOfPlayers() >= MIN_PLAYERS && nrOfPlayers() <= MAX_PLAYERS){
+			//throw new NotEnoughPlayersException("No exception should be thrown");
+		}
+		else {
 			players.clear();
 			throw new NotEnoughPlayersException(
 					  "Ludo#Ludo(String, String, String, String):"
-					+ "The number of players must be more than 2");
-		}
-		else {
-			//throw new NotEnoughPlayersException("No exception should be thrown");
+					+ "The number of players must be more than 2!\n");
 		}
 	}
 	
@@ -123,10 +108,8 @@ public class Ludo {
 	public int nrOfPlayers(){
 		int ps = 0;
 		
-		if(players.size() != 0) {
-			for (int i = 0; i < MAX_PLAYERS; i++) {
-				if(players.get(i) != null) ps++;
-			}
+		for (int i = 0; i < players.size(); i++) {
+			if(players.get(i) != null) ps++;
 		}
 		
 		return ps;
@@ -139,8 +122,11 @@ public class Ludo {
 	 */
 	public int activePlayers(){
 		int ap = 0;
-		for(int i = 0; i < MAX_PLAYERS; i++) {
-			if(!players.get(i).startsWith("Inactive: ")) ap++;
+		for(int i = 0; i < players.size(); i++) {
+			if(players.get(i) == null) {
+				// do nothing
+			}
+			else if(!players.get(i).startsWith("Inactive: ")) ap++;
 		}
 		return ap;
 	}
@@ -154,7 +140,7 @@ public class Ludo {
 	 */
 	public String getPlayerName(int player){
 		// allowed numbers = 0, 1, 2, 3
-		if(player < 0 || player < nrOfPlayers() - 1){
+		if(player >= 0 && player <= nrOfPlayers()){
 			return players.get(player);
 		}
 		else{
@@ -171,25 +157,27 @@ public class Ludo {
 	 */
 	public void addPlayer(String player) throws IllegalPlayerNameException,
 												NoRoomForMorePlayersException {
-		if(nrOfPlayers() > MAX_PLAYERS) {
+		if(nrOfPlayers() >= MAX_PLAYERS) {
 			throw new NoRoomForMorePlayersException(
 					  "Ludo#addPlayer(String): Game already "
-					  + "has 4 players");
-			// a WILD return appeared
-			return;
+					  + "has 4 players\n");
 		}
 		else {
 			for(String p : players) {
-				if(p == player) throw new IllegalPlayerNameException(
-										  "Ludo#addPlayer(String): Name: "
-										+ player + ", is already taken!");
+				if(p == player)
+					throw new IllegalPlayerNameException(
+								  "Ludo#addPlayer(String): Name: "
+								+ player + ", is already taken!\n"
+										+ "");
 			}
+			
+			if(player.startsWith("****"))
+				throw new IllegalPlayerNameException(
+								  "Ludo#addPlayer(String): Can't"
+								+ " start with ****!");
+			
+			else players.add(player);
 		}
-
-		// TODO: sjekk om navnet starter med 4x*
-		
-		// TODO: bør legges i egen funksjon
-		// om vi trenger mer funksjonalitet her
 	}
 	
 	/**
@@ -260,6 +248,7 @@ public class Ludo {
 	 */
 	public int throwDice(int value) {
 		alertThrowDice(value);
+		dice = value;
 		return value;
 	}
 	
@@ -373,6 +362,7 @@ public class Ludo {
 	 */
 	public String getStatus() {
 		if(activePlayers() == 0) {
+			return "Created";
 		}
 		else if(activePlayers() >= 1){
 			if(dice == 0) {
@@ -386,6 +376,7 @@ public class Ludo {
 			if(getWinner() > 0) {
 				return "Finished";
 			}
+			else return null;
 		}
 	}
 	
@@ -494,21 +485,21 @@ public class Ludo {
 	 * Checks if someone have won the game
 	 */
 	private void checkWinner() {
+		boolean won = false;
 		
-	}
-	
-	/**
-	 * Checks if enough actual players are in game
-	 * @return true if we have at least 2, false otherwise
-	 */
-	private boolean enoughPlayers() {
-		int ps = 0;
-		for (int i = 0; i < MAX_PLAYERS; i++) {
-			if(players.get(i) != null) ps++;
+		for(int pl = 0; pl < MAX_PLAYERS; pl++) {
+			for(int pi = 0; pi < PIECES; pi++) {
+				if(playerPieces[pl][pi] == 59) won = true;
+			}
 		}
 		
-		if(ps >= MIN_PLAYERS) return true;
-		else return false;
+		if(won) {
+			for(PlayerListener playerListener : playerListeners) {
+				playerListener.playerStateChanged(
+						new PlayerEvent("Ludo#checkWinner()", activePlayer, PlayerEvent.WON)
+					);
+			}
+		}
 	}
 	
 	
@@ -517,25 +508,31 @@ public class Ludo {
 	 * the playerPieces and empty vectors
 	 */
 	private void setUpGame(){
-		playerPieces = new int[4][4];
+		playerPieces = new int[MAX_PLAYERS][PIECES];
+		userGridToPlayerGrid = new int[MAX_PLAYERS][COMMON_GRID_COUNT];
+		
+		activePlayer = RED;
+		dice = 0;
+		
+		// empty vectors != null
+		diceListeners = new Vector<>();
+		pieceListeners = new Vector<>();
+		playerListeners = new Vector<>();
 		players = new Vector<>();
 		
+		
+		// inits the playerPieces to be at home
 		for(int player = 0; player < MAX_PLAYERS; player++) {
-			if(player == RED) setUpPos(RED, 16, 68);
-			if(player == BLUE) setUpPos(BLUE, 29, 74);
-			if(player == GREEN) setUpPos(GREEN, 55, 86);
-			if(player == YELLOW) setUpPos(YELLOW, 42, 80);
 			for(int piece = 0; piece < PIECES; piece++) {
 				playerPieces[player][piece] = 0;				
 			}
 		}
 		
-		activePlayer = RED;
-		dice = 0;
-		
-		diceListeners = new Vector<>();
-		pieceListeners = new Vector<>();
-		playerListeners = new Vector<>();
+		// creates the playerToUserGrid
+		setUpPos(RED, 16, 68);
+		setUpPos(BLUE, 29, 74);
+		setUpPos(GREEN, 55, 86);
+		setUpPos(YELLOW, 42, 80);
 	}
 	/**
 	 * Set up each position in userGridToPlayerGrid
@@ -545,16 +542,39 @@ public class Ludo {
 	 * @param startEnd value for each players runway
 	 */
 	private void setUpPos(int player, int start, int startEnd) {
-		int blackInt = start;		// Setter startverdien til den svarte
-		for(int colInt =1 ; colInt <= 53; colInt++) {	// Går rundt hele ytre bane
-			userGridToPlayerGrid[player][colInt]= blackInt;
-			if(blackInt == 67) blackInt=15;		// Spesialhådterer tallskifte
+		int blackInt = start;							// Setter startverdien til den svarte
+		for(int colInt = 1; colInt < COMMON_GRID_COUNT; colInt++) {	// Går rundt hele ytre bane
+			userGridToPlayerGrid[player][colInt] = blackInt;
+			if(blackInt == 67) blackInt=15;				// Spesialhådterer tallskifte
 			blackInt++;
 		}
-		blackInt=startEnd;  //Setter startverdien på oppløpet
-		for(int colInt = 54; colInt <= 6; colInt++) {	// Går opp hele oppløpet
+
+		blackInt=startEnd;  							//Setter startverdien på oppløpet
+		for(int colInt = COMMON_GRID_COUNT; colInt <= 6; colInt++) {	// Går opp hele oppløpet
 			userGridToPlayerGrid[player][colInt]= blackInt;
 			blackInt++;
+		}
+	}
+	
+	
+	/**
+	 * Alerts all registered PlayerListeners of the given event.
+	 * @param event The PlayerEvent that should be sent to the listeners.
+	 */
+	private void alertPlayers(PlayerEvent event) {
+		for(PlayerListener playerListener : playerListeners) {
+			playerListener.playerStateChanged(event);
+		}
+	}
+	
+	
+	/**
+	 * Alerts all registered PieceEvents of the given event
+	 * @param event The PieceEvent that should be sent to the listeners.
+	 */
+	private void alertPieces(PieceEvent event) {
+		for(PieceListener pieceListener : pieceListeners) {
+			pieceListener.piceMoved(event);
 		}
 	}
 }
