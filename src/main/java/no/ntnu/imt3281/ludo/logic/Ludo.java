@@ -321,7 +321,9 @@ public class Ludo {
 		if(canMove(from, to)) {
 			// TODO, hvilken brikke skal flyttes
 			
-			playerPieces[player][x] = to;	// pos. må vel mappes også 
+			for 
+			
+			playerPieces[player][0] = to;	// pos. må vel mappes også 
 			
 			return true;
 		}
