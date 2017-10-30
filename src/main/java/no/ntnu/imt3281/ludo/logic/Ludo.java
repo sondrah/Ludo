@@ -321,12 +321,12 @@ public class Ludo {
 				if (playerPieces[player][i] == from) // en spiller
 					pieceindex = i;
 			}
-			new PieceEvent("Piece moved", activePlayer, pieceindex, from, to);
+			alertPieces(new PieceEvent("Piece moved", activePlayer, pieceindex, from, to));
 			
 			playerPieces[player][pieceindex] = to;
 			
 			nextPlayer();
-			new PlayerEvent("Neste spiller sin tur", activePlayer, PlayerEvent.PLAYING);
+			alertPlayers(new PlayerEvent("Next player", activePlayer, PlayerEvent.PLAYING));
 			
 			return true;
 		}
