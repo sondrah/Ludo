@@ -39,8 +39,25 @@ public class Ludo {
 	private int[][] playerPieces;
 	
 	// make a type for this
-	private int[][] userGridToPlayerGrid;
-	
+	private int[][] userGridToPlayerGrid =
+		{
+			/* Red Player    */ {  0, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34,
+							      35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54,
+							      55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 16, 68, 69, 70, 71, 72, 73},
+			
+			/* Blue Player   */ {  4, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+		    				      48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67,
+							      16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 74, 75, 76, 77, 78, 79},
+			
+			/* Yellow Player */ {  8, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
+							      61, 62, 63, 64, 65, 66, 67, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+							      29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 80, 81, 82, 83, 84, 85},
+			
+			/* Green Player */  { 12, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 16, 17, 18, 19, 20, 21,
+							      22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41,
+							      42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 86, 87, 88, 89, 90, 91}
+		};
+		
 	/** A Vector with the different DiceListners */
 	private Vector<DiceListener> diceListeners;
 	
@@ -67,25 +84,22 @@ public class Ludo {
 	 * @throws NotEnoughPlayersException
 	 */
 	public Ludo(String p1, String p2, String p3, String p4) throws NotEnoughPlayersException {
-		players.add(p1);
-		players.add(p2);
-		players.add(p3);
-		players.add(p4);
+		setUpGame();
+		
+		players.add(RED, p1);
+		players.add(BLUE, p2);
+		players.add(YELLOW, p3);
+		players.add(GREEN, p4);
 		
 		// ingen ting å catche her
-		// og, som ej prøvde å forklare, nrOfPlayers() er muligens
-		// forskjellig fra om vi har nok spillere.
-		// evt må nrOfPlayers ha funksjonalitet til enough players 
-		if(!enoughPlayers()) {
-		//if(MIN_PLAYERS <= nrOfPlayers() && MAX_PLAYERS >= nrOfPlayers()){
+		if(MIN_PLAYERS > nrOfPlayers() && MAX_PLAYERS < nrOfPlayers()){
 			players.clear();
 			throw new NotEnoughPlayersException(
 					  "Ludo#Ludo(String, String, String, String):"
 					+ "The number of players must be more than 2");
 		}
 		else {
-			setUpGame();
-			throw new NotEnoughPlayersException("No exception should be thrown");
+			//throw new NotEnoughPlayersException("No exception should be thrown");
 		}
 	}
 	
@@ -107,7 +121,15 @@ public class Ludo {
 	 * @return number of players as int
 	 */
 	public int nrOfPlayers(){
-		return players.size();
+		int ps = 0;
+		
+		if(players.size() != 0) {
+			for (int i = 0; i < MAX_PLAYERS; i++) {
+				if(players.get(i) != null) ps++;
+			}
+		}
+		
+		return ps;
 	}
 	
 	/**
@@ -136,7 +158,8 @@ public class Ludo {
 			return players.get(player);
 		}
 		else{
-			//TODO: feilmelding
+			// TODO: feilmelding?
+			return null;
 		}
 	}
 	
@@ -378,7 +401,7 @@ public class Ludo {
 	 * Adds a DiceListner to the game
 	 * @param diceListner to be added
 	 */
-	public void addDiceListner(DiceListener diceListner) {
+	public void addDiceListener(DiceListener diceListner) {
 		diceListeners.add(diceListner);
 	}
 	
@@ -386,7 +409,7 @@ public class Ludo {
 	 * Adds PlayerListner to the game
 	 * @param playerListner to be added
 	 */
-	public void addPlayerListner(PlayerListener playerListner) {
+	public void addPlayerListener(PlayerListener playerListner) {
 		playerListeners.add(playerListner);
 	}
 	
@@ -394,7 +417,7 @@ public class Ludo {
 	 * Adds a PieceListner to the game
 	 * @param pieceListner to be added
 	 */
-	public void addPieceListner(PieceListener pieceListner) {
+	public void addPieceListener(PieceListener pieceListner) {
 		pieceListeners.add(pieceListner);
 	}
 	
@@ -484,6 +507,9 @@ public class Ludo {
 	 * the playerPieces and empty vectors
 	 */
 	private void setUpGame(){
+		playerPieces = new int[4][4];
+		players = new Vector<>();
+		
 		for(int player = 0; player < MAX_PLAYERS; player++) {
 			if(player == RED) setUpPos(RED, 16, 68);
 			if(player == BLUE) setUpPos(BLUE, 29, 74);
