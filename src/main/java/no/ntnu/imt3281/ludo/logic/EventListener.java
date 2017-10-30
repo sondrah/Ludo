@@ -8,6 +8,8 @@ package no.ntnu.imt3281.ludo.logic;
  * @author Guro
  *
  */
-public interface EventListener implements DiceListener, PieceListener, PlayerListener  {
+public interface EventListener {
+	
+	// public void EventListener(Object obj);
 
 }

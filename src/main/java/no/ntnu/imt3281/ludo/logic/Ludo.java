@@ -275,19 +275,28 @@ public class Ludo {
 	}
 	
 	/**
-	 * Checks if the current player must have a six 
-	 * to be allowed to move a piece
-	 * 
-	 * @return false if all pieces in home and no six on dice, true otherwise 
+	 * Checks if the current move: 
+	 * Is from correct position
+	 * Is equal to dice
+	 * Is allowed from start (must have a six to be allowed to move a piece)
+	 * is not in conflict with a tower
+	 * @return false if can't move,  true otherwise 
 	 */
 	
 	private boolean canMove(int player, int from, int to) {					// TODO
 		boolean canMove = false;
-		if(from == 0 && dice ==6) canMove = true;
 		
-		if(!checkBlockAt(player, from, to)) canMove = true;
-		else canMove = false;
-		
+		if(from == playerPieces[player][from]) {		// Sjekker om brikken er der
+			if(dice == from-to) {						// Sjekker om diff er lig dice
+				if(from == 0 && dice ==6) {
+					to = 1; 		// TODO sjekk om dette holder, er to allerede 1?
+					canMove = true; // må ha 6 om det er fra start
+				}
+				if(!checkBlockAt(player, from, to)) canMove = true;
+				else canMove = false;
+				if(to> 59) 	canMove = false;				 // Må ha akkurat verdi i mål
+			}
+		}
 		return canMove;
 	}
 	
@@ -340,23 +349,23 @@ public class Ludo {
 		int fromBlack = userGridToLudoBoardGrid(player, from);
 		int toBlack = userGridToLudoBoardGrid(player, to);
 		for(int pl = 0; pl<=MAX_PLAYERS; pl++) {
-			int p[] =  new int [4];			// tårn for hver spiller
+			int twr[] =  new int [4];			// lagrer alle posisjonene for hver spiller
 			for(int pi=0; pi <= 3; pi++) {
 				int posCol = playerPieces[pl][pi]; 
 				int posBlack = userGridToLudoBoardGrid(pl, posCol); 
-				//picePos[pi] =posBlack; ryddigere, men trenger den antagelig ikke
 				if(posBlack >fromBlack && posBlack<= toBlack) 
-					p[pi] =posBlack;
+					twr[pi] =posBlack;
+					
 			}
-			if(p[0]==p[1] || p[0]==p[2] || p[0]==p[3] || p[1]==p[2] ||
-					p[1]==p[3] || p[2]==p[3]) {
+			if(twr[0]==twr[1] || twr[0]==twr[2] || twr[0]==twr[3] || twr[1]==twr[2] ||
+					twr[1]==twr[3] || twr[2]==twr[3]) {
 				return true;
-			}	
+			}
 		}
 		return false;
 	}
 	
-	
+
 	/**
 	 * Gets the current state of the game
 	 * @return gamestate
@@ -426,7 +435,9 @@ public class Ludo {
 	 * @return the relativ grid
 	 */
 	private int[][] getUserGridToPlayGrid(){
-		
+		// userGridToPlayerGrid[player][numbCol]
+		// fra svart til hvilket av de fargede tallene??
+		return 0;
 	}
 	
 	/**
@@ -472,12 +483,21 @@ public class Ludo {
 	
 	
 	/**
-	 * Probably solve some kind of random shenadigans
-	 * @param player1 player one in question
-	 * @param player2 player two in question
+	 * check if there are Unfortunate Opponent on the position player moves to
+	 * @param player that moves
+	 * @param to position
 	 */
-	private void checkUnfortunateOpponent(int player1, int player2) {
-		
+	private void checkUnfortunateOpponent(int player, int to) {
+		int toBlack = userGridToLudoBoardGrid(player, to);
+		for(int pl = 0; pl<=MAX_PLAYERS; pl++) {		
+			for(int pi=0; pi <= 3; pi++) {
+				int posCol = playerPieces[pl][pi]; 
+				int posBlack = userGridToLudoBoardGrid(pl, posCol); 
+				if(posBlack == toBlack) {
+					new PieceEvent("movePieceBackToStart", pl,pi, posCol, 0);
+				}
+			}
+		}	
 	}
 	
 	/**
