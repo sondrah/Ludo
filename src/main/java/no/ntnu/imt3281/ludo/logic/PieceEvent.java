@@ -24,7 +24,7 @@ public class PieceEvent extends java.util.EventObject {
 	/**
 	 * Constructs a PieceEvent with the given object and
 	 * integers player, piece, from, to.
-	 * @param obj object the calls the event
+	 * @param obj object that calls the event
 	 * @param player index of the player that calls the event
 	 * @param piece index of the piece in the current players
 	 * 		  piece-array, 0,1,2,3
