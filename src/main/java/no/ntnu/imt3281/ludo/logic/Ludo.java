@@ -107,14 +107,12 @@ public class Ludo {
 	 * Converts the given coordinates to the relative
 	 * board coordinates
 	 * 
-	 * @param x coordinate
-	 * @param y coordinate
-	 * @return The translated coord as int
+	 * @param player colour
+	 * @param players number
+	 * @return The translated coord as int (black number)
 	 */
-	public int userGridToLudoBoardGrid(int x, int y){
-		
-		
-		return 0;
+	public int userGridToLudoBoardGrid(int player, int numbCol){
+		return userGridToPlayerGrid[player][numbCol];
 	}
 	
 	/**
@@ -276,13 +274,22 @@ public class Ludo {
 		}
 	}
 	
-
-	private boolean canMove() {					// TODO
+	/**
+	 * Checks if the current player must have a six 
+	 * to be allowed to move a piece
+	 * 
+	 * @return false if all pieces in home and no six on dice, true otherwise 
+	 */
+	
+	private boolean canMove(int from, int to) {					// TODO
 		
-		if(needASixToGetStarted()) {
-			// if(checkBlocAt()) 
-				 return false;
+		if(from == 0) {
+			if(dice !=6) {
+				if(checkBlocAt(to)) 
+			}
 		}
+		if(checkBlocAt()) 
+				 return false;
 		
 		return true;
 	}
@@ -311,7 +318,7 @@ public class Ludo {
 	
 	public boolean movePiece(int player, int from, int to) {	//FIXME
 																	
-		if(canMove()) {
+		if(canMove(from, to)) {
 			// TODO, hvilken brikke skal flyttes
 			
 			playerPieces[player][x] = to;	// pos. må vel mappes også 
@@ -322,21 +329,21 @@ public class Ludo {
 	}
 	
 	
-	/**
-	 * Checks if the current player must have a six 
-	 * to be allowed to move a piece
-	 * 
-	 * @return false if all pieces in home and no six on dice, true otherwise 
-	 */
-	private boolean needASixToGetStarted() {
-		if(allHome() && dice !=6)return false;
-		else return true;
-	}
+
 	
-	/*
-	 * 
+	/**
+	 * Checks if there are any blockades for specific piece in distance it's about to move
 	 */
-	private void checkBlocAt(int a, int b, int c, int d) { 
+	private void checkBlocAt(int player, int piece, int from, int to) { 
+		int fromBlack = userGridToLudoBoardGrid(player, from);
+		int toBlack = userGridToLudoBoardGrid(player, to);
+		for(int pl = 0; pl<=MAX_PLAYERS; pl++) {
+			for(int pi=0; pi <= 3; pi++) {
+				int posCol = playerPieces[pl][pi]; 
+				int posBlack = userGridToLudoBoardGrid(pl, posCol); 
+				
+			}
+		}
 		
 	}
 	
@@ -442,14 +449,18 @@ public class Ludo {
 	
 	
 	
-	
+	/**
+	 * 
+	 * @param player
+	 * @param piece
+	 * @param to
+	 * @param from
+	 * @return
+	 */
 	private boolean blocked(int player, int piece, int to, int from) {
-		
+		return false;
 	}
 	
-	private boolean checkBlockAt(int player, int piece, int a, int b) {
-		
-	}
 	
 	/**
 	 * Probably solve some kind of random shenadigans
@@ -493,6 +504,11 @@ public class Ludo {
 		for(int player = 0; player < MAX_PLAYERS; player++) {
 			for(int piece = 0; piece < PIECES; piece++) {
 				playerPieces[player][piece] = 0;
+				
+				if(player == RED) setUpPos(RED, 16, 68);
+				if(player == BLUE) setUpPos(BLUE, 29, 74);
+				if(player == GREEN) setUpPos(GREEN, 55, 86);
+				if(player == YELLOW) setUpPos(YELLOW, 42, 80);
 			}
 		}
 		
@@ -502,5 +518,20 @@ public class Ludo {
 		diceListeners = new Vector<>();
 		pieceListeners = new Vector<>();
 		playerListeners = new Vector<>();
+	}
+	
+	private void setUpPos(int player, int start, int startEnd) {
+		int colInt = 1;
+		for(int i = start; i <= 52; i++) {
+			userGridToPlayerGrid[player][colInt]= i;
+			if(colInt == 67) 
+			colInt++;
+		}
+		userGridToPlayerGrid[player][colInt]= mid;
+		
+		for(int i = startEnd; i <= 6; i++) {
+			userGridToPlayerGrid[player][colInt]= i;
+			colInt++;
+		}
 	}
 }
