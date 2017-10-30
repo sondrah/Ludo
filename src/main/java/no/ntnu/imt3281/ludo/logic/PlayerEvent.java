@@ -17,7 +17,8 @@ public class PlayerEvent extends java.util.EventObject {
 	
 	
 	/**
-	 * @param obj
+	 * Constructs a PlayerEvent with given object
+	 * @param obj object that calls this event
 	 */
 	public PlayerEvent(Object obj) 
 	{
@@ -25,7 +26,9 @@ public class PlayerEvent extends java.util.EventObject {
 	}
 	
 	/**
-	 * @param obj
+	 * Constructs a PlayerEvent with given object and
+	 * integers activePlayer and state
+	 * @param obj object that calls the event
 	 * @param active
 	 * @param state
 	 */
@@ -39,33 +42,38 @@ public class PlayerEvent extends java.util.EventObject {
 	 * @param obj
 	 * @return
 	 */
-	public boolean Equals(Object obj) {
+	@Override
+	public boolean equals(Object obj) {
 		return true;						//FIXME
 	}
 
 	/**
-	 * @return
+	 * gets current active player
+	 * @return integer value of current active player. (ref. Ludo class)
 	 */
 	public int getActivePlayer() {
 		return activePlayer;
 	}
 	
 	/**
-	 * @param active
+	 * sets current active player
+	 * @param active index(color) of the player that is to be set as active
 	 */
 	public void setActivePlayer(int active) {
 		this.activePlayer = active;
 	}
 	
 	/**
-	 * @return
+	 * gets the current state of an active player (Playing, waiting..)
+	 * @return integer, current state
 	 */
 	public int getState() {
 		return state;
 	}
 
 	/**
-	 * @param state
+	 * sets current state of an active player.
+	 * @param state index of current state
 	 */
 	public void setState(int state) {
 		this.state = state;
