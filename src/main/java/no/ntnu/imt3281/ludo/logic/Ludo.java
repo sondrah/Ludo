@@ -86,12 +86,12 @@ public class Ludo {
 	}
 	
 	/**
-	 * Converts the given coordinates to the relative
-	 * board coordinates
+	 * Converts the given colured number to the relative
+	 * board (black) number
 	 * 
 	 * @param player colour
 	 * @param players number
-	 * @return The translated coord as int (black number)
+	 * @return The translated pos as int (black number)
 	 */
 	public int userGridToLudoBoardGrid(int player, int numbCol){
 		return userGridToPlayerGrid[player][numbCol];
@@ -267,17 +267,14 @@ public class Ludo {
 	 * @return false if all pieces in home and no six on dice, true otherwise 
 	 */
 	
-	private boolean canMove(int from, int to) {					// TODO
+	private boolean canMove(int player, int from, int to) {					// TODO
+		boolean canMove = false;
+		if(from == 0 && dice ==6) canMove = true;
 		
-		if(from == 0) {
-			if(dice !=6) {
-				if(checkBlocAt(to)) 
-			}
-		}
-		if(checkBlocAt()) 
-				 return false;
+		if(!checkBlockAt(player, from, to)) canMove = true;
+		else canMove = false;
 		
-		return true;
+		return canMove;
 	}
 	
 	/**
@@ -304,10 +301,12 @@ public class Ludo {
 	
 	public boolean movePiece(int player, int from, int to) {	//FIXME
 																	
-		if(canMove(from, to)) {
+		if(canMove(player, from, to)) {
 			// TODO, hvilken brikke skal flyttes
 			
-			playerPieces[player][x] = to;	// pos. må vel mappes også 
+			for 
+			
+			playerPieces[player][0] = to;	// pos. må vel mappes også 
 			
 			return true;
 		}
@@ -319,18 +318,30 @@ public class Ludo {
 	
 	/**
 	 * Checks if there are any blockades for specific piece in distance it's about to move
+	 * Iterate through all players, 
+	 * If the pos is in the actual area, saves the position for each pice in p[]
+	 * For each player, check if one of the pos is equal to each other
+	 * 
 	 */
-	private void checkBlocAt(int player, int piece, int from, int to) { 
+	private boolean checkBlockAt(int player, int from, int to) { 
+		
 		int fromBlack = userGridToLudoBoardGrid(player, from);
 		int toBlack = userGridToLudoBoardGrid(player, to);
 		for(int pl = 0; pl<=MAX_PLAYERS; pl++) {
+			int p[] =  new int [4];			// tårn for hver spiller
 			for(int pi=0; pi <= 3; pi++) {
 				int posCol = playerPieces[pl][pi]; 
 				int posBlack = userGridToLudoBoardGrid(pl, posCol); 
-				
+				//picePos[pi] =posBlack; ryddigere, men trenger den antagelig ikke
+				if(posBlack >fromBlack && posBlack<= toBlack) 
+					p[pi] =posBlack;
 			}
+			if(p[0]==p[1] || p[0]==p[2] || p[0]==p[3] || p[1]==p[2] ||
+					p[1]==p[3] || p[2]==p[3]) {
+				return true;
+			}	
 		}
-		
+		return false;
 	}
 	
 	
@@ -490,13 +501,12 @@ public class Ludo {
 		players = new Vector<>();
 		
 		for(int player = 0; player < MAX_PLAYERS; player++) {
+			if(player == RED) setUpPos(RED, 16, 68);
+			if(player == BLUE) setUpPos(BLUE, 29, 74);
+			if(player == GREEN) setUpPos(GREEN, 55, 86);
+			if(player == YELLOW) setUpPos(YELLOW, 42, 80);
 			for(int piece = 0; piece < PIECES; piece++) {
-				playerPieces[player][piece] = 0;
-				
-				if(player == RED) setUpPos(RED, 16, 68);
-				if(player == BLUE) setUpPos(BLUE, 29, 74);
-				if(player == GREEN) setUpPos(GREEN, 55, 86);
-				if(player == YELLOW) setUpPos(YELLOW, 42, 80);
+				playerPieces[player][piece] = 0;				
 			}
 		}
 		
@@ -507,18 +517,25 @@ public class Ludo {
 		pieceListeners = new Vector<>();
 		playerListeners = new Vector<>();
 	}
-	
+	/**
+	 * Set up each position in userGridToPlayerGrid
+	 * From color int to black int. 
+	 * @param player 
+	 * @param start value for player
+	 * @param startEnd value for each players runway
+	 */
 	private void setUpPos(int player, int start, int startEnd) {
-		int colInt = 1;
-		for(int i = start; i <= 52; i++) {
-			userGridToPlayerGrid[player][colInt]= i;
-			if(colInt == 67) 
-			colInt++;
+		int blackInt = start;		// Setter startverdien til den svarte
+		for(int colInt =1 ; colInt <= 53; colInt++) {	// Går rundt hele ytre bane
+			userGridToPlayerGrid[player][colInt]= blackInt;
+			if(blackInt == 67) blackInt=15;		// Spesialhådterer tallskifte
+			blackInt++;
 		}
-		
-		for(int i = startEnd; i <= 6; i++) {
-			userGridToPlayerGrid[player][colInt]= i;
-			colInt++;
+
+		blackInt=startEnd;  //Setter startverdien på oppløpet
+		for(int colInt = 54; colInt <= 6; colInt++) {	// Går opp hele oppløpet
+			userGridToPlayerGrid[player][colInt]= blackInt;
+			blackInt++;
 		}
 	}
 }
