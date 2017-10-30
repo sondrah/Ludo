@@ -35,23 +35,23 @@ public class Ludo {
 	/** Used to simulate dicethrows */
 	private Random randomGenerator;
 	
-	/** A 2D int array to hold the different players pieces*/
+	/** A 2D integer array to hold the different players pieces*/
 	private int[][] playerPieces;
 	
 	// make a type for this
-	private [][] userGridToPlayerGrid;
+	private int[][] userGridToPlayerGrid;
 	
 	/** A Vector with the different DiceListners */
-	private Vector<DiceListner> diceListners;
+	private Vector<DiceListener> diceListeners;
 	
 	/** A Vector with the different PieceListners */
-	private Vector<PieceListner> pieceListners;
+	private Vector<PieceListener> pieceListeners;
 	
-	/** A Vector with the diffenet PlayerListners */
-	private Vector<PlayerListner> playerListners;
+	/** A Vector with the different PlayerListners */
+	private Vector<PlayerListener> playerListeners;
 	
 	/**
-	 * Default Constructor for the Ludo calss
+	 * Default Constructor for the Ludo class
 	 */
 	public Ludo(){
 		setUpGame();
@@ -72,17 +72,21 @@ public class Ludo {
 		players.add(p3);
 		players.add(p4);
 		
-		if(enoughPlayers()){
+		// ingen ting å catche her
+		// og, som ej prøvde å forklare, nrOfPlayers() er muligens
+		// forskjellig fra om vi har nok spillere.
+		// evt må nrOfPlayers ha funksjonalitet til enough players 
+		if(!enoughPlayers()) {
+		//if(MIN_PLAYERS <= nrOfPlayers() && MAX_PLAYERS >= nrOfPlayers()){
 			players.clear();
 			throw new NotEnoughPlayersException(
 					  "Ludo#Ludo(String, String, String, String):"
 					+ "The number of players must be more than 2");
 		}
 		else {
+			setUpGame();
 			throw new NotEnoughPlayersException("No exception should be thrown");
 		}
-		
-		setUpGame();
 	}
 	
 	/**
@@ -109,7 +113,7 @@ public class Ludo {
 	}
 	
 	/**
-	 * Returns the number og active players
+	 * Returns the number of active players
 	 * in this game
 	 * @return the number of active players
 	 */
@@ -227,6 +231,7 @@ public class Ludo {
 		return dice;
 	}
 	
+
 	/**
 	 * Clientside dicethrow, returns the given value
 	 * @param value the value the throw should result in
@@ -243,9 +248,20 @@ public class Ludo {
 	 * @param value of the dicethrow
 	 */
 	private void alertThrowDice(int value) {
-		for(DiceListner dl : diceListners) {
+		for(DiceListener dl : diceListeners) {
 			dl.diceThrown(new DiceEvent("Server", value, activePlayer));
 		}
+	}
+	
+
+	private boolean canMove() {					// TODO
+		
+		if(needASixToGetStarted()) {
+			// if(checkBlocAt()) 
+				 return false;
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -256,6 +272,7 @@ public class Ludo {
 	 * 
 	 * @return true if the piece could move, false otherwise
 	 */
+/*
 	private boolean movePiece(int player, int from, int to) {
 		// FIXME
 		if (from == 0) {
@@ -267,8 +284,39 @@ public class Ludo {
 					i++;
 				}
 			}
+*/
+	
+	public boolean movePiece(int player, int from, int to) {	//FIXME
+																	
+		if(canMove()) {
+			// TODO, hvilken brikke skal flyttes
+			
+			playerPieces[player][x] = to;	// pos. må vel mappes også 
+			
+			return true;
 		}
+		else return false;	
 	}
+	
+	
+	/**
+	 * Checks if the current player must have a six 
+	 * to be allowed to move a piece
+	 * 
+	 * @return false if all pieces in home and no six on dice, true otherwise 
+	 */
+	private boolean needASixToGetStarted() {
+		if(allHome() && dice !=6)return false;
+		else return true;
+	}
+	
+	/*
+	 * 
+	 */
+	private void checkBlocAt(int a, int b, int c, int d) { 
+		
+	}
+	
 	
 	/**
 	 * Gets the current state of the game
@@ -297,11 +345,15 @@ public class Ludo {
 	 * Checks if someone has won the game
 	 * @return the winner of the game
 	 */
-	public int getWinner() { 
-		for(int i = 0; i < players.size(); i++) {
-			for(int j = 0; j < 4; j++) {
+	public int getWinner() {
+		int i;
+		int j;
+		
+		for(i = 0; i < players.size(); i++) {
+			for(j = 0; j < 4; j++) {
 				// TODO: check if 59 is correct pos
-				if(playerPieces[i][j] == 59);
+				if(playerPieces[i][j] == 59) return i;
+				else return -1;
 			}
 		}
 	}
@@ -310,23 +362,23 @@ public class Ludo {
 	 * Adds a DiceListner to the game
 	 * @param diceListner to be added
 	 */
-	public void addDiceListner(DiceListner diceListner) {
-		diceListners.add(diceListner);
+	public void addDiceListner(DiceListener diceListner) {
+		diceListeners.add(diceListner);
 	}
 	
 	/**
 	 * Adds PlayerListner to the game
 	 * @param playerListner to be added
 	 */
-	public void addPlayerListner(PlayerListner playerListner) {
-		playerListners.add(playerListner);
+	public void addPlayerListner(PlayerListener playerListner) {
+		playerListeners.add(playerListner);
 	}
 	
 	/**
 	 * Adds a PieceListner to the game
 	 * @param pieceListner to be added
 	 */
-	public void addPieceListner(PieceListner pieceListner) {
+	public void addPieceListner(PieceListener pieceListner) {
 		pieceListeners.add(pieceListner);
 	}
 	
@@ -341,9 +393,17 @@ public class Ludo {
 	/**
 	 * Checks if all the pieces are home?
 	 * @return true if all pieces are home, false otherwise
+	 * piecesInStart counts down for each pice in start
 	 */
 	private boolean allHome() {
-		
+		int piecesInHome = 4;
+		for(int piece = 0; piece < PIECES; piece++) {
+			if(playerPieces[activePlayer][piece] != 0) {
+				--piecesInHome;
+			}
+		}
+		if(piecesInHome==4) return true;
+		else return false;
 	}
 	
 	
@@ -357,19 +417,14 @@ public class Ludo {
 		else activePlayer++;
 	}
 	
-	/**
-	 * probably check on dice = 6
-	 */
-	private boolean canMove() {
-		
-	}
+	
 	
 	
 	private boolean blocked(int player, int piece, int to, int from) {
 		
 	}
 	
-	private boolean checkBlockAt(int player, int piece, int, int) {
+	private boolean checkBlockAt(int player, int piece, int a, int b) {
 		
 	}
 	
@@ -394,7 +449,7 @@ public class Ludo {
 	 * @return true if we have at least 2, false otherwise
 	 */
 	private boolean enoughPlayers() {
-		int ps;
+		int ps = 0;
 		for (int i = 0; i < MAX_PLAYERS; i++) {
 			if(players.get(i) != null) ps++;
 		}
@@ -402,6 +457,7 @@ public class Ludo {
 		if(ps >= MIN_PLAYERS) return true;
 		else return false;
 	}
+	
 	
 	/**
 	 * Sets up the common stuff for the constructors. Such as
@@ -417,8 +473,8 @@ public class Ludo {
 		activePlayer = RED;
 		dice = 0;
 		
-		diceListners = new Vector<>();
-		pieceListners = new Vector<>();
-		playerListners = new Vector<>();
+		diceListeners = new Vector<>();
+		pieceListeners = new Vector<>();
+		playerListeners = new Vector<>();
 	}
 }
