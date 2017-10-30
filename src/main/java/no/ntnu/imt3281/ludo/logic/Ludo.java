@@ -39,8 +39,25 @@ public class Ludo {
 	private int[][] playerPieces;
 	
 	// make a type for this
-	private int[][] userGridToPlayerGrid;
-	
+	private int[][] userGridToPlayerGrid =
+		{
+			/* Red Player    */ {  0, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34,
+							      35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54,
+							      55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 16, 68, 69, 70, 71, 72, 73},
+			
+			/* Blue Player   */ {  4, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+		    				      48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67,
+							      16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 74, 75, 76, 77, 78, 79},
+			
+			/* Yellow Player */ {  8, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
+							      61, 62, 63, 64, 65, 66, 67, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+							      29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 80, 81, 82, 83, 84, 85},
+			
+			/* Green Player */  { 12, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 16, 17, 18, 19, 20, 21,
+							      22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41,
+							      42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 86, 87, 88, 89, 90, 91}
+		};
+		
 	/** A Vector with the different DiceListners */
 	private Vector<DiceListener> diceListeners;
 	
@@ -67,25 +84,22 @@ public class Ludo {
 	 * @throws NotEnoughPlayersException
 	 */
 	public Ludo(String p1, String p2, String p3, String p4) throws NotEnoughPlayersException {
-		players.add(p1);
-		players.add(p2);
-		players.add(p3);
-		players.add(p4);
+		setUpGame();
+		
+		players.add(RED, p1);
+		players.add(BLUE, p2);
+		players.add(YELLOW, p3);
+		players.add(GREEN, p4);
 		
 		// ingen ting å catche her
-		// og, som ej prøvde å forklare, nrOfPlayers() er muligens
-		// forskjellig fra om vi har nok spillere.
-		// evt må nrOfPlayers ha funksjonalitet til enough players 
-		if(!enoughPlayers()) {
-		//if(MIN_PLAYERS <= nrOfPlayers() && MAX_PLAYERS >= nrOfPlayers()){
+		if(MIN_PLAYERS > nrOfPlayers() && MAX_PLAYERS < nrOfPlayers()){
 			players.clear();
 			throw new NotEnoughPlayersException(
 					  "Ludo#Ludo(String, String, String, String):"
 					+ "The number of players must be more than 2");
 		}
 		else {
-			setUpGame();
-			throw new NotEnoughPlayersException("No exception should be thrown");
+			//throw new NotEnoughPlayersException("No exception should be thrown");
 		}
 	}
 	
@@ -93,14 +107,12 @@ public class Ludo {
 	 * Converts the given coordinates to the relative
 	 * board coordinates
 	 * 
-	 * @param x coordinate
-	 * @param y coordinate
-	 * @return The translated coord as int
+	 * @param player colour
+	 * @param players number
+	 * @return The translated coord as int (black number)
 	 */
-	public int userGridToLudoBoardGrid(int x, int y){
-		
-		
-		return 0;
+	public int userGridToLudoBoardGrid(int player, int numbCol){
+		return userGridToPlayerGrid[player][numbCol];
 	}
 	
 	/**
@@ -109,7 +121,15 @@ public class Ludo {
 	 * @return number of players as int
 	 */
 	public int nrOfPlayers(){
-		return players.size();
+		int ps = 0;
+		
+		if(players.size() != 0) {
+			for (int i = 0; i < MAX_PLAYERS; i++) {
+				if(players.get(i) != null) ps++;
+			}
+		}
+		
+		return ps;
 	}
 	
 	/**
@@ -138,8 +158,8 @@ public class Ludo {
 			return players.get(player);
 		}
 		else{
-			//TODO: feilmelding
-			return "aiaiai";
+			// TODO: feilmelding?
+			return null;
 		}
 	}
 	
@@ -254,13 +274,22 @@ public class Ludo {
 		}
 	}
 	
-
-	private boolean canMove() {					// TODO
+	/**
+	 * Checks if the current player must have a six 
+	 * to be allowed to move a piece
+	 * 
+	 * @return false if all pieces in home and no six on dice, true otherwise 
+	 */
+	
+	private boolean canMove(int from, int to) {					// TODO
 		
-		if(needASixToGetStarted()) {
-			// if(checkBlocAt()) 
-				 return false;
+		if(from == 0) {
+			if(dice !=6) {
+				if(checkBlocAt(to)) 
+			}
 		}
+		if(checkBlocAt()) 
+				 return false;
 		
 		return true;
 	}
@@ -289,7 +318,7 @@ public class Ludo {
 	
 	public boolean movePiece(int player, int from, int to) {	//FIXME
 																	
-		if(canMove()) {
+		if(canMove(from, to)) {
 			// TODO, hvilken brikke skal flyttes
 			
 			playerPieces[player][x] = to;	// pos. må vel mappes også 
@@ -300,21 +329,21 @@ public class Ludo {
 	}
 	
 	
-	/**
-	 * Checks if the current player must have a six 
-	 * to be allowed to move a piece
-	 * 
-	 * @return false if all pieces in home and no six on dice, true otherwise 
-	 */
-	private boolean needASixToGetStarted() {
-		if(allHome() && dice !=6)return false;
-		else return true;
-	}
+
 	
-	/*
-	 * 
+	/**
+	 * Checks if there are any blockades for specific piece in distance it's about to move
 	 */
-	private void checkBlocAt(int a, int b, int c, int d) { 
+	private void checkBlocAt(int player, int piece, int from, int to) { 
+		int fromBlack = userGridToLudoBoardGrid(player, from);
+		int toBlack = userGridToLudoBoardGrid(player, to);
+		for(int pl = 0; pl<=MAX_PLAYERS; pl++) {
+			for(int pi=0; pi <= 3; pi++) {
+				int posCol = playerPieces[pl][pi]; 
+				int posBlack = userGridToLudoBoardGrid(pl, posCol); 
+				
+			}
+		}
 		
 	}
 	
@@ -371,7 +400,7 @@ public class Ludo {
 	 * Adds PlayerListner to the game
 	 * @param playerListner to be added
 	 */
-	public void addPlayerListner(PlayerListener playerListner) {
+	public void addPlayerListener(PlayerListener playerListner) {
 		playerListeners.add(playerListner);
 	}
 	
@@ -379,7 +408,7 @@ public class Ludo {
 	 * Adds a PieceListner to the game
 	 * @param pieceListner to be added
 	 */
-	public void addPieceListner(PieceListener pieceListner) {
+	public void addPieceListener(PieceListener pieceListner) {
 		pieceListeners.add(pieceListner);
 	}
 	
@@ -420,14 +449,18 @@ public class Ludo {
 	
 	
 	
-	
+	/**
+	 * 
+	 * @param player
+	 * @param piece
+	 * @param to
+	 * @param from
+	 * @return
+	 */
 	private boolean blocked(int player, int piece, int to, int from) {
-		
+		return false;
 	}
 	
-	private boolean checkBlockAt(int player, int piece, int a, int b) {
-		
-	}
 	
 	/**
 	 * Probably solve some kind of random shenadigans
@@ -465,9 +498,17 @@ public class Ludo {
 	 * the playerPieces and empty vectors
 	 */
 	private void setUpGame(){
+		playerPieces = new int[4][4];
+		players = new Vector<>();
+		
 		for(int player = 0; player < MAX_PLAYERS; player++) {
 			for(int piece = 0; piece < PIECES; piece++) {
 				playerPieces[player][piece] = 0;
+				
+				if(player == RED) setUpPos(RED, 16, 68);
+				if(player == BLUE) setUpPos(BLUE, 29, 74);
+				if(player == GREEN) setUpPos(GREEN, 55, 86);
+				if(player == YELLOW) setUpPos(YELLOW, 42, 80);
 			}
 		}
 		
@@ -477,5 +518,20 @@ public class Ludo {
 		diceListeners = new Vector<>();
 		pieceListeners = new Vector<>();
 		playerListeners = new Vector<>();
+	}
+	
+	private void setUpPos(int player, int start, int startEnd) {
+		int colInt = 1;
+		for(int i = start; i <= 52; i++) {
+			userGridToPlayerGrid[player][colInt]= i;
+			if(colInt == 67) 
+			colInt++;
+		}
+		userGridToPlayerGrid[player][colInt]= mid;
+		
+		for(int i = startEnd; i <= 6; i++) {
+			userGridToPlayerGrid[player][colInt]= i;
+			colInt++;
+		}
 	}
 }
