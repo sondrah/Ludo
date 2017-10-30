@@ -139,6 +139,7 @@ public class Ludo {
 		}
 		else{
 			//TODO: feilmelding
+			return "aiaiai";
 		}
 	}
 	
@@ -362,7 +363,7 @@ public class Ludo {
 	 * Adds a DiceListner to the game
 	 * @param diceListner to be added
 	 */
-	public void addDiceListner(DiceListener diceListner) {
+	public void addDiceListener(DiceListener diceListner) {
 		diceListeners.add(diceListner);
 	}
 	
