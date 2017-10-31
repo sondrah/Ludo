@@ -278,7 +278,7 @@ public class Ludo {
 			else result = false;
 			if(to> 59) 	result = false;				 // Må ha akkurat verdi i mål
 		}
-		System.out.println("Can move: " + dice + pieceindex);
+		System.out.println("Can move: "+ result + " dice: " + dice + " Piece" + pieceindex);
 		return (result );
 	}
 	
@@ -305,7 +305,7 @@ public class Ludo {
 */
 	
 	public boolean movePiece(int player, int from, int to) {	//FIXME
-		
+		int beginningAttempt = 1;
 		int pieceindex = -1;					// Trengs for å garantere at bare
 		int i = 0;									// en og første brikke flyttes
 		while ( i < PIECES && pieceindex == -1) {	// går igjennom alle brikkene frem til
@@ -313,22 +313,50 @@ public class Ludo {
 				pieceindex = i;
 			}
 			 i++;
-
 		}
-		if(canMove(player, pieceindex, from, to)) {
-			 System.out.println("can move");
-			new PieceEvent("Piece moved", activePlayer, pieceindex, from, to);			
-			playerPieces[player][pieceindex] = to;
-			nextPlayer();
-			alertPlayers(new PlayerEvent("Next player", activePlayer, PlayerEvent.PLAYING));
-			return true;
+		if (pieceindex !=-1) {						// Hvis den fant brikke
+			if(canMove(player, pieceindex, from, to) ) {	// Hvis den kan flytte
+				 System.out.println("PieceEvent neste");
+				new PieceEvent("Piece moved", activePlayer, pieceindex, from, to);			
+				playerPieces[player][pieceindex] = to;
+				nextPlayer();
+				alertPlayers(new PlayerEvent("Next player", activePlayer, PlayerEvent.PLAYING));
+				return true;
+			}
+							// Hvis den ikke kan flytte, 
+							//  har alle brikkene i start eller oppløp
+							//  OG har igjen forsøk. 
+			else if (needASixToGetStarted(player) && beginningAttempt<=3) {
+				beginningAttempt++;
+				System.out.println("Kan ikke flytte Forsøk: " + beginningAttempt);
+				// TODO en funk? som sier samme spiler igjen.
+			}
+			else if(beginningAttempt>3) {
+				nextPlayer();
+			}
+			else return false;
 		}
 		else return false;	
 	}
 	
-	
+	/**
+	 * 
+	 * @param player
+	 * @return
+	 */
 
-	
+	// TODO Dette er samme som all home, + all runway
+	private boolean needASixToGetStarted(int player) {
+		int nrOfPiececInStart = 0;
+		int nrOfPiececInRunway = 0;
+		for(int pi=0; pi <= PIECES; pi++) {
+			if (playerPieces[player][pi] == 0) nrOfPiececInStart++;
+			if (playerPieces[player][pi] > 54) nrOfPiececInRunway++;
+		if(nrOfPiececInStart == 4) return true;
+		if(nrOfPiececInRunway == 4) return true;		// TODO blir dette riktig??
+		else return false;
+	}
+
 	/**
 	 * Checks if there are any blockades for specific piece in distance it's about to move
 	 * Iterate through all players, 
@@ -342,7 +370,7 @@ public class Ludo {
 		int toBlack = userGridToLudoBoardGrid(player, to);
 		for(int pl = 0; pl<=MAX_PLAYERS; pl++) {
 			int twr[] =  new int [4];			// lagrer alle posisjonene for hver spiller
-			for(int pi=0; pi <= 3; pi++) {
+			for(int pi=0; pi <= PIECES; pi++) {
 				int posCol = playerPieces[pl][pi]; 
 				int posBlack = userGridToLudoBoardGrid(pl, posCol); 
 				if(posBlack >fromBlack && posBlack<= toBlack) 
@@ -441,10 +469,10 @@ public class Ludo {
 	 * piecesInStart counts down for each pice in start
 	 */
 	private boolean allHome() {
-		int piecesInHome = 4;
+		int piecesInHome = 0;
 		for(int piece = 0; piece < PIECES; piece++) {
-			if(playerPieces[activePlayer][piece] != 0) {
-				--piecesInHome;
+			if(playerPieces[activePlayer][piece] == 0) {
+				piecesInHome++;
 			}
 		}
 		if(piecesInHome==4) return true;
@@ -489,7 +517,7 @@ public class Ludo {
 				int posCol = playerPieces[pl][pi]; 
 				int posBlack = userGridToLudoBoardGrid(pl, posCol); 
 				if(posBlack == toBlack) {
-					new PieceEvent("movePieceBackToStart", pl,pi, posCol, 0);
+					new PieceEvent(this, pl,pi, posCol, 0);
 				}
 			}
 		}	
