@@ -272,21 +272,26 @@ public class Ludo {
 	 * @return false if can't move,  true otherwise 
 	 */
 	
-	private boolean canMove(int player, int from, int to) {					// TODO
-		boolean canMove = false;
+	private boolean canMove(int player, int pieceindex, int from, int to) {					// TODO
+		boolean result = false;
 		
-		if(from == playerPieces[player][from]) {		// Sjekker om brikken er der
-			if(dice == from-to) {						// Sjekker om diff er lig dice
-				if(from == 0 && dice ==6) {
-					to = 1; 		// TODO sjekk om dette holder, er to allerede 1?
-					canMove = true; // må ha 6 om det er fra start
-				}
-				if(!checkBlockAt(player, from, to)) canMove = true;
-				else canMove = false;
-				if(to> 59) 	canMove = false;				 // Må ha akkurat verdi i mål
-			}
+		// Hvis startprosedyre 
+		if(from == 0 && dice ==6) {	
+			to = 1; 		// TODO sjekk om dette holder, er to allerede 1?
+			result = true; // må ha 6 om det er fra start
+			System.out.println("ut av start"+ result);
 		}
-		return canMove;
+		// Hvis ikke, gjør disse sjekkene uansett
+		else if(dice == from-to || from == 0) {						// Sjekker om diff er lig dice
+			if(!checkBlockAt(player, from, to)) {
+				result = true; 
+				System.out.println("ut av checkBlockAt "+ result);
+			}
+			else result = false;
+			if(to> 59) 	result = false;				 // Må ha akkurat verdi i mål
+		}
+		System.out.println("can move" + result );
+		return (result );
 	}
 	
 	/**
@@ -314,13 +319,15 @@ public class Ludo {
 	public boolean movePiece(int player, int from, int to) {	//FIXME
 		
 		int pieceindex = 0;					// Trengs for å garantere at bare
-											// en brikke flyttes
-		if(canMove(player, from, to)) {
-			
-			for (int i = 0; i < PIECES; i++) {	// går igjennom alle brikkene til
-				if (playerPieces[player][i] == from) // en spiller
-					pieceindex = i;
-			}
+		int i = 0;									// en brikke flyttes
+		while ( i < PIECES && pieceindex !=0) {	// går igjennom alle brikkene frem til
+			if (playerPieces[player][i] == from) // første brikke
+				pieceindex = i;
+			 i++;
+			System.out.println("inne i move");
+		}
+		if(canMove(player, pieceindex, from, to)) {
+			// TODO stopp på første finn = while	
 			new PieceEvent("Piece moved", activePlayer, pieceindex, from, to);
 			
 			playerPieces[player][pieceindex] = to;
@@ -405,6 +412,7 @@ public class Ludo {
 				else return -1;
 			}
 		}
+		// return j;
 	}
 	
 	/**

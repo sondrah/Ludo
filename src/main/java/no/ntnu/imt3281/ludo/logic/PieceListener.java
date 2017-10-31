@@ -9,6 +9,6 @@ package no.ntnu.imt3281.ludo.logic;
  */
 public interface PieceListener extends EventListener {
 	
-	public void piceMoved(PieceEvent pieceEvent);
+	public void pieceMoved(PieceEvent pieceEvent);
 
 }
