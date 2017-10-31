@@ -247,21 +247,11 @@ public class Ludo {
 	 * @return the given value
 	 */
 	public int throwDice(int value) {
-		alertThrowDice(value);
+		alertThrowDice(new DiceEvent(this, value, activePlayer));
 		dice = value;
 		return value;
 	}
-	
-	
-	/**
-	 * sends the DiceEvent to all registered DiceListners
-	 * @param value of the dicethrow
-	 */
-	private void alertThrowDice(int value) {
-		for(DiceListener dl : diceListeners) {
-			dl.diceThrown(new DiceEvent("Server", value, activePlayer));
-		}
-	}
+
 	
 	/**
 	 * Checks if the current move: 
@@ -279,18 +269,16 @@ public class Ludo {
 		if(from == 0 && dice ==6) {	
 			to = 1; 		// TODO sjekk om dette holder, er to allerede 1?
 			result = true; // må ha 6 om det er fra start
-			System.out.println("ut av start"+ result);
 		}
 		// Hvis ikke, gjør disse sjekkene uansett
 		else if(dice == from-to || from == 0) {						// Sjekker om diff er lig dice
 			if(!checkBlockAt(player, from, to)) {
 				result = true; 
-				System.out.println("ut av checkBlockAt "+ result);
 			}
 			else result = false;
 			if(to> 59) 	result = false;				 // Må ha akkurat verdi i mål
 		}
-		System.out.println("can move" + result );
+		System.out.println("Can move: " + dice + pieceindex);
 		return (result );
 	}
 	
@@ -318,23 +306,21 @@ public class Ludo {
 	
 	public boolean movePiece(int player, int from, int to) {	//FIXME
 		
-		int pieceindex = 0;					// Trengs for å garantere at bare
-		int i = 0;									// en brikke flyttes
-		while ( i < PIECES && pieceindex !=0) {	// går igjennom alle brikkene frem til
-			if (playerPieces[player][i] == from) // første brikke
+		int pieceindex = -1;					// Trengs for å garantere at bare
+		int i = 0;									// en og første brikke flyttes
+		while ( i < PIECES && pieceindex == -1) {	// går igjennom alle brikkene frem til
+			if (playerPieces[player][i] == from) { // første brikke
 				pieceindex = i;
+			}
 			 i++;
-			System.out.println("inne i move");
+
 		}
 		if(canMove(player, pieceindex, from, to)) {
-			// TODO stopp på første finn = while	
-			new PieceEvent("Piece moved", activePlayer, pieceindex, from, to);
-			
+			 System.out.println("can move");
+			new PieceEvent("Piece moved", activePlayer, pieceindex, from, to);			
 			playerPieces[player][pieceindex] = to;
-			
 			nextPlayer();
-			new PlayerEvent("Neste spiller sin tur", activePlayer, PlayerEvent.PLAYING);
-			
+			alertPlayers(new PlayerEvent("Next player", activePlayer, PlayerEvent.PLAYING));
 			return true;
 		}
 		else return false;	
@@ -573,7 +559,7 @@ public class Ludo {
 		int blackInt = start;							// Setter startverdien til den svarte
 		for(int colInt = 1; colInt < COMMON_GRID_COUNT; colInt++) {	// Går rundt hele ytre bane
 			userGridToPlayerGrid[player][colInt] = blackInt;
-			if(blackInt == 67) blackInt=15;				// Spesialhådterer tallskifte
+			if(blackInt == 67) blackInt = 15;					// Spesialhådterer tallskifte
 			blackInt++;
 		}
 
@@ -603,6 +589,17 @@ public class Ludo {
 	private void alertPieces(PieceEvent event) {
 		for(PieceListener pieceListener : pieceListeners) {
 			pieceListener.piceMoved(event);
+		}
+	}
+	
+	
+	/**
+	 * sends the DiceEvent to all registered DiceListners
+	 * @param event The DiceEvent that should be sent to the listeners.
+	 */
+	private void alertThrowDice(DiceEvent event) {
+		for(DiceListener dl : diceListeners) {
+			dl.diceThrown(event);
 		}
 	}
 }
