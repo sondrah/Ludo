@@ -236,7 +236,7 @@ public class Ludo {
 		randomGenerator = new Random();
 		
 		dice = randomGenerator.nextInt(5) + 1;
-		alertThrowDice(dice);
+		alertThrowDice(new DiceEvent(this, dice, activePlayer));
 		return dice;
 	}
 	
