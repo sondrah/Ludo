@@ -96,8 +96,22 @@ public class Ludo {
 	 * @param players number
 	 * @return The translated pos as int (black number)
 	 */
-	public int userGridToLudoBoardGrid(int player, int numbCol){
-		return userGridToPlayerGrid[player][numbCol];
+	public int userGridToLudoBoardGrid(int player, int userPosition){
+		int gridPosition = 0;
+		
+		if(userPosition == 0) {
+			switch(player) {
+			case RED: 		gridPosition = 0;	break;
+			case BLUE: 		gridPosition = 4;	break;
+			case YELLOW:	gridPosition = 8;	break;
+			case GREEN: 	gridPosition = 12;	break;
+			}
+		}
+		else {
+			gridPosition = userGridToPlayerGrid[player][userPosition];
+		}
+		
+		return gridPosition;
 	}
 	
 	/**
@@ -305,7 +319,7 @@ public class Ludo {
 		
 		int pieceindex = 0;					// Trengs for å garantere at bare
 											// en brikke flyttes
-		if(canMove(player, from, to)) {
+		if(canMove(player, from, to)) {			
 			
 			for (int i = 0; i < PIECES; i++) {	// går igjennom alle brikkene til
 				if (playerPieces[player][i] == from) // en spiller
@@ -519,7 +533,7 @@ public class Ludo {
 	 */
 	private void setUpGame(){
 		playerPieces = new int[MAX_PLAYERS][PIECES];
-		userGridToPlayerGrid = new int[MAX_PLAYERS][COMMON_GRID_COUNT];
+		userGridToPlayerGrid = new int[MAX_PLAYERS][COMMON_GRID_COUNT + 6];
 		
 		activePlayer = RED;
 		dice = 0;
@@ -544,6 +558,8 @@ public class Ludo {
 		setUpPos(GREEN, 55, 86);
 		setUpPos(YELLOW, 42, 80);
 	}
+	
+	
 	/**
 	 * Set up each position in userGridToPlayerGrid
 	 * From color int to black int. 
@@ -559,9 +575,9 @@ public class Ludo {
 			blackInt++;
 		}
 
-		blackInt=startEnd;  							//Setter startverdien på oppløpet
-		for(int colInt = COMMON_GRID_COUNT; colInt <= 6; colInt++) {	// Går opp hele oppløpet
-			userGridToPlayerGrid[player][colInt]= blackInt;
+		blackInt = startEnd;  							//Setter startverdien på oppløpet
+		for(int colInt = COMMON_GRID_COUNT; colInt < COMMON_GRID_COUNT + 6; colInt++) {	// Går opp hele oppløpet
+			userGridToPlayerGrid[player][colInt] = blackInt;
 			blackInt++;
 		}
 	}
