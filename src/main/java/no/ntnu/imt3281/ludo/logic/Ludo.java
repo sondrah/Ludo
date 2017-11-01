@@ -259,58 +259,37 @@ public class Ludo {
 	 * Is equal to dice
 	 * Is allowed from start (must have a six to be allowed to move a piece)
 	 * is not in conflict with a tower
-	 * @return false if can't move,  true otherwise 
+	 * @param player which player is trying to move a piece
+	 * @param piece 
+	 * @param from coordinates piece is being moved from
+	 * @param to coordinates piece is being moved to
+	 * @return true if it can move, otherwise false
 	 */
 	
-	private boolean canMove(int player, int pieceindex, int from, int to) {					// TODO
-		boolean result = false;
-		
-		// Hvis startprosedyre 
-		if(from == 0 && dice ==6) {	
-			to = 1; 		// TODO sjekk om dette holder, er to allerede 1?
-			result = true; // må ha 6 om det er fra start
-		}
-		// Hvis ikke, gjør disse sjekkene uansett
-		else if(dice == from-to || from == 0) {						// Sjekker om diff er lig dice
+	
+	private boolean canMove(int player, int piece, int from, int to) {			// TODO
+		boolean movable = false;
+			
+		if(needASixToGetStarted(player) && dice == 6) {	 // hvis alle i home, så må dice = 6 for å flytte
+			movable = true; 		
+		}												
+		else if(dice == from-to || playerPieces[player][piece] == 0) {	// Sjekker om diff. er lik dice
 			if(!checkBlockAt(player, from, to)) {
-				result = true; 
+				movable = true; 
 			}
-			else result = false;
-			if(to> 59) 	result = false;				 // Må ha akkurat verdi i mål
+			else movable = false;
+			if(to> 59) movable = false;				 // Må ha akkurat verdi i mål
 		}
-		System.out.println("Can move: "+ result + " dice: " + dice + " Piece" + pieceindex);
-		return (result );
+		return (movable);
 	}
 	
-	/**
-	 * Handles all movements of pieces in the game 
-	 * @param player the player whose piece we want to move 
-	 * @param from position to move from (relative to the player)
-	 * @param to position to move from (relative to he player)
-	 * 
-	 * @return true if the piece could move, false otherwise
-	 */
-/*
-	private boolean movePiece(int player, int from, int to) {
-		// FIXME
-		if (from == 0) {
-			if(dice == 6) {
-				int i = 0;
-				boolean moved = false,
-				while(!moved && playerPieces[player][i] == 0) {
-					playerPieces[player][i] = to;
-					i++;
-				}
-			}
-*/
-	
 	
 	/**
-	 * 
-	 * @param player
-	 * @param from
-	 * @param to
-	 * @return 
+	 * Moves a player's piece, if legal
+	 * @param player which player is moving a piece
+	 * @param from coordinates piece is being moved from
+	 * @param to coordinates piece is being moved to 
+	 * @return true if piece was moved, false if not
 	 */
 	public boolean movePiece(int player, int from, int to) {	
 		int beginningAttempt = 1;
@@ -344,15 +323,15 @@ public class Ludo {
 	 */
 
 	// TODO Dette er samme som all home, + all runway
-	private boolean needASixToGetStarted(int player) {
+	private boolean needASixToGetStarted(int player) {		
 		int nrOfPiecesInStart = 0;
 		int nrOfPiecesInRunway = 0;
-		for(int pi=0; pi <= PIECES; pi++) {
+		for(int pi=0; pi < PIECES; pi++) {
 			if (playerPieces[player][pi] == 0) nrOfPiecesInStart++;
 			if (playerPieces[player][pi] > 54) nrOfPiecesInRunway++;
 		}
 		if(nrOfPiecesInStart == 4) return true;
-		if(nrOfPiecesInRunway == 4) return true;		// TODO blir dette riktig??
+		if(nrOfPiecesInRunway == 4) return true;		 // FIXME blir dette riktig??
 		else return false;
 	}
 
