@@ -304,39 +304,37 @@ public class Ludo {
 			}
 */
 	
-	public boolean movePiece(int player, int from, int to) {	//FIXME
+	
+	/**
+	 * 
+	 * @param player
+	 * @param from
+	 * @param to
+	 * @return 
+	 */
+	public boolean movePiece(int player, int from, int to) {	
 		int beginningAttempt = 1;
-		int pieceindex = -1;					// Trengs for å garantere at bare
+		int pieceindex = -1;						// Trengs for å garantere at bare
 		int i = 0;									// en og første brikke flyttes
+		
 		while ( i < PIECES && pieceindex == -1) {	// går igjennom alle brikkene frem til
-			if (playerPieces[player][i] == from) { // første brikke
+			if (playerPieces[player][i] == from) { 	// første brikke
 				pieceindex = i;
 			}
-			 i++;
+			i++;
 		}
-		if (pieceindex !=-1) {						// Hvis den fant brikke
+		if (pieceindex != -1) {								// Hvis den fant brikke
 			if(canMove(player, pieceindex, from, to) ) {	// Hvis den kan flytte
-				 System.out.println("PieceEvent neste");
+				
 				new PieceEvent("Piece moved", activePlayer, pieceindex, from, to);			
 				playerPieces[player][pieceindex] = to;
 				nextPlayer();
 				alertPlayers(new PlayerEvent("Next player", activePlayer, PlayerEvent.PLAYING));
 				return true;
 			}
-							// Hvis den ikke kan flytte, 
-							//  har alle brikkene i start eller oppløp
-							//  OG har igjen forsøk. 
-			else if (needASixToGetStarted(player) && beginningAttempt<=3) {
-				beginningAttempt++;
-				System.out.println("Kan ikke flytte Forsøk: " + beginningAttempt);
-				// TODO en funk? som sier samme spiler igjen.
-			}
-			else if(beginningAttempt>3) {
-				nextPlayer();
-			}
-			else return false;
+			else return false;	// blokkert av tårn eller brukt opp 3 forsøk
 		}
-		else return false;	
+		else return false;		// har ingen brikke på den pos.
 	}
 	
 	/**
@@ -347,13 +345,14 @@ public class Ludo {
 
 	// TODO Dette er samme som all home, + all runway
 	private boolean needASixToGetStarted(int player) {
-		int nrOfPiececInStart = 0;
-		int nrOfPiececInRunway = 0;
+		int nrOfPiecesInStart = 0;
+		int nrOfPiecesInRunway = 0;
 		for(int pi=0; pi <= PIECES; pi++) {
-			if (playerPieces[player][pi] == 0) nrOfPiececInStart++;
-			if (playerPieces[player][pi] > 54) nrOfPiececInRunway++;
-		if(nrOfPiececInStart == 4) return true;
-		if(nrOfPiececInRunway == 4) return true;		// TODO blir dette riktig??
+			if (playerPieces[player][pi] == 0) nrOfPiecesInStart++;
+			if (playerPieces[player][pi] > 54) nrOfPiecesInRunway++;
+		}
+		if(nrOfPiecesInStart == 4) return true;
+		if(nrOfPiecesInRunway == 4) return true;		// TODO blir dette riktig??
 		else return false;
 	}
 
@@ -616,7 +615,7 @@ public class Ludo {
 	 */
 	private void alertPieces(PieceEvent event) {
 		for(PieceListener pieceListener : pieceListeners) {
-			pieceListener.piceMoved(event);
+			pieceListener.pieceMoved(event);
 		}
 	}
 	
