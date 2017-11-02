@@ -355,11 +355,13 @@ public class Ludo {
 	 * @return true if piece was moved, false otherwise
 	 */
 	public boolean movePiece(int player, int from, int to) {	
-		boolean movable = false;
-		
-		int pieceindex = -1;						// Trengs for å garantere at bare
-		int i = 0;									// en og første brikke flyttes
-		
+	boolean movable = false;
+	
+	int pieceindex = -1;						// Trengs for å garantere at bare
+	int i = 0;									// en og første brikke flyttes
+	
+	if(canMove() ) {								// Hvis spilleren i det hele tatt 
+												 //     har en brike som kna flyttes
 		while ( i < PIECES && pieceindex == -1) {	// går igjennom alle brikkene frem til
 			if (getPosition(player, i) == from) { 	// første brikke som er på denne ruten
 				pieceindex = i;
@@ -368,40 +370,24 @@ public class Ludo {
 		}
 		
 		if (pieceindex != -1) {								// Hvis den fant brikke
-			if(canMove() ) {								// Hvis den kan flytte
-							
-				playerPieces[player][pieceindex] = to;
-				
-				alertPieces(new PieceEvent("Piece moved", activePlayer, pieceindex, from, to));
-				nextPlayer();
-				alertPlayers(new PlayerEvent("Next player", activePlayer, PlayerEvent.PLAYING));
-				movable = true;
+				if(checkBlockAt(player, pieceindex, from, to)) {  // Hvis det ikke er en blokkade
+					if((from+dice) < GOAL) {					// Hvis mål nås akkurat. 
+					playerPieces[player][pieceindex] = to;
+					
+					alertPieces(new PieceEvent("Piece moved", activePlayer, pieceindex, from, to));
+					nextPlayer();
+					alertPlayers(new PlayerEvent("Next player", activePlayer, PlayerEvent.PLAYING));
+					movable = true;
+					}
+				}
+				else movable = false;
 			}
 			else movable = false;	// blokkert / kan ikkje flytte
-		}
-		else movable = false;		// har ingen brikke på den pos.
-		
-		return movable;
 	}
+	else movable = false;		// har ingen brikke på den pos.
 	
-	/**
-	 * 
-	 * @param player
-	 * @return
-	 */
-	// TODO Dette er samme som all home, + all runway
-	private boolean needASixToGetStarted(int player) {		
-		int nrOfPiecesInStart = 0;
-		int nrOfPiecesInRunway = 0;
-		for(int pi=0; pi < PIECES; pi++) {
-			if (getPosition(player, pi) == 0) nrOfPiecesInStart++;
-			if (getPosition(player, pi) > 54) nrOfPiecesInRunway++;
-		}
-		if(nrOfPiecesInStart == 4) return true;
-		if(nrOfPiecesInRunway == 4) return true;		 // FIXME blir dette riktig??
-		else return false;
+	return movable;
 	}
-
 	
 	/**
 	 * Checks if there is a tower in the way for this players
@@ -427,7 +413,6 @@ public class Ludo {
 		// one of the tiles between "to" and "from"
 		int pieceAtPos[][] = new int[4][dist];
 		//int twr[] = new int[4];
-		
 		
 		boolean blockade = false;				// if we found a tower
 		
@@ -466,12 +451,6 @@ public class Ludo {
 				if(pieceAtPos[pl][i] >= 2) blockade = true;
 			}
 		}
-		
-		/*
-		if ( twr[0] == twr[1] || twr[0] == twr[2] || twr[0] == twr[3] ||
-			 twr[1] == twr[2] || twr[1] == twr[3] || twr[2] == twr[3])
-			return true;
-		 */
 		
 		return blockade;
 	}
