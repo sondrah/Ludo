@@ -249,14 +249,13 @@ public class Ludo {
 	 * @return value between 1 and 6 (inclusive)
 	 */
 	public int throwDice() {
-		int dice = 0;
+		int locDice = 0;
 		randomGenerator = new Random();
 		
-		dice = randomGenerator.nextInt(5) + 1;
-		checkNrOfThrows();
+		locDice = randomGenerator.nextInt(5) + 1;
 		
-		alertThrowDice(new DiceEvent(this, dice, activePlayer));
-		return dice;
+		alertThrowDice(new DiceEvent(this, locDice, activePlayer));
+		return locDice;
 	}
 	
 
@@ -284,16 +283,14 @@ public class Ludo {
 	 * @param to coordinates piece is being moved to
 	 * @return true if it can move, otherwise false
 	 */
-	
-	
-	private boolean canMove(int player, int piece, int from, int to) {			// TODO
+	/*private boolean canMove(int player, int piece, int from, int to) {			// TODO
 		boolean movable = false;
+		
 		
 		if(allHome(activePlayer) && dice == 6) {	// Om alle er hjemme må vi ha 6 for å flytte
 			movable = true;
 		}
 		
-		while(block)
 		for(int i = 0; i < PIECES; i++) {
 			getPosition(activePlayer, i);
 		}
@@ -311,6 +308,41 @@ public class Ludo {
 														// er ikke mulig å flytte til 
 		}
 		return (movable);
+	}*/
+	
+	
+	/**
+	 * Checks if the activePlayer have any pieces he/she
+	 * can move.
+	 * @return true if the player can move one piece
+	 */
+	private boolean canMove() {
+		boolean moveable = false;
+		
+		int homeOrDone = 0;
+		
+		if(dice != 6) {
+			for(int pi = 0; pi < PIECES; pi++) {
+				int pos = getPosition(activePlayer, pi);
+				
+				if(pos == 59 || pos == 0) {
+					homeOrDone++;
+				}
+			}
+			
+			if(homeOrDone < 4) moveable = true;
+		}
+		
+		if(allHome(activePlayer) && dice == 6) moveable = true;
+		
+		// might give the turn to the next player
+		// if he/she has 3 throws
+		if(checkThreeInARow()) {
+			nextPlayer();
+			moveable = false;
+		}
+		
+		return moveable;
 	}
 	
 	
@@ -334,8 +366,9 @@ public class Ludo {
 			}
 			i++;
 		}
+		
 		if (pieceindex != -1) {								// Hvis den fant brikke
-			if(canMove(player, pieceindex, from, to) ) {	// Hvis den kan flytte
+			if(canMove() ) {								// Hvis den kan flytte
 							
 				playerPieces[player][pieceindex] = to;
 				
@@ -356,7 +389,6 @@ public class Ludo {
 	 * @param player
 	 * @return
 	 */
-
 	// TODO Dette er samme som all home, + all runway
 	private boolean needASixToGetStarted(int player) {		
 		int nrOfPiecesInStart = 0;
@@ -470,7 +502,7 @@ public class Ludo {
 		}
 		
 		// if we have a winner: FINISHED
-		if(getWinner() > 0) {
+		if(getWinner() >= 0) {
 			res = "Finished";
 		}
 		
@@ -494,7 +526,9 @@ public class Ludo {
 			}
 		}
 		// return j;
+		return 0;
 	}
+	
 	
 	/**
 	 * Adds a DiceListner to the game
@@ -519,6 +553,7 @@ public class Ludo {
 	public void addPieceListener(PieceListener pieceListner) {
 		pieceListeners.add(pieceListner);
 	}
+	
 	
 	/**
 	 * Returns the array responsible for grid-convertions
@@ -724,10 +759,13 @@ public class Ludo {
 	/**
 	 * 
 	 */
-	private void checkNrOfThrows() {
+	private boolean checkThreeInARow() {
 		if(nrOfThrows + 1 == 3) {
-			nextPlayer();
+			return true;
 		}
-		else nrOfThrows++;
+		else {
+			nrOfThrows++;
+			return false;
+		}
 	}
 }
