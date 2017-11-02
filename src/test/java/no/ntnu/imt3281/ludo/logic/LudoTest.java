@@ -384,6 +384,8 @@ public class LudoTest {
     @Test
     public void towersBlocksOpponents() {
         Ludo ludo = new Ludo("Player1", "Player2", null, null);
+        
+        System.err.println("\n\ntowersBlocksOpponents");
 
         ludo.throwDice(6); // RED is in play
         assertTrue(ludo.movePiece(Ludo.RED, 0, 1));
@@ -455,6 +457,7 @@ public class LudoTest {
      *            the object holding this game
      */
     private void skipPlayer(Ludo ludo) {
+    	System.err.println("skipPLayer");
         for (int noBlue = 0; noBlue < 3; noBlue++) { // We will be moving the red players pieces only
             ludo.throwDice(1); // So blue only throws ones
         }
@@ -475,6 +478,8 @@ public class LudoTest {
     @Test
     public void diceThrownEventTest() {
         Ludo ludo = new Ludo("Player1", "Player2", null, null);
+        
+        System.err.println("diceThrownEventTest");
 
         // Create a mock DiceListener
         DiceListener diceListener = mock(DiceListener.class);
