@@ -25,6 +25,8 @@ public class Ludo {
 	/** Number of shared/common squares on the board
 	 * , also the start of the runway */
 	private static final int COMMON_GRID_COUNT = 54;
+	/** The last tile on the board */
+	private static final int GOAL = 59;
 	/** Number of subsequent throws*/
 	private static int nrOfThrows = 0;
 	
@@ -253,6 +255,11 @@ public class Ludo {
 		randomGenerator = new Random();
 		
 		locDice = randomGenerator.nextInt(5) + 1;
+		// might give the turn to the next player
+		// if he/she has 3 throws
+		if(checkThreeInARow()) {
+			nextPlayer();
+		}
 		
 		alertThrowDice(new DiceEvent(this, locDice, activePlayer));
 		return locDice;
@@ -321,26 +328,21 @@ public class Ludo {
 		
 		int homeOrDone = 0;
 		
-		if(dice != 6) {
-			for(int pi = 0; pi < PIECES; pi++) {
-				int pos = getPosition(activePlayer, pi);
-				
-				if(pos == 59 || pos == 0) {
-					homeOrDone++;
-				}
+		// get how many pieces we DON'T have in play
+		for(int pi = 0; pi < PIECES; pi++) {
+			int pos = getPosition(activePlayer, pi);
+			
+			if(pos == GOAL || pos == 0) {
+				homeOrDone++;
 			}
 			
-			if(homeOrDone < 4) moveable = true;
 		}
 		
+		// if one ore more pieces is in play
+		if(homeOrDone < 4) moveable = true;
+		
+		// if all is home, we need 6
 		if(allHome(activePlayer) && dice == 6) moveable = true;
-		
-		// might give the turn to the next player
-		// if he/she has 3 throws
-		if(checkThreeInARow()) {
-			nextPlayer();
-			moveable = false;
-		}
 		
 		return moveable;
 	}
@@ -441,16 +443,17 @@ public class Ludo {
 		 * that tile.
 		 */
 		for(int pl = 0; pl < MAX_PLAYERS; pl++) {
-			// if(pl == player)  // --> sett inn denne om egne tårn ikke blokker
-			for(int pi = 0; pi < PIECES; pi++) {
-				int pieceGridPos = userGridToLudoBoardGrid(pl, getPosition(pl, pi));
-				
-				if(pieceGridPos > fromGridPos && pieceGridPos <= toGridPos) {
-					// should get positions relative to "from" as index
-					// ex: pieceGridPos = 21, fromGridPos = 20
-					// index = 21 - 20 - 1 = 0
-					int index = pieceGridPos - fromGridPos - 1; 
-					pieceAtPos[pl][index]++;
+			if(pl == player) {  // --> sett inn denne om egne tårn ikke blokker
+				for(int pi = 0; pi < PIECES; pi++) {
+					int pieceGridPos = userGridToLudoBoardGrid(pl, getPosition(pl, pi));
+					
+					if(pieceGridPos > fromGridPos && pieceGridPos <= toGridPos) {
+						// should get positions relative to "from" as index
+						// ex: pieceGridPos = 21, fromGridPos = 20
+						// index = 21 - 20 - 1 = 0
+						int index = pieceGridPos - fromGridPos - 1; 
+						pieceAtPos[pl][index]++;
+					}
 				}
 			}
 		}
@@ -521,7 +524,7 @@ public class Ludo {
 		for(i = 0; i < players.size(); i++) {
 			for(j = 0; j < 4; j++) {
 				// TODO: check if 59 is correct pos
-				if(getPosition(i, j) == 59) return i;
+				if(getPosition(i, j) == GOAL) return i;
 				else return -1;
 			}
 		}
@@ -653,7 +656,7 @@ public class Ludo {
 		
 		for(int pl = 0; pl < MAX_PLAYERS; pl++) {
 			for(int pi = 0; pi < PIECES; pi++) {
-				if(getPosition(pl, pi) == 59) won = true;
+				if(getPosition(pl, pi) == GOAL) won = true;
 			}
 		}
 		
