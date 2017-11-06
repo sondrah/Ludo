@@ -323,7 +323,7 @@ public class Ludo {
 	 * @return true if piece was moved, false otherwise
 	 */
 	public boolean movePiece(int player, int from, int to) {	
-		boolean movable = false;
+		boolean moveable = false;
 		
 		int pieceindex = -1;						// Trengs for å garantere at bare
 		int i = 0;									// en og første brikke flyttes
@@ -342,13 +342,13 @@ public class Ludo {
 				alertPieces(new PieceEvent("Piece moved", activePlayer, pieceindex, from, to));
 				nextPlayer();
 				alertPlayers(new PlayerEvent("Next player", activePlayer, PlayerEvent.PLAYING));
-				movable = true;
+				moveable = true;
 			}
-			else movable = false;	// blokkert / kan ikkje flytte
+			else moveable = false;	// blokkert / kan ikkje flytte
 		}
-		else movable = false;		// har ingen brikke på den pos.
+		else moveable = false;		// har ingen brikke på den pos.
 		
-		return movable;
+		return moveable;
 	}
 	
 	/**
