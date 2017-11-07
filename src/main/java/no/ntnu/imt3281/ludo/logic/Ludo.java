@@ -6,6 +6,8 @@ import java.util.Vector;
 import org.apache.derby.impl.sql.catalog.SYSCONGLOMERATESRowFactory;
 import org.apache.derby.impl.sql.catalog.SYSSEQUENCESRowFactory;
 
+import com.sun.javafx.geom.transform.GeneralTransform3D;
+
 /**
  * Main Class that represents the
  * actual game
@@ -568,18 +570,15 @@ public class Ludo {
 	 * @return the winner of the game
 	 */
 	public int getWinner() {
-		int i;
-		int j;
+		int winner = -1;
 		
-		for(i = 0; i < players.size(); i++) {
-			for(j = 0; j < 4; j++) {
-				// TODO: check if 59 is correct pos
-				if(getPosition(i, j) == GOAL) return i;
-				else return -1;
+		for(int pl = 0; pl < activePlayers(); pl++) {
+			for(int pi = 0; pi < PIECES; pi++) {
+				if(getPosition(pl, pi) == GOAL) winner = pi; 
 			}
 		}
-		// return j;
-		return 0;
+		
+		return winner;
 	}
 	
 	
@@ -701,12 +700,14 @@ public class Ludo {
 	private void checkUnfortunateOpponent(int player, int to) {
 		int gridPos = userGridToLudoBoardGrid(player, to);
 		
-		for(int pl = 0; pl <= MAX_PLAYERS; pl++) {		
+		for(int pl = 0; pl <= activePlayers(); pl++) {		
 			for(int pi = 0; pi < PIECES; pi++) { 
 				int pieceGridPos = userGridToLudoBoardGrid(pl, getPosition(pl, pi)); 
 				
 				if(pieceGridPos == gridPos) {
-					new PieceEvent(this, pl, pi, pieceGridPos, 0);
+					alertPieces(new PieceEvent(this, pl, pi, to, 0));
+					
+					playerPieces[pl][pi] = 0;
 				}
 			}
 		}	

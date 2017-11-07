@@ -166,6 +166,8 @@ public class LudoTest {
         assertEquals(Ludo.BLUE, ludo.activePlayer(), 0);
         assertTrue(ludo.movePiece(Ludo.BLUE, 0, 1)); // Move players piece from start(0) to square 1
         assertEquals(1, ludo.getPosition(Ludo.BLUE, 0));
+        
+        System.err.println("EHI");
 
         // Since player moved out of start, the next player should get his/her turn(s)
         assertEquals(Ludo.RED, ludo.activePlayer(), 0);
