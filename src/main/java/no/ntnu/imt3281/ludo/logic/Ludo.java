@@ -417,6 +417,7 @@ public class Ludo {
 				if(!checkBlockAt(player, pieceindex, from, to)) {	// Hvis det ikke er en blokkade
 					if((from + dice) < GOAL) {						// Hvis mål nås akkurat. 
 						playerPieces[player][pieceindex] = to;
+						System.err.println("pl: " + player + ", pi: " + pieceindex + ", to: " + to);
 						
 						checkUnfortunateOpponent(player, to);
 						
@@ -700,14 +701,20 @@ public class Ludo {
 	private void checkUnfortunateOpponent(int player, int to) {
 		int gridPos = userGridToLudoBoardGrid(player, to);
 		
-		for(int pl = 0; pl <= activePlayers(); pl++) {		
-			for(int pi = 0; pi < PIECES; pi++) { 
-				int pieceGridPos = userGridToLudoBoardGrid(pl, getPosition(pl, pi)); 
-				
-				if(pieceGridPos == gridPos) {
-					alertPieces(new PieceEvent(this, pl, pi, to, 0));
+		System.err.println("gridPos: " + gridPos);
+		
+		for(int pl = 0; pl <= activePlayers(); pl++) {	
+			if(pl != player) {
+				for(int pi = 0; pi < PIECES; pi++) { 
+					int pieceGridPos = userGridToLudoBoardGrid(pl, getPosition(pl, pi));
 					
-					playerPieces[pl][pi] = 0;
+					System.err.println("pieceGridPos: " + pieceGridPos);
+					
+					if(pieceGridPos == gridPos) {
+						alertPieces(new PieceEvent(this, pl, pi, to, 0));
+						
+						playerPieces[pl][pi] = 0;
+					}
 				}
 			}
 		}	
