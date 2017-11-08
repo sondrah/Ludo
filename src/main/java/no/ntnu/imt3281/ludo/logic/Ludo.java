@@ -836,6 +836,7 @@ public class Ludo {
 	 * @param event The PieceEvent that should be sent to the listeners.
 	 */
 	private void alertPieces(PieceEvent event) {
+		System.err.println("alert pieces start");
 		for(PieceListener pieceListener : pieceListeners) {
 			System.err.println("alerting piece: " + event);
 			pieceListener.pieceMoved(event);
