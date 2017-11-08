@@ -3,12 +3,6 @@ package no.ntnu.imt3281.ludo.logic;
 import java.util.Random;
 import java.util.Vector;
 
-import org.apache.derby.tools.sysinfo;
-
-import com.sun.javafx.geom.transform.GeneralTransform3D;
-
-import sun.util.locale.provider.AvailableLanguageTags;
-
 /**
  * Main Class that represents the
  * actual game
