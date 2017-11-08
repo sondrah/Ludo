@@ -28,8 +28,12 @@ public class Client extends Application {
 		}
 	}
 
+	/**
+	 * Starts a new client
+	 * @param args commandline-arguments
+	 */
 	public static void main(String[] args) {		// Sondre si hei
 		launch(args);
-		System.out.println("Din langhåra plommetjuv!");
+		System.err.println("Din langhåra plommetjuv!");
 	}
 }

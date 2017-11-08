@@ -340,8 +340,6 @@ public class LudoTest {
     @Test
     public void landingOnTopSendsPlayerBack() {
         Ludo ludo = new Ludo("Player1", "Player2", null, null);
-        
-        System.err.println("landing");
 
         ludo.throwDice(6); // Lucky red, threw a six
         ludo.movePiece(Ludo.RED, 0, 1); // Board position 16
@@ -588,7 +586,6 @@ public class LudoTest {
         // Red and blue moving on (***MOVE3***)
         for (int i = 0; i < 3; i++) {
             ludo.throwDice(6);
-            System.err.println("YMSE");
             ludo.movePiece(Ludo.RED, (17 * i) + 8, (17 * i) + 14);
             ludo.throwDice(6);
             ludo.movePiece(Ludo.RED, (17 * i) + 14, (17 * i) + 20);
