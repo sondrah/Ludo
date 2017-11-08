@@ -3,7 +3,11 @@ package no.ntnu.imt3281.ludo.logic;
 import java.util.Random;
 import java.util.Vector;
 
+import org.apache.derby.tools.sysinfo;
+
 import com.sun.javafx.geom.transform.GeneralTransform3D;
+
+import sun.util.locale.provider.AvailableLanguageTags;
 
 /**
  * Main Class that represents the
@@ -216,6 +220,9 @@ public class Ludo {
 				sb.append(players.remove(i));
 				players.add(i, sb.toString());
 				found = true;
+				
+				alertPlayers(new PlayerEvent(this, activePlayer, PlayerEvent.LEFTGAME));
+				nextPlayer();
 			}
 			i++;
 		}
@@ -421,10 +428,10 @@ public class Ludo {
 						playerPieces[player][pieceindex] = to;
 						//System.err.println("pl: " + player + ", pi: " + pieceindex + ", to: " + to);
 						
-						checkUnfortunateOpponent(player, to);
-						
 						// tell clients that a piece is moved
 						alertPieces(new PieceEvent(this, activePlayer, pieceindex, from, to));
+						checkUnfortunateOpponent(player, to);
+						checkWinner();
 						
 						// give the turn to the next player
 						// unless he got a 6 and isn't going
@@ -663,13 +670,27 @@ public class Ludo {
 		// reset the throwcount for a new player
 		nrOfThrows = 0;
 		
-		//System.err.println("nextPlayer - prev: " + activePlayer);
-		//if(activePlayer == MAX_PLAYERS - 1) {
-		if(activePlayer == nrOfPlayers() - 1) {
-			activePlayer = 0;
-		}
-		else activePlayer++;
-		//System.err.println("nextPlayer - cur: " + activePlayer);
+		String pl = "";
+		
+		boolean found = false;
+		do {
+			pl = "";
+			if(activePlayer == MAX_PLAYERS - 1) {
+				pl = players.get(RED);
+				activePlayer = RED;
+			}
+			else {
+				// try?
+				//System.err.println("prev: " + activePlayer);
+				//System.err.println("name1: " + players.get(activePlayer));
+				pl = players.get(++activePlayer);
+				//System.err.println("cur: " + activePlayer);
+				//System.err.println("name2: " + players.get(activePlayer));
+			}
+			
+			System.err.println("pl:" + pl);
+			if(pl != null && !pl.startsWith("Inactive:")) found = true;
+		} while(!found);
 		
 		// changes state of next player
 		alertPlayers(new PlayerEvent(this, activePlayer, PlayerEvent.PLAYING));
@@ -716,7 +737,7 @@ public class Ludo {
 	private void checkUnfortunateOpponent(int player, int to) {
 		int gridPos = userGridToLudoBoardGrid(player, to);
 		
-		//System.err.println("gridPos: " + gridPos);
+		System.err.println("gridPos: " + gridPos);
 		
 		for(int pl = 0; pl <= activePlayers(); pl++) {	
 			if(pl != player) {
@@ -743,20 +764,8 @@ public class Ludo {
 	 * Checks if someone have won the game
 	 */
 	private void checkWinner() {
-		boolean won = false;
-		
-		for(int pl = 0; pl < MAX_PLAYERS; pl++) {
-			for(int pi = 0; pi < PIECES; pi++) {
-				if(getPosition(pl, pi) == GOAL) won = true;
-			}
-		}
-		
-		if(won) {
-			for(PlayerListener playerListener : playerListeners) {
-				playerListener.playerStateChanged(
-						new PlayerEvent(this, activePlayer, PlayerEvent.WON)
-					);
-			}
+		if(getWinner() != -1) {
+			alertPlayers(new PlayerEvent(this, activePlayer, PlayerEvent.WON));
 		}
 	}
 	
@@ -836,7 +845,8 @@ public class Ludo {
 	 * @param event The PieceEvent that should be sent to the listeners.
 	 */
 	private void alertPieces(PieceEvent event) {
-		System.err.println("alert pieces start");
+		
+		System.err.println("pieceListeners: " + pieceListeners.size());
 		for(PieceListener pieceListener : pieceListeners) {
 			System.err.println("alerting piece: " + event);
 			pieceListener.pieceMoved(event);
