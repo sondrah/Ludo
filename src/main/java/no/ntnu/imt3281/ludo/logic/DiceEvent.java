@@ -1,4 +1,4 @@
-package no.ntnu.imt3281.ludo.logic;
+	package no.ntnu.imt3281.ludo.logic;
 
 /**
  * @author Snorre

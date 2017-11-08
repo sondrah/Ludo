@@ -576,18 +576,27 @@ public class Ludo {
 	 * @return the winner of the game
 	 */
 	public int getWinner() {
-		int winner = -1;
-		int i, pl, pi;
-		i = pl = pi = 0;
 		
-		while(winner > 0 && pl < activePlayers()) {
-			while(getPosition(pl, pi) == GOAL && pi < PIECES) {
-				i++;
-				pi++;
+		//System.err.println("getWinner: START");
+		int winner = -1;
+		int i, pl;
+		i = pl = 0;
+		
+		while(winner == -1 && pl < activePlayers()) {
+			for(int pi = 0 ; pi < PIECES; pi++) {
+				if(getPosition(pl, pi) == GOAL) i++;
 			}
+			
+			//System.err.println("pl: " + pl);
+			//System.err.println("i: " + i);
+			
 			if(i == PIECES) winner = pl;
+			
+			pl++;
 		}
 		
+		System.err.println("returns: " + winner);
+		System.err.println("getWinner: END");
 		return winner;
 	}
 	
