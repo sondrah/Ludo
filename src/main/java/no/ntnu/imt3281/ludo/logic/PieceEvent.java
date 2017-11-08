@@ -41,6 +41,16 @@ public class PieceEvent extends java.util.EventObject {
 		setTo(to);
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		PieceEvent temp = (PieceEvent) obj;
+		return (this.player == temp.getPlayer() && this.piece == temp.getPiece()
+				&& this.from == temp.getFrom() && this.to == temp.getTo());
+	}
+	
 	/**
 	 * gets player in the current turn
 	 * @return integer player index
@@ -103,6 +113,14 @@ public class PieceEvent extends java.util.EventObject {
 	 */
 	public void setTo(int to) {
 		this.to = to;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder piecestring = new StringBuilder();
+		piecestring.append("Player: " + getPlayer() + " Piece: " + getPiece()
+		+ " From: " + getFrom() + " To: " + getTo());
+		return piecestring.toString();
 	}
 	
 }
