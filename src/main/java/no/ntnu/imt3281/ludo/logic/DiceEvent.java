@@ -40,7 +40,7 @@ public class DiceEvent extends java.util.EventObject {
 	@Override
 	public boolean equals(Object obj) {
 		DiceEvent temp = (DiceEvent) obj;
-		return (this.dice == temp.getDice() && this.player == temp.getPlayer());
+		return (this.player == temp.getPlayer() && this.dice == temp.getDice());
 	}
 	
 	/**

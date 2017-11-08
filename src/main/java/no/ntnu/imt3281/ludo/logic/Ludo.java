@@ -281,7 +281,7 @@ public class Ludo {
 	 */
 	public int throwDice(int value) {	
 		System.err.println("throwDice: START");
-		alertThrowDice(new DiceEvent(this, value, activePlayer));
+		alertThrowDice(new DiceEvent(this, activePlayer, value));
 		dice = value;
 		
 		System.err.println("Throw #: " + nrOfThrows);
@@ -729,7 +729,11 @@ public class Ludo {
 					System.err.println("pieceGridPos: " + pieceGridPos);
 					
 					if(pieceGridPos == gridPos) {
-						alertPieces(new PieceEvent(this, pl, pi, to, 0));
+						System.err.println("sent home!");
+						System.err.println("pl: " + pl);
+						System.err.println("to: " + getPosition(pl, pi));
+						System.err.println("pi; " + pi);
+						alertPieces(new PieceEvent(this, pl, pi, getPosition(pl, pi), 0));
 						
 						playerPieces[pl][pi] = 0;
 					}
@@ -835,6 +839,7 @@ public class Ludo {
 	 */
 	private void alertPieces(PieceEvent event) {
 		for(PieceListener pieceListener : pieceListeners) {
+			System.err.println("alerting piece: " + event);
 			pieceListener.pieceMoved(event);
 		}
 	}
