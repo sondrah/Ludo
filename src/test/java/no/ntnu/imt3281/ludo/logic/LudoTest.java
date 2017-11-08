@@ -149,7 +149,6 @@ public class LudoTest {
     @Test
     public void needASixToGetStarted() {
         Ludo ludo = new Ludo("Player1", "Player2", null, null);
-        System.err.println("\n\nneedASixToGetStarted:");
 
         assertEquals(Ludo.RED, ludo.activePlayer(), 0);
         ludo.throwDice(1);
@@ -166,8 +165,6 @@ public class LudoTest {
         assertEquals(Ludo.BLUE, ludo.activePlayer(), 0);
         assertTrue(ludo.movePiece(Ludo.BLUE, 0, 1)); // Move players piece from start(0) to square 1
         assertEquals(1, ludo.getPosition(Ludo.BLUE, 0));
-        
-        System.err.println("EHI");
 
         // Since player moved out of start, the next player should get his/her turn(s)
         assertEquals(Ludo.RED, ludo.activePlayer(), 0);
@@ -299,8 +296,6 @@ public class LudoTest {
      */
     @Test
     public void checkPlayerLocationToBoardLocationConversion() {
-    	System.err.println("\n\ncheckPlayer");
-    	
         Ludo ludo = new Ludo();
         // The order of the players are RED, BLUE, YELLOW and GREEN
 
@@ -390,8 +385,6 @@ public class LudoTest {
     public void towersBlocksOpponents() {
         Ludo ludo = new Ludo("Player1", "Player2", null, null);
         
-        System.err.println("\n\ntowersBlocksOpponents");
-
         ludo.throwDice(6); // RED is in play
         assertTrue(ludo.movePiece(Ludo.RED, 0, 1));
         skipPlayer(ludo);
@@ -462,7 +455,6 @@ public class LudoTest {
      *            the object holding this game
      */
     private void skipPlayer(Ludo ludo) {
-    	System.err.println("skipPLayer");
         for (int noBlue = 0; noBlue < 3; noBlue++) { // We will be moving the red players pieces only
             ludo.throwDice(1); // So blue only throws ones
         }
@@ -483,8 +475,6 @@ public class LudoTest {
     @Test
     public void diceThrownEventTest() {
         Ludo ludo = new Ludo("Player1", "Player2", null, null);
-        
-        System.err.println("diceThrownEventTest");
 
         // Create a mock DiceListener
         DiceListener diceListener = mock(DiceListener.class);

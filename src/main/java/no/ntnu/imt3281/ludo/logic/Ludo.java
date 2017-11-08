@@ -3,9 +3,6 @@ package no.ntnu.imt3281.ludo.logic;
 import java.util.Random;
 import java.util.Vector;
 
-import org.apache.derby.impl.sql.catalog.SYSCONGLOMERATESRowFactory;
-import org.apache.derby.impl.sql.catalog.SYSSEQUENCESRowFactory;
-
 import com.sun.javafx.geom.transform.GeneralTransform3D;
 
 /**
@@ -269,7 +266,7 @@ public class Ludo {
 		
 		nrOfThrows++;
 		alertThrowDice(new DiceEvent(this, locDice, activePlayer));
-		System.err.println("Threw dice:" + locDice);
+		//System.err.println("Threw dice:" + locDice);
 		return locDice;
 	}
 	
@@ -280,11 +277,11 @@ public class Ludo {
 	 * @return the given value
 	 */
 	public int throwDice(int value) {	
-		System.err.println("throwDice: START");
+		//System.err.println("throwDice: START");
 		alertThrowDice(new DiceEvent(this, value, activePlayer));
 		dice = value;
 		
-		System.err.println("Throw #: " + nrOfThrows);
+		//System.err.println("Throw #: " + nrOfThrows);
 		
 		if(!canMove()) {
 			if(nrOfPlayedPieces(activePlayer) > 0) {
@@ -301,8 +298,8 @@ public class Ludo {
 		nrOfThrows++;
 		if(dice == 6 && nrOfThrows == 3 && nrOfPlayedPieces(activePlayer) > 0) nextPlayer();
 		
-		System.err.println("Threw dice: " + value);
-		System.err.println("throwDice: END");
+		//System.err.println("Threw dice: " + value);
+		//System.err.println("throwDice: END");
 		return value;
 	}
 
@@ -326,7 +323,7 @@ public class Ludo {
 	private boolean canMove() {			
 		boolean movable = false;
 		
-		System.err.println("canMove: START");
+		//System.err.println("canMove: START");
 		
 		if(nrOfPlayedPieces(activePlayer) == 0 && dice == 6) movable = true;
 		else {
@@ -343,8 +340,8 @@ public class Ludo {
 			} 
 		} 
 		
-		System.err.println("canMove: " + movable);
-		System.err.println("canMove: END");
+		//System.err.println("canMove: " + movable);
+		//System.err.println("canMove: END");
 		return movable;
 	}
 	
@@ -397,7 +394,7 @@ public class Ludo {
 	public boolean movePiece(int player, int from, int to) {	
 		boolean movable = false;
 		
-		System.err.println("movePiece: START");
+		//System.err.println("movePiece: START");
 		
 		int pieceindex = -1;						// Trengs for å garantere at bare
 		int i = 0;									// en og første brikke flyttes
@@ -411,7 +408,7 @@ public class Ludo {
 				i++;
 			}
 			
-			System.err.println("pieceindex: " + pieceindex);
+			//System.err.println("pieceindex: " + pieceindex);
 			
 			/* if we found the valid piece,
 			 * we check if that particular piece is blocked,
@@ -422,7 +419,7 @@ public class Ludo {
 				if(!checkBlockAt(player, pieceindex, from, to)) {	// Hvis det ikke er en blokkade
 					if((from + dice) <= GOAL) {						// Hvis mål nås akkurat. 
 						playerPieces[player][pieceindex] = to;
-						System.err.println("pl: " + player + ", pi: " + pieceindex + ", to: " + to);
+						//System.err.println("pl: " + player + ", pi: " + pieceindex + ", to: " + to);
 						
 						checkUnfortunateOpponent(player, to);
 						
@@ -435,7 +432,7 @@ public class Ludo {
 						if(from == 0 && dice == 6) nextPlayer();
 						if(dice != 6) nextPlayer();
 						
-						System.err.println("Moved piece!");
+						//System.err.println("Moved piece!");
 						
 						// WE CAN MOVE
 						movable = true;
@@ -444,7 +441,7 @@ public class Ludo {
 			} // found piece
 		} // we can move
 		
-		System.err.println("movePiece: END");
+		//System.err.println("movePiece: END");
 		
 		return movable;
 	}
@@ -462,7 +459,7 @@ public class Ludo {
 	 */
 	private boolean checkBlockAt(int player, int piece, int from, int to) {
 		
-		System.err.println("checkBlockAt: START");
+		//System.err.println("checkBlockAt: START");
 		
 		// gets the actual positions on the board
 		int fromGridPos = userGridToLudoBoardGrid(player, from);
@@ -532,8 +529,8 @@ public class Ludo {
 			i++;
 		}
 		
-		System.err.println("checkBlockAt: " + blockade);
-		System.err.println("checkBlockAt: END");
+		//System.err.println("checkBlockAt: " + blockade);
+		//System.err.println("checkBlockAt: END");
 		return blockade;
 	}
 	
@@ -595,8 +592,8 @@ public class Ludo {
 			pl++;
 		}
 		
-		System.err.println("returns: " + winner);
-		System.err.println("getWinner: END");
+		//System.err.println("returns: " + winner);
+		//System.err.println("getWinner: END");
 		return winner;
 	}
 	
@@ -658,7 +655,7 @@ public class Ludo {
 	 * Gives the turn to the next player in the queue
 	 */
 	private void nextPlayer() {
-		System.err.println("nextPlayer: START");
+		//System.err.println("nextPlayer: START");
 		
 		// changes state of prev player
 		alertPlayers(new PlayerEvent(this, activePlayer, PlayerEvent.WAITING));
@@ -666,18 +663,18 @@ public class Ludo {
 		// reset the throwcount for a new player
 		nrOfThrows = 0;
 		
-		System.err.println("nextPlayer - prev: " + activePlayer);
+		//System.err.println("nextPlayer - prev: " + activePlayer);
 		//if(activePlayer == MAX_PLAYERS - 1) {
 		if(activePlayer == nrOfPlayers() - 1) {
 			activePlayer = 0;
 		}
 		else activePlayer++;
-		System.err.println("nextPlayer - cur: " + activePlayer);
+		//System.err.println("nextPlayer - cur: " + activePlayer);
 		
 		// changes state of next player
 		alertPlayers(new PlayerEvent(this, activePlayer, PlayerEvent.PLAYING));
 		
-		System.err.println("nextPlayer: END");
+		//System.err.println("nextPlayer: END");
 	}
 	
 	
@@ -693,7 +690,7 @@ public class Ludo {
 	 */
 	private boolean blocked(int player, int from, int to) {
 		
-		System.err.println("blocked: START");
+		//System.err.println("blocked: START");
 		
 		boolean allBlocked = true;
 		
@@ -705,8 +702,8 @@ public class Ludo {
 			//System.err.println("pi: " + i + " | block: " + allBlocked);
 		}
 		
-		System.err.println("returns: " + allBlocked);
-		System.err.println("blocked: END");
+		//System.err.println("returns: " + allBlocked);
+		//System.err.println("blocked: END");
 		return allBlocked;
 	}
 	
@@ -719,14 +716,14 @@ public class Ludo {
 	private void checkUnfortunateOpponent(int player, int to) {
 		int gridPos = userGridToLudoBoardGrid(player, to);
 		
-		System.err.println("gridPos: " + gridPos);
+		//System.err.println("gridPos: " + gridPos);
 		
 		for(int pl = 0; pl <= activePlayers(); pl++) {	
 			if(pl != player) {
 				for(int pi = 0; pi < PIECES; pi++) { 
 					int pieceGridPos = userGridToLudoBoardGrid(pl, getPosition(pl, pi));
 					
-					System.err.println("pieceGridPos: " + pieceGridPos);
+					//System.err.println("pieceGridPos: " + pieceGridPos);
 					
 					if(pieceGridPos == gridPos) {
 						alertPieces(new PieceEvent(this, pl, pi, to, 0));
@@ -850,20 +847,6 @@ public class Ludo {
 		}
 	}
 	
-	/**
-	 * 
-	 */
-	private boolean checkThreeInARow() {
-		System.err.println("checkThreeInARow: " + nrOfThrows);
-		if(nrOfThrows == 3) {
-			return true;
-		}
-		else {
-			nrOfThrows++;
-			return false;
-		}
-	}
-	
 	
 	/**
 	 * Gets the number of pieces the given player DON'T have
@@ -873,7 +856,7 @@ public class Ludo {
 	 */
 	private int nrOfPlayedPieces(int player) {
 		
-		System.err.println("nrOfPlayedPieces: START");
+		//System.err.println("nrOfPlayedPieces: START");
 		int homeOrDone = 0;
 		
 		for(int pi = 0; pi < PIECES; pi++) {
@@ -883,8 +866,8 @@ public class Ludo {
 				homeOrDone++;
 			}
 		}
-		System.err.println("return: " + (PIECES - homeOrDone));
-		System.err.println("nrOfPlayedPieces: START");
+		//System.err.println("return: " + (PIECES - homeOrDone));
+		//System.err.println("nrOfPlayedPieces: START");
 		return (PIECES - homeOrDone);
 	}
 }
