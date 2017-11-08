@@ -320,32 +320,35 @@ public class Ludo {
 	 * @param to coordinates piece is being moved to
 	 * @return true if it can move, otherwise false
 	 */
-	/*private boolean canMove(int player, int piece, int from, int to) {			// TODO
+	
+	
+	
+		// ALTERNATIV canMove() av Sondre A
+	private boolean canMove() {			
 		boolean movable = false;
 		
+		System.err.println("canMove: START");
 		
-		if(allHome(activePlayer) && dice == 6) {	// Om alle er hjemme må vi ha 6 for å flytte
-			movable = true;
-		}
-		
-		for(int i = 0; i < PIECES; i++) {
-			getPosition(activePlayer, i);
-		}
-		
-		// Om ikke alle brikker er hjemme, må vi sjekke om from-to diff. er OK
-		// Om vi har < 4 brikker i hjem, men ønsker å flytte ut en ny
-		// må vi bypasse from-to diff. sjekk
-		else if(dice == from-to || getPosition(player, piece) == 0) {
-			if(!checkBlockAt(player, from, to)) {
-				movable = true; 
-			}
-			else movable = false;
+		if(allHome(activePlayer) && dice == 6) movable = true;			// if all is home, we need 6
+		else if(allHome(activePlayer) && dice != 6) movable = false;	// no six from home, no canMove
+		else {
+			for(int pi = 0; pi < PIECES; pi++) {
+				int pos = getPosition(activePlayer, pi);
 			
-			if(to > 59) movable = false;				// Alle to verdier over 59
-														// er ikke mulig å flytte til 
-		}
-		return (movable);
-	}*/
+				if(pos != 0) {
+					if((pos + dice) <= GOAL) {	
+						if(!blocked(activePlayer, pos, pos + dice)) {
+							movable = true;
+						}
+					}
+				}
+			} 
+		} 
+		
+		System.err.println("canMove: " + movable);
+		System.err.println("canMove: END");
+		return movable;
+	}
 	
 	
 	/**
@@ -353,28 +356,31 @@ public class Ludo {
 	 * can move.
 	 * @return true if the player can move one piece
 	 */
-	private boolean canMove() {
-		boolean moveable = false;
+/*	private boolean canMove() {
+		boolean movable = false;
 		
 		System.err.println("canMove: START");
 		
-		// if one ore more pieces is in play
-		if(nrOfPlayedPieces(activePlayer) > 0) moveable = true;
+		
+		if(nrOfPlayedPieces(activePlayer) > 0) {		// if one ore more pieces is in play
+			for(int i = 0; )
+		}
 		
 		// if all is home, we need 6
-		if(allHome(activePlayer) && dice == 6) moveable = true;
+		if(allHome(activePlayer) && dice == 6) movable = true;
 		
 		for(int pi = 0; pi < PIECES; pi++) {
 			int pos = getPosition(activePlayer, pi);
 			
 			if(pos != 0) {
 				if(!blocked(activePlayer, pos, pos + dice)) {
-					moveable = true;
+					movable = true;
 				}
-				else moveable = false;
+				else movable = false;
 			}
 		}
 		
+<<<<<<< HEAD
 		for(int pi = 0; pi < PIECES; pi++) {
 			int pos = getPosition(activePlayer, pi);
 			
@@ -384,10 +390,13 @@ public class Ludo {
 		}
 		
 		System.err.println("canMove: " + moveable);
+=======
+		System.err.println("canMove: " + movable);
+>>>>>>> 3a19e5a0eb1fdd70214894f53b5a2bada1da300c
 		System.err.println("canMove: END");
-		return moveable;
+		return movable;
 	}
-	
+*/	
 	
 	/**
 	 * Tries to moves a player's piece
@@ -796,9 +805,9 @@ public class Ludo {
 		
 		for(int colInt = 1; colInt < COMMON_GRID_COUNT; colInt++) {	// Går rundt hele ytre bane
 			userGridToPlayerGrid[player][colInt] = startGridPos;
-			if(startGridPos == 67) startGridPos = 15;					// Spesialhådterer tallskifte
-			startGridPos++;
-		}
+			if(startGridPos == 67) startGridPos = 15;			// Spesialhåndterer tallskifte fra overgang  
+			startGridPos++;										//  67 til 16, 15 vil bli inkrementert til 16  
+		}														//    før neste iterasjon
 
 		int runwayGridPos = runway;  							//Setter startverdien på oppløpet
 		for(int colInt = COMMON_GRID_COUNT; colInt < COMMON_GRID_COUNT + 6; colInt++) {	// Går opp hele oppløpet
