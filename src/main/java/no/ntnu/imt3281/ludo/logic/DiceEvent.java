@@ -75,4 +75,10 @@ public class DiceEvent extends java.util.EventObject {
 		this.dice = dice;
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder dicestring = new StringBuilder();
+		dicestring.append("Player: " + getPlayer() + " Dice: " + getDice());
+		return dicestring.toString();
+	}
 }

@@ -80,8 +80,11 @@ public class PlayerEvent extends java.util.EventObject {
 		this.state = state;
 	}
 	
-	
-	
-	
+	@Override
+	public String toString() {
+		StringBuilder playerstring = new StringBuilder();
+		playerstring.append("Active Player: " + getActivePlayer() + " State: " + getState());
+		return playerstring.toString();
+	}
 	
 }

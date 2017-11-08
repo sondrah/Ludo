@@ -115,4 +115,12 @@ public class PieceEvent extends java.util.EventObject {
 		this.to = to;
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder piecestring = new StringBuilder();
+		piecestring.append("Player: " + getPlayer() + " Piece: " + getPiece()
+		+ " From: " + getFrom() + " To: " + getTo());
+		return piecestring.toString();
+	}
+	
 }

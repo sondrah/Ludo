@@ -268,7 +268,7 @@ public class Ludo {
 		}
 		
 		nrOfThrows++;
-		alertThrowDice(new DiceEvent(this, locDice, activePlayer));
+		alertThrowDice(new DiceEvent(this, activePlayer, locDice));
 		System.err.println("Threw dice:" + locDice);
 		return locDice;
 	}
