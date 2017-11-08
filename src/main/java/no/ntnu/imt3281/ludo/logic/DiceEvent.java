@@ -34,6 +34,15 @@ public class DiceEvent extends java.util.EventObject {
 		setDice(dice);
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		DiceEvent temp = (DiceEvent) obj;
+		return (this.dice == temp.getDice() && this.player == temp.getPlayer());
+	}
+	
 	/**
 	 * gets player in the current turn
 	 * @return integer player index
