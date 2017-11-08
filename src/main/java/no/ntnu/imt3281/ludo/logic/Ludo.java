@@ -375,6 +375,14 @@ public class Ludo {
 			}
 		}
 		
+		for(int pi = 0; pi < PIECES; pi++) {
+			int pos = getPosition(activePlayer, pi);
+			
+			if((pos + dice) <= GOAL) {
+				moveable = false;
+			}
+		}
+		
 		System.err.println("canMove: " + moveable);
 		System.err.println("canMove: END");
 		return moveable;
