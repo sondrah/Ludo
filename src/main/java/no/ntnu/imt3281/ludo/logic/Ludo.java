@@ -803,6 +803,7 @@ public class Ludo {
 		
 		for(int colInt = 1; colInt < COMMON_GRID_COUNT; colInt++) {	// Går rundt hele ytre bane
 			userGridToPlayerGrid[player][colInt] = startGridPos;
+
 			if(startGridPos == 67) startGridPos = 15;			// Spesialhåndterer tallskifte fra overgang  
 			startGridPos++;										//  67 til 16, 15 vil bli inkrementert til 16  
 		}														//    før neste iterasjon
