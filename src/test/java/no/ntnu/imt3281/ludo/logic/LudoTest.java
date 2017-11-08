@@ -299,6 +299,8 @@ public class LudoTest {
      */
     @Test
     public void checkPlayerLocationToBoardLocationConversion() {
+    	System.err.println("\n\ncheckPlayer");
+    	
         Ludo ludo = new Ludo();
         // The order of the players are RED, BLUE, YELLOW and GREEN
 

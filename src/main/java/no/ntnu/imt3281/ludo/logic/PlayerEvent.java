@@ -38,13 +38,14 @@ public class PlayerEvent extends java.util.EventObject {
 		setState(state);
 	}
 	
-	/**
-	 * @param obj
-	 * @return
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		return true;						//FIXME
+		PlayerEvent temp = (PlayerEvent) obj;
+		return (this.activePlayer == temp.getActivePlayer() && this.state == temp.getState());
 	}
 
 	/**
@@ -79,8 +80,11 @@ public class PlayerEvent extends java.util.EventObject {
 		this.state = state;
 	}
 	
-	
-	
-	
+	@Override
+	public String toString() {
+		StringBuilder playerstring = new StringBuilder();
+		playerstring.append("Active Player: " + getActivePlayer() + " State: " + getState());
+		return playerstring.toString();
+	}
 	
 }
