@@ -788,7 +788,7 @@ public class Ludo {
 		
 		for(int colInt = 1; colInt < COMMON_GRID_COUNT; colInt++) {	// Går rundt hele ytre bane
 			userGridToPlayerGrid[player][colInt] = startGridPos;
-			if(startGridPos == 67) startGridPos = 15;					// Spesialhådterer tallskifte
+			if(startGridPos == 67) startGridPos = 15;				// Spesialhådterer tallskifte
 			startGridPos++;
 		}
 
