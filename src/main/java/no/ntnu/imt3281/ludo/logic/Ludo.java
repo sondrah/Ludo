@@ -293,14 +293,13 @@ public class Ludo {
 					nrOfThrows--;
 				}
 			}
-			else{
-				if(nrOfThrows + 1 == 3) {
+			else if(nrOfThrows + 1 == 3) {
 					nextPlayer();
 					nrOfThrows--;
-				}
 			}
 		}
 		nrOfThrows++;
+		if(dice == 6 && nrOfThrows == 3 && nrOfPlayedPieces(activePlayer) > 0) nextPlayer();
 		
 		System.err.println("Threw dice: " + value);
 		System.err.println("throwDice: END");
@@ -329,8 +328,7 @@ public class Ludo {
 		
 		System.err.println("canMove: START");
 		
-		if(allHome(activePlayer) && dice == 6) movable = true;			// if all is home, we need 6
-		else if(allHome(activePlayer) && dice != 6) movable = false;	// no six from home, no canMove
+		if(nrOfPlayedPieces(activePlayer) == 0 && dice == 6) movable = true;
 		else {
 			for(int pi = 0; pi < PIECES; pi++) {
 				int pos = getPosition(activePlayer, pi);
@@ -350,12 +348,6 @@ public class Ludo {
 		return movable;
 	}
 	
-	
-	/**
-	 * Checks if the activePlayer have any pieces he/she
-	 * can move.
-	 * @return true if the player can move one piece
-	 */
 /*	private boolean canMove() {
 		boolean movable = false;
 		
@@ -380,7 +372,6 @@ public class Ludo {
 			}
 		}
 		
-<<<<<<< HEAD
 		for(int pi = 0; pi < PIECES; pi++) {
 			int pos = getPosition(activePlayer, pi);
 			
@@ -390,9 +381,6 @@ public class Ludo {
 		}
 		
 		System.err.println("canMove: " + moveable);
-=======
-		System.err.println("canMove: " + movable);
->>>>>>> 3a19e5a0eb1fdd70214894f53b5a2bada1da300c
 		System.err.println("canMove: END");
 		return movable;
 	}
@@ -432,7 +420,7 @@ public class Ludo {
 			 */
 			if (pieceindex != -1) {
 				if(!checkBlockAt(player, pieceindex, from, to)) {	// Hvis det ikke er en blokkade
-					if((from + dice) < GOAL) {						// Hvis mål nås akkurat. 
+					if((from + dice) <= GOAL) {						// Hvis mål nås akkurat. 
 						playerPieces[player][pieceindex] = to;
 						System.err.println("pl: " + player + ", pi: " + pieceindex + ", to: " + to);
 						
@@ -589,11 +577,15 @@ public class Ludo {
 	 */
 	public int getWinner() {
 		int winner = -1;
+		int i, pl, pi;
+		i = pl = pi = 0;
 		
-		for(int pl = 0; pl < activePlayers(); pl++) {
-			for(int pi = 0; pi < PIECES; pi++) {
-				if(getPosition(pl, pi) == GOAL) winner = pi; 
+		while(winner > 0 && pl < activePlayers()) {
+			while(getPosition(pl, pi) == GOAL && pi < PIECES) {
+				i++;
+				pi++;
 			}
+			if(i == PIECES) winner = pl;
 		}
 		
 		return winner;
