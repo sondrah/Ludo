@@ -35,7 +35,7 @@ public class Ludo {
 	
 	
 	/** Number of subsequent throws*/
-	private static int nrOfThrows = 0;
+	private int nrOfThrows = 0;
 	
 	/** An Vector with the current players */
 	private Vector<String> players;
@@ -209,7 +209,7 @@ public class Ludo {
 					  + "has 4 players\n");
 		} else {	// check the names
 			for(String p : players) {
-				if(p.equals(player)) {
+				if(p == player) {
 					throw new IllegalPlayerNameException(
 								  "Ludo#addPlayer(String): Name: "
 								+ player + ", is already taken!\n"
