@@ -7,7 +7,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -27,7 +29,11 @@ public class Server extends JFrame {
     /**
 	 * It said so
 	 */
+	
 	private static final long serialVersionUID = 1L;
+	private final static Logger logger = Logging.getLogger();
+	private final static String url = "jdbc:derby:ludoServer";
+	private static Connection database;
 	private JTextField enterField;
     private JTextArea displayArea;
     private ObjectOutputStream output;
@@ -38,7 +44,14 @@ public class Server extends JFrame {
 
     public Server() {
         super("Server");
-
+    	try {
+			logger.fine("Connecting to database.");
+			database =  DriverManager.getConnection(url);
+		} catch (SQLException sqle) {
+			Logging.printStackTrace(sqle);
+		}
+		
+		
         enterField = new JTextField();
         enterField.setFont(new Font("Arial", Font.PLAIN, 26));
         enterField.setEditable(false);
