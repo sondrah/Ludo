@@ -46,9 +46,14 @@ public class PieceEvent extends java.util.EventObject {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		PieceEvent temp = (PieceEvent) obj;
-		return (this.player == temp.getPlayer() && this.piece == temp.getPiece()
-				&& this.from == temp.getFrom() && this.to == temp.getTo());
+		if(obj == this) return true;
+		
+		if(obj instanceof PieceEvent && obj != null) {
+			PieceEvent temp = (PieceEvent) obj;
+			return (this.player == temp.getPlayer() && this.piece == temp.getPiece()
+					&& this.from == temp.getFrom() && this.to == temp.getTo());
+		}
+		else return false;
 	}
 	
 	/**

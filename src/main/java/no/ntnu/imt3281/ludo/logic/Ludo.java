@@ -203,18 +203,18 @@ public class Ludo {
 		}
 		else {	// check the names
 			for(String p : players) {
-				if(p == player)
+				if(p.equals(player)) {
 					throw new IllegalPlayerNameException(
 								  "Ludo#addPlayer(String): Name: "
 								+ player + ", is already taken!\n"
 										+ "");
+				}
 			}
-			
-			if(player.startsWith("****"))
+			if(player.startsWith("****")) {
 				throw new IllegalPlayerNameException(
 								  "Ludo#addPlayer(String): Can't"
 								+ " start with ****!");
-			
+			}
 			else {
 				int i = nrOfPlayers();	// start at the next valid (0 - 3)
 				boolean added = false;
