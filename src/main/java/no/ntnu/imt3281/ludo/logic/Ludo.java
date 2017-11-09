@@ -676,12 +676,15 @@ public class Ludo {
 	private boolean allHome(int player) {
 		int piecesInHome = 0;
 		
+		// loops through all pieces of that player and
+		// checks if he's home
 		for(int piece = 0; piece < PIECES; piece++) {
 			if(getPosition(player, piece) == 0) {
 				piecesInHome++;
 			}
 		}
 		
+		// if all pieces are in home, we are good
 		if(piecesInHome == 4) return true;
 		else return false;
 	}
