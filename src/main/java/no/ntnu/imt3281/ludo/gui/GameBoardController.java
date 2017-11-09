@@ -11,6 +11,11 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 
+
+/**
+ * A FXML controller class that handles all visuals for the
+ * gameboard that the user sees and interacts with
+ */
 public class GameBoardController {
 
     @FXML

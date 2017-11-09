@@ -11,6 +11,10 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 
+/**
+ * This class controlls the flow of the game and comunications between server
+ * and the different clients
+ */
 public class LudoController {
 
     @FXML
@@ -19,6 +23,11 @@ public class LudoController {
     @FXML
     private TabPane tabbedPane;
 
+    /**
+     * Handles the action of one player that tries to enter a
+     * new random game with said button
+     * @param e the buttonclick action
+     */
     @FXML
     public void joinRandomGame(ActionEvent e) {  	
     	FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));

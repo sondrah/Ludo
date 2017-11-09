@@ -3,10 +3,7 @@ package no.ntnu.imt3281.ludo.logic;
 import java.util.Random;
 import java.util.Vector;
 
-import org.apache.derby.impl.sql.catalog.SYSCONGLOMERATESRowFactory;
-import org.apache.derby.impl.sql.catalog.SYSSEQUENCESRowFactory;
-
-import com.sun.javafx.geom.transform.GeneralTransform3D;
+import javax.jws.soap.SOAPBinding;
 
 /**
  * Main Class that represents the
@@ -32,6 +29,11 @@ public class Ludo {
 	private static final int COMMON_GRID_COUNT = 54;
 	/** The last tile on the board */
 	private static final int GOAL = 59;
+	/** A constant of 'Inactive: ' used in all cases where
+	 * we need to check for inactivity */
+	private static final String INACTIVE = "Inactive: "; 
+	
+	
 	/** Number of subsequent throws*/
 	private static int nrOfThrows = 0;
 	
@@ -77,7 +79,7 @@ public class Ludo {
 	 * @param p2 player2
 	 * @param p3 player3
 	 * @param p4 player4
-	 * @throws NotEnoughPlayersException
+	 * @throws NotEnoughPlayersException if the number of players is less than 2
 	 */
 	public Ludo(String p1, String p2, String p3, String p4) throws NotEnoughPlayersException {
 		setUpGame();
@@ -87,8 +89,8 @@ public class Ludo {
 		players.add(YELLOW, p3);
 		players.add(GREEN, p4);
 		
-		if(nrOfPlayers() >= MIN_PLAYERS && nrOfPlayers() <= MAX_PLAYERS){
-			//throw new NotEnoughPlayersException("No exception should be thrown");
+		if(nrOfPlayers() >= MIN_PLAYERS && nrOfPlayers() <= MAX_PLAYERS) {
+			/* Might want to invert this statement */
 		}
 		else {
 			players.clear();
@@ -97,29 +99,42 @@ public class Ludo {
 					+ "The number of players must be more than 2!\n");
 		}
 	}
+
 	
 	/**
-	 * Converts the given colured number to the relative
-	 * board (black) number
+	 * Converts a given relative position for the given player
+	 * to the corresponding gridPosition
+	 * @param player The player relative to
+	 * @param userPosition The relative position to convert
 	 * 
-	 * @param player colour
-	 * @param players number
-	 * @return The translated pos as int (black number)
+	 * @return The gridPosition of the given relative position
 	 */
 	public int userGridToLudoBoardGrid(int player, int userPosition){
 		int gridPosition = 0;
 		
 		if(userPosition == 0) {
 			switch(player) {
-			case RED: 		gridPosition = 0;	break;
-			case BLUE: 		gridPosition = 4;	break;
-			case YELLOW:	gridPosition = 8;	break;
-			case GREEN: 	gridPosition = 12;	break;
+				case RED:
+					gridPosition = 0;
+					break;
+					
+				case BLUE:
+					gridPosition = 4;
+					break;
+					
+				case YELLOW:
+					gridPosition = 8;
+					break;
+					
+				case GREEN:
+					gridPosition = 12;
+					break;
+					
+				default:
+					break;
 			}
 		}
-		else {
-			gridPosition = userGridToPlayerGrid[player][userPosition];
-		}
+		else gridPosition = userGridToPlayerGrid[player][userPosition];
 		
 		return gridPosition;
 	}
@@ -132,7 +147,7 @@ public class Ludo {
 	public int nrOfPlayers(){
 		int ps = 0;
 		
-		for (int i = 0; i < players.size(); i++) {
+		for (int i = 0; i < MAX_PLAYERS; i++) {
 			if(players.get(i) != null) ps++;
 		}
 		
@@ -146,11 +161,8 @@ public class Ludo {
 	 */
 	public int activePlayers(){
 		int ap = 0;
-		for(int i = 0; i < players.size(); i++) {
-			if(players.get(i) == null) {
-				// do nothing
-			}
-			else if(!players.get(i).startsWith("Inactive: ")) ap++;
+		for(int i = 0; i < MAX_PLAYERS; i++) {
+			if(isActive(i)) ap++;
 		}
 		return ap;
 	}
@@ -160,33 +172,36 @@ public class Ludo {
 	 * index in the playervector
 	 * 
 	 * @param player Index of the player
-	 * @return the players name as String
+	 * @return The players name as String
 	 */
 	public String getPlayerName(int player){
 		// allowed numbers = 0, 1, 2, 3
 		if(player >= 0 && player <= nrOfPlayers()){
 			return players.get(player);
 		}
-		else{
-			// TODO: feilmelding?
-			return null;
-		}
+		else return null;
 	}
 	
 	/**
 	 * Tries to add the given player to the game
-	 * @param player the player to be added
-	 * @throws IllegalPlayerNameException
+	 * @param player The name of a player to be added
+	 * @throws IllegalPlayerNameException 
+	 *		If the player has the same name as a player
+	 *		already in the game or if the names starts
+	 *		with 4x'*'
+	 *    
 	 * @throws NoRoomForMorePlayersException
+	 * 		If there are 4 players in the game already
 	 */
 	public void addPlayer(String player) throws IllegalPlayerNameException,
 												NoRoomForMorePlayersException {
+		// if we have 4 or more players 
 		if(nrOfPlayers() >= MAX_PLAYERS) {
 			throw new NoRoomForMorePlayersException(
 					  "Ludo#addPlayer(String): Game already "
 					  + "has 4 players\n");
 		}
-		else {
+		else {	// check the names
 			for(String p : players) {
 				if(p == player)
 					throw new IllegalPlayerNameException(
@@ -200,43 +215,83 @@ public class Ludo {
 								  "Ludo#addPlayer(String): Can't"
 								+ " start with ****!");
 			
-			else players.add(player);
-		}
-	}
+			else {
+				int i = nrOfPlayers();	// start at the next valid (0 - 3)
+				boolean added = false;
+				
+				// As long as there is space, try to add a the given
+				// player to the players vector. This is filled with
+				// nulls and thus we need to remove these first, then
+				// insert the given player at the position we found
+				// open (as null)
+				while(nrOfPlayers() < MAX_PLAYERS && i < MAX_PLAYERS && !added) {
+					players.remove(i);
+					players.add(i, player);
+					added = true;
+					i++;
+				} // while
+			} // if **
+		} // if players > 4
+	} // end function
 	
 	/**
 	 * "Removes" the given player from the game. Marks them as inactive
-	 * @param player to be marked as inactive
-	 * @throws NoSuchPlayerException
+	 * @param player A player that is inactive
+	 * @throws NoSuchPlayerException If the given player isn't in this game
 	 */
 	public void removePlayer(String player) throws NoSuchPlayerException{
 		boolean found = false;
 		int i = 0;
 		
-		while(!found && i < players.size()) {
+		/* Loops through the playersvector and looks for
+		 * the given player. We stop if we find him/her
+		 * or if we have looked through all the players
+		 */
+		while(!found && i < MAX_PLAYERS) {
+			
+			/* If we find a suitable player, construct
+			 * a new StringBuilder with the inactive
+			 * prefix, then, while removing the player
+			 * from the playersvector, append the players
+			 * name to the StringBuilder.
+			 * 
+			 * Then we add the player we modified back into
+			 * the playervector where we found him/her
+			 */
 			if(players.get(i) == player) {
-				StringBuilder sb = new StringBuilder("Inactive: ");
+				StringBuilder sb = new StringBuilder(INACTIVE);
 				sb.append(players.remove(i));
 				players.add(i, sb.toString());
 				found = true;
+				
+				// alerts all other players that a player
+				// has left the game / has come inactive
+				alertPlayers(new PlayerEvent(this, activePlayer, PlayerEvent.LEFTGAME));
+				
+				// We need to give the turn to the next player
+				nextPlayer();
 			}
+			
+			// progress in the playervector
 			i++;
-		}
+		} // while
 		
+		// if no player with the given name where found
+		// we throw a new NoSuchPlayerException
 		if(!found) {
 			throw new NoSuchPlayerException(
 					  "Ludo#removePlayer(String):"
 					+ "The player" + player + " was not found"); 
 		}
-	}
+	} // removePlayer end
 	
 	
 	/**
-	 * Gets the position of the given player's given peice,
+	 * Gets the position of the given player's given piece,
 	 * relative to him
-	 * @param player the player whose piece we want
-	 * @param piece we want to find
-	 * @return the position, relative to the player, as int
+	 * @param player The player whose piece we want
+	 * @param piece The index of the piece we want to find
+	 * @return The position, relative to the player, as integer
 	 */
 	public int getPosition(int player, int piece){
 		return playerPieces[player][piece];
@@ -245,7 +300,7 @@ public class Ludo {
 
 	/**
 	 * Gets the current active player (RED, GREEN, YELLOW, BLUE) 
-	 * @return the current active player
+	 * @return The current active player
 	 */
 	public int activePlayer() {
 		return this.activePlayer;
@@ -253,39 +308,51 @@ public class Ludo {
 	
 	/**
 	 * Throws a D6
-	 * @return value between 1 and 6 (inclusive)
+	 * @return Value between 1 and 6 (inclusive)
 	 */
 	public int throwDice() {
+		// TODO: finn ut om denne må se ut som
+		// clientside throwdice
+		
 		int locDice = 0;
 		randomGenerator = new Random();
 		
 		locDice = randomGenerator.nextInt(5) + 1;
 		
-		// might give the turn to the next player
-		// if he/she has 3 throws
-		if(nrOfThrows == 3) {
-			nextPlayer();
-		}
-		
-		nrOfThrows++;
 		alertThrowDice(new DiceEvent(this, activePlayer, locDice));
-		System.err.println("Threw dice:" + locDice);
 		return locDice;
 	}
 	
 
 	/**
 	 * Clientside dicethrow, returns the given value
-	 * @param value the value the throw should result in
-	 * @return the given value
+	 * @param value A integer representing the value
+	 * of a D6 dice
+	 * @return The given value (as this should only
+	 * simulate a dicethrow)
 	 */
-	public int throwDice(int value) {	
-		System.err.println("throwDice: START");
-		alertThrowDice(new DiceEvent(this, value, activePlayer));
-		dice = value;
+	public int throwDice(int value) {
+		// alert all players that a dice is thrown
+		alertThrowDice(new DiceEvent(this, activePlayer, value));
+		dice = value;			// updates the current value of dice
 		
-		System.err.println("Throw #: " + nrOfThrows);
-		
+		/* If a player cannot move one or more of his/her
+		 * pieces we need to check if he either:
+		 * - Needs to get out of home
+		 * - Has a piece thats locked
+		 * 
+		 * Based on this we allow the player 1 or 3 throws
+		 * 
+		 * In both cases we want to give the turn to the next
+		 * player (Couse the player has used up all his/her
+		 * tries)
+		 * 
+		 * The number of throws is reset to 0 when 'nextPlayer'
+		 * is called, but since this function ALWAYS increments the 
+		 * number of throws, we need to decrement it in the special
+		 * cases where the player cannot move and is forced to give
+		 * up his/her turn
+		 */
 		if(!canMove()) {
 			if(nrOfPlayedPieces(activePlayer) > 0) {
 				if(nrOfThrows + 1 == 1) {
@@ -298,106 +365,89 @@ public class Ludo {
 					nrOfThrows--;
 			}
 		}
-		nrOfThrows++;
-		if(dice == 6 && nrOfThrows == 3 && nrOfPlayedPieces(activePlayer) > 0) nextPlayer();
 		
-		System.err.println("Threw dice: " + value);
-		System.err.println("throwDice: END");
+		// if a player CAN move, increment the number of throws
+		nrOfThrows++;
+		
+		/* if this throw was his 3.
+		 * AND he got 6 on the dice
+		 * AND he has at least 1 piece played
+		 * 
+		 * THEN the player immediately gives up his turn
+		 * without beeing able to move his piece 
+		 */
+		if(dice == 6 && nrOfThrows == 3 && nrOfPlayedPieces(activePlayer) > 0) nextPlayer();
+
+		// TODO: we might want to reset the value to 0
+		// if a player isn't allowed to move so we can
+		// check this at the client
 		return value;
 	}
 
 	
 	/**
-	 * Checks if the current move: 
-	 * Is from correct position
-	 * Is equal to dice
-	 * Is allowed from start (must have a six to be allowed to move a piece)
-	 * is not in conflict with a tower
-	 * @param player which player is trying to move a piece
-	 * @param piece 
-	 * @param from coordinates piece is being moved from
-	 * @param to coordinates piece is being moved to
-	 * @return true if it can move, otherwise false
+	 * Checks if the active player has at least 1 piece
+	 * he/she can move.
+	 * <br>
+	 * Checks:
+	 * <ul>
+	 *   <li>Need a 6 on the dice because all pieces are either
+	 *       home or in goal</li>
+	 *   <li>A piece on the board doesn't move past the goal.
+	 *       This ensures that a player can't move his piece
+	 *       unless the exact number of tiles to the goal is
+	 *       equal to the value of his dice</li>
+	 *   <li>All pieces are blocked by towers</li>
+	 * </ul>
+	 * 
+	 * @return True if there is 1 piece that can be moved
 	 */
-	
-	
-	
-		// ALTERNATIV canMove() av Sondre A
 	private boolean canMove() {			
 		boolean movable = false;
 		
-		System.err.println("canMove: START");
-		
+		/* checks if all of the players pieces is either
+		 * home or in goal. In this case the player
+		 * NEEDS 6 on the dice
+		 */
 		if(nrOfPlayedPieces(activePlayer) == 0 && dice == 6) movable = true;
 		else {
+			/* Loops through all the players pieces
+			 * and gets its position.
+			 */
 			for(int pi = 0; pi < PIECES; pi++) {
 				int pos = getPosition(activePlayer, pi);
-			
+
+				/* As long as we are NOT moving out of
+				 * home, check if the player can move
+				 * in to the goal with this piece
+				 * 
+				 * THEN check if the player has all
+				 * his pieces blocked.
+				 * if NOT we can allow the player to move
+				 */
 				if(pos != 0) {
 					if((pos + dice) <= GOAL) {	
 						if(!blocked(activePlayer, pos, pos + dice)) {
 							movable = true;
-						}
-					}
-				}
-			} 
-		} 
+						} // if blocked
+					} // if == goal
+				} // if != 0
+			} // for
+		} // home
 		
-		System.err.println("canMove: " + movable);
-		System.err.println("canMove: END");
 		return movable;
 	}
-	
-/*	private boolean canMove() {
-		boolean movable = false;
-		
-		System.err.println("canMove: START");
-		
-		
-		if(nrOfPlayedPieces(activePlayer) > 0) {		// if one ore more pieces is in play
-			for(int i = 0; )
-		}
-		
-		// if all is home, we need 6
-		if(allHome(activePlayer) && dice == 6) movable = true;
-		
-		for(int pi = 0; pi < PIECES; pi++) {
-			int pos = getPosition(activePlayer, pi);
-			
-			if(pos != 0) {
-				if(!blocked(activePlayer, pos, pos + dice)) {
-					movable = true;
-				}
-				else movable = false;
-			}
-		}
-		
-		for(int pi = 0; pi < PIECES; pi++) {
-			int pos = getPosition(activePlayer, pi);
-			
-			if((pos + dice) <= GOAL) {
-				moveable = false;
-			}
-		}
-		
-		System.err.println("canMove: " + moveable);
-		System.err.println("canMove: END");
-		return movable;
-	}
-*/	
 	
 	/**
-	 * Tries to moves a player's piece
-	 * @param player which player is moving a piece
-	 * @param from relative position to move from
-	 * @param to relative position to move to
+	 * Tries to move a players piece
+	 * @param player Which player is moving a piece
+	 * @param from Relative position to move from
+	 * @param to Relative position to move to
 	 *  
-	 * @return true if piece was moved, false otherwise
+	 * @return True if a piece was moved, false otherwise
 	 */
 	public boolean movePiece(int player, int from, int to) {	
 		boolean movable = false;
-		
-		System.err.println("movePiece: START");
 		
 		int pieceindex = -1;						// Trengs for å garantere at bare
 		int i = 0;									// en og første brikke flyttes
@@ -411,8 +461,6 @@ public class Ludo {
 				i++;
 			}
 			
-			System.err.println("pieceindex: " + pieceindex);
-			
 			/* if we found the valid piece,
 			 * we check if that particular piece is blocked,
 			 * then, we need to have a small check if the piece
@@ -422,20 +470,22 @@ public class Ludo {
 				if(!checkBlockAt(player, pieceindex, from, to)) {	// Hvis det ikke er en blokkade
 					if((from + dice) <= GOAL) {						// Hvis mål nås akkurat. 
 						playerPieces[player][pieceindex] = to;
-						System.err.println("pl: " + player + ", pi: " + pieceindex + ", to: " + to);
-						
-						checkUnfortunateOpponent(player, to);
 						
 						// tell clients that a piece is moved
 						alertPieces(new PieceEvent(this, activePlayer, pieceindex, from, to));
+						
+						// check if someone needs to be sent
+						// home at the given tile
+						checkUnfortunateOpponent(player, to);
+						
+						// check if we have a winner
+						checkWinner();
 						
 						// give the turn to the next player
 						// unless he got a 6 and isn't going
 						// out of home
 						if(from == 0 && dice == 6) nextPlayer();
 						if(dice != 6) nextPlayer();
-						
-						System.err.println("Moved piece!");
 						
 						// WE CAN MOVE
 						movable = true;
@@ -444,25 +494,22 @@ public class Ludo {
 			} // found piece
 		} // we can move
 		
-		System.err.println("movePiece: END");
-		
 		return movable;
-	}
+	} // movePiece end
+	
 	
 	/**
 	 * Checks if there is a tower in the way for this players
-	 * given piece between the two positions "to" and "from"
+	 * given piece between the two relative positions "to" and "from"
 	 * 
-	 * @param player whose piece to move
-	 * @param piece we want to move
-	 * @param from relative position to move from
-	 * @param to relative position to move to
+	 * @param player The player whose piece to move
+	 * @param piece The index of the players piece to move
+	 * @param from Relative position to move from
+	 * @param to Relative position to move to
 	 * 
 	 * @return true if no towers were found, false otherwise
 	 */
 	private boolean checkBlockAt(int player, int piece, int from, int to) {
-		
-		System.err.println("checkBlockAt: START");
 		
 		// gets the actual positions on the board
 		int fromGridPos = userGridToLudoBoardGrid(player, from);
@@ -474,9 +521,9 @@ public class Ludo {
 		// holds how many pieces one player has on
 		// one of the tiles between "to" and "from"
 		int pieceAtPos[][] = new int[4][dist];
-		//int twr[] = new int[4];
 		
-		boolean blockade = false;				// if we found a tower
+		// if we found a tower
+		boolean blockade = false;				
 		
 		/*
 		 * Loops through all possible players (they should have pieces
@@ -492,14 +539,6 @@ public class Ludo {
 				
 				for(int pi = 0; pi < PIECES; pi++) {
 					int pieceGridPos = userGridToLudoBoardGrid(pl, getPosition(pl, pi));
-					
-					/*System.err.println("fromGridPos: " + fromGridPos);
-					System.err.println("toGridPos: " + toGridPos);
-					System.err.println("pl: " + pl);
-					System.err.println("dist: " + dist);
-					System.err.println("piecePos: " + pieceGridPos);
-					System.err.println((pieceGridPos > fromGridPos) && (pieceGridPos <= toGridPos));
-					*/
 					
 					if(from == 0) {
 						if(pieceGridPos == toGridPos) {
@@ -519,53 +558,46 @@ public class Ludo {
 		
 		// we need something to itterate on :D (again)
 		int i = 0;
-		// loops untill we find a blockade or we've seen
+		// loops untill we find a tower or we've seen
 		// all tiles between "to" and "from"
 		while(!blockade && i < dist) {
 			for(int pl = 0; pl < MAX_PLAYERS; pl++) {
 				// we hava a tower if a player have 2 or more
 				// pieces on one tile
 				if(pieceAtPos[pl][i] >= 2) blockade = true;
-				
-				//System.err.println("pl: " + pl + " | tile: " + i + " = " + pieceAtPos[pl][i]);
-			}
+			} // for
+			
+			// progress through the tiles
 			i++;
-		}
+		} // while
 		
-		System.err.println("checkBlockAt: " + blockade);
-		System.err.println("checkBlockAt: END");
 		return blockade;
-	}
+	} // checkBlockAt end
 	
 
 	/**
 	 * Gets the current state of the game
-	 * @return gamestate
+	 * @return The gamestate
 	 */
 	public String getStatus() {
 		String res = null;
 		
 		// if we have 0 players in the game: CREATED
-		if(nrOfPlayers() == 0) {
-			res = "Created";
-		}
+		if(nrOfPlayers() == 0) res = "Created";
+		
 		// if we have one or more players
 		else if(activePlayers() >= 1){
+			
 			// if no dice is thrown: INITIATED
-			if(dice == 0) {
-				res = "Initiated";
-			}
+			if(dice == 0) res = "Initiated";
+			
 			// the game is started (couse a dice is thrown)
 			// :STARTED
-			else { 
-				res = "Started";
-			}
-		}
+			else res = "Started";
+		} // if
 		
 		// if we have a winner: FINISHED
-		if(getWinner() >= 0) {
-			res = "Finished";
-		}
+		if(getWinner() != -1) res = "Finished";
 		
 		return res;
 	}
@@ -573,37 +605,32 @@ public class Ludo {
 	
 	/**
 	 * Checks if someone has won the game
-	 * @return the winner of the game
+	 * @return The winner of the game, or -1 
 	 */
 	public int getWinner() {
 		
-		//System.err.println("getWinner: START");
+		// keeps the winner
 		int winner = -1;
-		int i, pl;
-		i = pl = 0;
+		int i = 0;
 		
-		while(winner == -1 && pl < activePlayers()) {
+		// loops through all players pieces
+		// if all (4) of them is in goal we have a winner
+		for(int pl = 0; pl < MAX_PLAYERS; pl++) {
 			for(int pi = 0 ; pi < PIECES; pi++) {
 				if(getPosition(pl, pi) == GOAL) i++;
 			}
 			
-			//System.err.println("pl: " + pl);
-			//System.err.println("i: " + i);
-			
 			if(i == PIECES) winner = pl;
-			
-			pl++;
+			i = 0;	// reset piece counter
 		}
 		
-		System.err.println("returns: " + winner);
-		System.err.println("getWinner: END");
 		return winner;
 	}
 	
 	
 	/**
 	 * Adds a DiceListner to the game
-	 * @param diceListner to be added
+	 * @param diceListner A DiceListener
 	 */
 	public void addDiceListener(DiceListener diceListner) {
 		diceListeners.add(diceListner);
@@ -611,7 +638,7 @@ public class Ludo {
 	
 	/**
 	 * Adds PlayerListner to the game
-	 * @param playerListner to be added
+	 * @param playerListner A PlayerListener
 	 */
 	public void addPlayerListener(PlayerListener playerListner) {
 		playerListeners.add(playerListner);
@@ -619,7 +646,7 @@ public class Ludo {
 	
 	/**
 	 * Adds a PieceListner to the game
-	 * @param pieceListner to be added
+	 * @param pieceListner A PieceListener
 	 */
 	public void addPieceListener(PieceListener pieceListner) {
 		pieceListeners.add(pieceListner);
@@ -628,18 +655,24 @@ public class Ludo {
 	
 	/**
 	 * Returns the array responsible for grid-convertions
-	 * @return the relativ grid
+	 * @return The grid
 	 */
 	private int[][] getUserGridToPlayGrid(){
-		// userGridToPlayerGrid[player][numbCol]
 		return userGridToPlayerGrid;
 	}
 	
 	/**
+	 * @deprecated Replaced by: {@linkplain nrOfPlayedPieces}.
+	 * This returns 0 if all are home or in goal. 'allHome'
+	 * is primarily used to check if a player needs 6 to play
+	 * a piece, but this is also the case for all cases with 1-3
+	 * pieces in either goal or home
+	 * 
 	 * Checks if all the players pieces are home
 	 * @param player the player to check for
 	 * @return true if all pieces are home, false otherwise
 	 */
+	@Deprecated
 	private boolean allHome(int player) {
 		int piecesInHome = 0;
 		
@@ -658,104 +691,116 @@ public class Ludo {
 	 * Gives the turn to the next player in the queue
 	 */
 	private void nextPlayer() {
-		System.err.println("nextPlayer: START");
+		boolean found = false;	// if we found a valid player
 		
-		// changes state of prev player
+		// Alert everyone that the previous player
+		// is done with his/her turn
 		alertPlayers(new PlayerEvent(this, activePlayer, PlayerEvent.WAITING));
 		
 		// reset the throwcount for a new player
 		nrOfThrows = 0;
 		
-		System.err.println("nextPlayer - prev: " + activePlayer);
-		//if(activePlayer == MAX_PLAYERS - 1) {
-		if(activePlayer == nrOfPlayers() - 1) {
-			activePlayer = 0;
-		}
-		else activePlayer++;
-		System.err.println("nextPlayer - cur: " + activePlayer);
+		/* As long as no valid player is found, check
+		 * if we're the last player.
+		 * IF SO: reset activePlayer
+		 */
+		do {
+			if(activePlayer == GREEN) activePlayer = RED;
+			else activePlayer++;
+			
+			if(isActive(activePlayer)) found = true;
+		} while(!found);
 		
-		// changes state of next player
-		alertPlayers(new PlayerEvent(this, activePlayer, PlayerEvent.PLAYING));
-		
-		System.err.println("nextPlayer: END");
+		// alert every player about whose turn it is
+		alertPlayers(new PlayerEvent(this, activePlayer, PlayerEvent.PLAYING));	
 	}
 	
 	
 	
 	/**
-	 * Checks if the player is blocked
+	 * Checks if any of the given players pieces
+	 * is blocked in the given distance between
+	 * 'from' and 'to'
 	 * 
-	 * @param player to check for
-	 * @param from the relative position to move from
-	 * @param to the relatice position to move to
+	 * @param player The player to check for
+	 * @param from Relative position to move from
+	 * @param to Relative position to move to
 	 * 
-	 * @return true if all pieces are unable to move, false otherwise
+	 * @return True if all pieces are unable to move, false otherwise
 	 */
 	private boolean blocked(int player, int from, int to) {
+		boolean allBlocked = true; 	// is every piece blocked?
+		int piece = 0; 
 		
-		System.err.println("blocked: START");
-		
-		boolean allBlocked = true;
-		
-		// perfomes a AND with all the pieces. If one of these can move
-		// checkBlockAt() will return false and the AND will make
-		// allBlocked be false.
-		for(int i = 0; i < PIECES; i++) {
-			allBlocked = allBlocked && checkBlockAt(player, i, from, to);
-			//System.err.println("pi: " + i + " | block: " + allBlocked);
+		// loops untill we find 1 piece that
+		// isn't blocked or we looked at all pieces
+		while(allBlocked && piece < PIECES) {
+			allBlocked = checkBlockAt(player, piece, from, to);
+			piece++;
 		}
 		
-		System.err.println("returns: " + allBlocked);
-		System.err.println("blocked: END");
 		return allBlocked;
 	}
 	
 	
 	/**
-	 * check if there are Unfortunate Opponent on the position player moves to
-	 * @param player that moves
-	 * @param position he moved to (relative)
+	 * Check if there are an Unfortunate Opponent on the
+	 * given relative position the given player moves to
+	 * 
+	 * @param player The player that moves
+	 * @param to The relative position moved to
 	 */
 	private void checkUnfortunateOpponent(int player, int to) {
+		// we want to start looking from the active player
+		int pl = activePlayer;
+		boolean found = false;	// if we found a valid player
+		
+		// gets the grid position of the given piece
 		int gridPos = userGridToLudoBoardGrid(player, to);
 		
-		System.err.println("gridPos: " + gridPos);
-		
-		for(int pl = 0; pl <= activePlayers(); pl++) {	
+		// loops through all active players
+		for(int i = 0; i < activePlayers(); i++) {
+			
+			// Skip all players that are inactive
+			do {
+				if(pl == GREEN) pl = RED;
+				else pl++;
+				
+				if(isActive(pl)) found = true;
+			} while(!found);
+			
+			/* As long as it isn't our self
+			 * loop through all the pieces and get their grid
+			 * position. If this position is the same as the
+			 * one the given player moved to, the other players
+			 * pieve has to be moved back to its home
+			 */
 			if(pl != player) {
-				for(int pi = 0; pi < PIECES; pi++) { 
-					int pieceGridPos = userGridToLudoBoardGrid(pl, getPosition(pl, pi));
-					
-					System.err.println("pieceGridPos: " + pieceGridPos);
+				for(int pieces = 0; pieces < PIECES; pieces++) { 
+					int pieceGridPos = userGridToLudoBoardGrid(pl, getPosition(pl, pieces));
 					
 					if(pieceGridPos == gridPos) {
-						alertPieces(new PieceEvent(this, pl, pi, to, 0));
+						// alert all players that a piece is sent home
+						alertPieces(new PieceEvent(this, pl, pieces, getPosition(pl, pieces), 0));
 						
-						playerPieces[pl][pi] = 0;
-					}
-				}
-			}
-		}	
-	}
+						// move the piece
+						playerPieces[pl][pieces] = 0;
+					} // if same pos
+				} // for piece
+			} // if same player
+		} // for i (active player)
+	} // checkUnfortunateOpponent end
+	
 	
 	/**
 	 * Checks if someone have won the game
 	 */
 	private void checkWinner() {
-		boolean won = false;
-		
-		for(int pl = 0; pl < MAX_PLAYERS; pl++) {
-			for(int pi = 0; pi < PIECES; pi++) {
-				if(getPosition(pl, pi) == GOAL) won = true;
-			}
-		}
-		
-		if(won) {
-			for(PlayerListener playerListener : playerListeners) {
-				playerListener.playerStateChanged(
-						new PlayerEvent(this, activePlayer, PlayerEvent.WON)
-					);
-			}
+		// if getWinner returns something other
+		// than '-1' someone has won
+		if(getWinner() != -1) {
+			// alert all players that the activePlayer has won
+			alertPlayers(new PlayerEvent(this, activePlayer, PlayerEvent.WON));
 		}
 	}
 	
@@ -765,7 +810,10 @@ public class Ludo {
 	 * the playerPieces and empty vectors
 	 */
 	private void setUpGame(){
+		// makes a 4 X 4 int array
 		playerPieces = new int[MAX_PLAYERS][PIECES];
+		
+		// makes a 4 X 60 in array (1 - 59)
 		userGridToPlayerGrid = new int[MAX_PLAYERS][COMMON_GRID_COUNT + 6];
 		
 		activePlayer = RED;
@@ -778,9 +826,11 @@ public class Ludo {
 		playerListeners = new Vector<>();
 		players = new Vector<>();
 		
-		
-		// inits the playerPieces to be at home
+		// inits the players to null and
+		// playerPieces to be at home
 		for(int player = 0; player < MAX_PLAYERS; player++) {
+			players.add(null);
+			
 			for(int piece = 0; piece < PIECES; piece++) {
 				playerPieces[player][piece] = 0;				
 			}
@@ -835,7 +885,10 @@ public class Ludo {
 	 * @param event The PieceEvent that should be sent to the listeners.
 	 */
 	private void alertPieces(PieceEvent event) {
+		
+		//System.err.println("pieceListeners: " + pieceListeners.size());
 		for(PieceListener pieceListener : pieceListeners) {
+			//System.err.println("alerting piece: " + event);
 			pieceListener.pieceMoved(event);
 		}
 	}
@@ -851,20 +904,6 @@ public class Ludo {
 		}
 	}
 	
-	/**
-	 * 
-	 */
-	private boolean checkThreeInARow() {
-		System.err.println("checkThreeInARow: " + nrOfThrows);
-		if(nrOfThrows == 3) {
-			return true;
-		}
-		else {
-			nrOfThrows++;
-			return false;
-		}
-	}
-	
 	
 	/**
 	 * Gets the number of pieces the given player DON'T have
@@ -874,7 +913,6 @@ public class Ludo {
 	 */
 	private int nrOfPlayedPieces(int player) {
 		
-		System.err.println("nrOfPlayedPieces: START");
 		int homeOrDone = 0;
 		
 		for(int pi = 0; pi < PIECES; pi++) {
@@ -884,8 +922,13 @@ public class Ludo {
 				homeOrDone++;
 			}
 		}
-		System.err.println("return: " + (PIECES - homeOrDone));
-		System.err.println("nrOfPlayedPieces: START");
+		
 		return (PIECES - homeOrDone);
+	}
+	
+	
+	private boolean isActive(int player) {
+		String pl = players.get(player);
+		return ((pl != null) && (!pl.startsWith(INACTIVE)));
 	}
 }
