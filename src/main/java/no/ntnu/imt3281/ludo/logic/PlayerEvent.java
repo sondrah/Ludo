@@ -1,5 +1,6 @@
 package no.ntnu.imt3281.ludo.logic;
 
+import java.util.Objects;
 
 /**
  * @author Snorre
@@ -52,6 +53,16 @@ public class PlayerEvent extends java.util.EventObject {
 		}
 		else return false;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+    public int hashCode() {
+		// makes a hash put of the given paramenters
+        return Objects.hash(activePlayer, state);
+    }
 
 	/**
 	 * gets current active player

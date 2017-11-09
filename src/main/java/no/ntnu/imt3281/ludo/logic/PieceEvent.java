@@ -1,5 +1,7 @@
 package no.ntnu.imt3281.ludo.logic;
 
+import java.util.Objects;
+
 /**
  * @author Snorre
  * This Class is meant to inform players that a piece has been moved.
@@ -55,6 +57,16 @@ public class PieceEvent extends java.util.EventObject {
 		}
 		else return false;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+    public int hashCode() {
+		// makes a hash put of the given paramenters
+        return Objects.hash(player, piece, from, to);
+    }
 	
 	/**
 	 * gets player in the current turn
