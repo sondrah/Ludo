@@ -820,7 +820,7 @@ public class Ludo {
 		dice = 0;
 		nrOfThrows = 0;
 		
-		// empty vectors != null
+		// empty vectors != nulls
 		diceListeners = new Vector<>();
 		pieceListeners = new Vector<>();
 		playerListeners = new Vector<>();
