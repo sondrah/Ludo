@@ -3,8 +3,8 @@ package no.ntnu.imt3281.ludo.logic;
 import java.util.Objects;
 
 /**
- * @author Snorre
- *
+ * An event that holds information about a player
+ * change. (the player changed / left / won)
  */
 public class PlayerEvent extends java.util.EventObject {
 
@@ -47,11 +47,12 @@ public class PlayerEvent extends java.util.EventObject {
 	public boolean equals(Object obj) {
 		if(obj == this) return true;
 		
-		if(obj instanceof PlayerEvent && obj != null) {
+		if(obj != null && obj instanceof PlayerEvent) {
 			PlayerEvent temp = (PlayerEvent) obj;
 			return (this.activePlayer == temp.getActivePlayer() && this.state == temp.getState());
+		} else {
+			return false;
 		}
-		else return false;
 	}
 	
 	/*
