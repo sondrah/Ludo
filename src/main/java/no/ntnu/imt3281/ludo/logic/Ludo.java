@@ -91,8 +91,8 @@ public class Ludo {
 		
 		if(nrOfPlayers() >= MIN_PLAYERS && nrOfPlayers() <= MAX_PLAYERS) {
 			/* Might want to invert this statement */
-		}
-		else {
+		
+		} else {
 			players.clear();
 			throw new NotEnoughPlayersException(
 					  "Ludo#Ludo(String, String, String, String):"
@@ -706,10 +706,7 @@ public class Ludo {
 		}
 		
 		// if all pieces are in home, we are good
-		if(piecesInHome == 4) {
-			return true;
-		}
-		else return false;
+		return (piecesInHome ==  4);
 	}
 	
 	
@@ -737,8 +734,9 @@ public class Ludo {
 			} else {
 				activePlayer++;
 			}
-			
-			if(isActive(activePlayer)) found = true;
+			if(isActive(activePlayer)) {
+				found = true;
+			}
 		} while(!found);
 		
 		// alert every player about whose turn it is
@@ -923,10 +921,7 @@ public class Ludo {
 	 * @param event The PieceEvent that should be sent to the listeners.
 	 */
 	private void alertPieces(PieceEvent event) {
-		
-		//System.err.println("pieceListeners: " + pieceListeners.size());
 		for(PieceListener pieceListener : pieceListeners) {
-			//System.err.println("alerting piece: " + event);
 			pieceListener.pieceMoved(event);
 		}
 	}

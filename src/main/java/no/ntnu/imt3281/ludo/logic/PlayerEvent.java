@@ -45,13 +45,17 @@ public class PlayerEvent extends java.util.EventObject {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if(obj == this) return true;
+		if(obj == this) {
+			return true;
+		}
 		
 		if(obj instanceof PlayerEvent && obj != null) {
 			PlayerEvent temp = (PlayerEvent) obj;
 			return (this.activePlayer == temp.getActivePlayer() && this.state == temp.getState());
+		
+		} else {
+			return false;
 		}
-		else return false;
 	}
 	
 	/*
