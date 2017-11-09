@@ -133,8 +133,10 @@ public class Ludo {
 				default:
 					break;
 			}
+			
+		} else {
+			gridPosition = userGridToPlayerGrid[player][userPosition];
 		}
-		else gridPosition = userGridToPlayerGrid[player][userPosition];
 		
 		return gridPosition;
 	}
@@ -148,7 +150,9 @@ public class Ludo {
 		int ps = 0;
 		
 		for (int i = 0; i < MAX_PLAYERS; i++) {
-			if(players.get(i) != null) ps++;
+			if(players.get(i) != null) {
+				ps++;
+			}
 		}
 		
 		return ps;
@@ -162,7 +166,9 @@ public class Ludo {
 	public int activePlayers(){
 		int ap = 0;
 		for(int i = 0; i < MAX_PLAYERS; i++) {
-			if(isActive(i)) ap++;
+			if(isActive(i)) {
+				ap++;
+			}
 		}
 		return ap;
 	}
@@ -178,8 +184,9 @@ public class Ludo {
 		// allowed numbers = 0, 1, 2, 3
 		if(player >= 0 && player <= nrOfPlayers()){
 			return players.get(player);
+		} else {
+			return null;
 		}
-		else return null;
 	}
 	
 	/**
@@ -200,8 +207,7 @@ public class Ludo {
 			throw new NoRoomForMorePlayersException(
 					  "Ludo#addPlayer(String): Game already "
 					  + "has 4 players\n");
-		}
-		else {	// check the names
+		} else {	// check the names
 			for(String p : players) {
 				if(p == player) {
 					throw new IllegalPlayerNameException(
@@ -214,8 +220,7 @@ public class Ludo {
 				throw new IllegalPlayerNameException(
 								  "Ludo#addPlayer(String): Can't"
 								+ " start with ****!");
-			}
-			else {
+			} else {
 				int i = nrOfPlayers();	// start at the next valid (0 - 3)
 				boolean added = false;
 				
@@ -359,10 +364,9 @@ public class Ludo {
 					nextPlayer();
 					nrOfThrows--;
 				}
-			}
-			else if(nrOfThrows + 1 == 3) {
-					nextPlayer();
-					nrOfThrows--;
+			} else if(nrOfThrows + 1 == 3) {
+				nextPlayer();
+				nrOfThrows--;
 			}
 		}
 		
@@ -376,7 +380,9 @@ public class Ludo {
 		 * THEN the player immediately gives up his turn
 		 * without beeing able to move his piece 
 		 */
-		if(dice == 6 && nrOfThrows == 3 && nrOfPlayedPieces(activePlayer) > 0) nextPlayer();
+		if(dice == 6 && nrOfThrows == 3 && nrOfPlayedPieces(activePlayer) > 0) {
+			nextPlayer();
+		}
 
 		// TODO: we might want to reset the value to 0
 		// if a player isn't allowed to move so we can
@@ -409,8 +415,10 @@ public class Ludo {
 		 * home or in goal. In this case the player
 		 * NEEDS 6 on the dice
 		 */
-		if(nrOfPlayedPieces(activePlayer) == 0 && dice == 6) movable = true;
-		else {
+		if(nrOfPlayedPieces(activePlayer) == 0 && dice == 6) {
+			movable = true;
+		
+		} else {
 			/* Loops through all the players pieces
 			 * and gets its position.
 			 */
@@ -484,8 +492,12 @@ public class Ludo {
 						// give the turn to the next player
 						// unless he got a 6 and isn't going
 						// out of home
-						if(from == 0 && dice == 6) nextPlayer();
-						if(dice != 6) nextPlayer();
+						if(from == 0 && dice == 6) {
+							nextPlayer();
+						}
+						if(dice != 6) {
+							nextPlayer();
+						}
 						
 						// WE CAN MOVE
 						movable = true;
@@ -544,8 +556,8 @@ public class Ludo {
 						if(pieceGridPos == toGridPos) {
 							pieceAtPos[pl][0]++;
 						}
-					}
-					else if(pieceGridPos > fromGridPos && pieceGridPos <= toGridPos) {
+					
+					} else if(pieceGridPos > fromGridPos && pieceGridPos <= toGridPos) {
 						// should get positions relative to "from" as index
 						// ex: pieceGridPos = 21, fromGridPos = 20
 						// index = 21 - 20 - 1 = 0
@@ -564,7 +576,9 @@ public class Ludo {
 			for(int pl = 0; pl < MAX_PLAYERS; pl++) {
 				// we hava a tower if a player have 2 or more
 				// pieces on one tile
-				if(pieceAtPos[pl][i] >= 2) blockade = true;
+				if(pieceAtPos[pl][i] >= 2) {
+					blockade = true;
+				}
 			} // for
 			
 			// progress through the tiles
@@ -583,21 +597,24 @@ public class Ludo {
 		String res = null;
 		
 		// if we have 0 players in the game: CREATED
-		if(nrOfPlayers() == 0) res = "Created";
+		if(nrOfPlayers() == 0) {
+			res = "Created";
 		
-		// if we have one or more players
-		else if(activePlayers() >= 1){
+		} else if(activePlayers() >= 1) {	// if we have one or more players
 			
 			// if no dice is thrown: INITIATED
-			if(dice == 0) res = "Initiated";
+			if(dice == 0) {
+				res = "Initiated";
 			
-			// the game is started (couse a dice is thrown)
-			// :STARTED
-			else res = "Started";
+			} else {					// the game is started (couse a dice is thrown)					
+				res = "Started";	// :STARTED
+			}
 		} // if
 		
 		// if we have a winner: FINISHED
-		if(getWinner() != -1) res = "Finished";
+		if(getWinner() != -1) {
+			res = "Finished";
+		}
 		
 		return res;
 	}
@@ -617,10 +634,14 @@ public class Ludo {
 		// if all (4) of them is in goal we have a winner
 		for(int pl = 0; pl < MAX_PLAYERS; pl++) {
 			for(int pi = 0 ; pi < PIECES; pi++) {
-				if(getPosition(pl, pi) == GOAL) i++;
+				if(getPosition(pl, pi) == GOAL) {
+					i++;
+				}
 			}
 			
-			if(i == PIECES) winner = pl;
+			if(i == PIECES) {
+				winner = pl;
+			}
 			i = 0;	// reset piece counter
 		}
 		
@@ -685,7 +706,9 @@ public class Ludo {
 		}
 		
 		// if all pieces are in home, we are good
-		if(piecesInHome == 4) return true;
+		if(piecesInHome == 4) {
+			return true;
+		}
 		else return false;
 	}
 	
@@ -708,8 +731,12 @@ public class Ludo {
 		 * IF SO: reset activePlayer
 		 */
 		do {
-			if(activePlayer == GREEN) activePlayer = RED;
-			else activePlayer++;
+			if(activePlayer == GREEN) {
+				activePlayer = RED;
+			
+			} else {
+				activePlayer++;
+			}
 			
 			if(isActive(activePlayer)) found = true;
 		} while(!found);
@@ -766,10 +793,16 @@ public class Ludo {
 			
 			// Skip all players that are inactive
 			do {
-				if(pl == GREEN) pl = RED;
-				else pl++;
+				if(pl == GREEN) {
+					pl = RED;
 				
-				if(isActive(pl)) found = true;
+				} else {
+					pl++;
+				}
+				
+				if(isActive(pl)) {
+					found = true;
+				}
 			} while(!found);
 			
 			/* As long as it isn't our self
@@ -855,16 +888,18 @@ public class Ludo {
 	 * @param runway position of the players runway (grid position)
 	 */
 	private void setUpPos(int player, int start, int runway) {
-		int startGridPos = start;							// Setter startverdien til den svarte
+		int startGridPos = start;									// Setter startverdien til den svarte
 		
 		for(int colInt = 1; colInt < COMMON_GRID_COUNT; colInt++) {	// Går rundt hele ytre bane
 			userGridToPlayerGrid[player][colInt] = startGridPos;
 
-			if(startGridPos == 67) startGridPos = 15;			// Spesialhåndterer tallskifte fra overgang  
-			startGridPos++;										//  67 til 16, 15 vil bli inkrementert til 16  
-		}														//    før neste iterasjon
+			if(startGridPos == 67) {
+				startGridPos = 15;									// Spesialhåndterer tallskifte fra overgang  
+			}
+			startGridPos++;											//  67 til 16, 15 vil bli inkrementert til 16  
+		}															//    før neste iterasjon
 
-		int runwayGridPos = runway;  							//Setter startverdien på oppløpet
+		int runwayGridPos = runway;  								//Setter startverdien på oppløpet
 		for(int colInt = COMMON_GRID_COUNT; colInt < COMMON_GRID_COUNT + 6; colInt++) {	// Går opp hele oppløpet
 			userGridToPlayerGrid[player][colInt] = runwayGridPos;
 			runwayGridPos++;
