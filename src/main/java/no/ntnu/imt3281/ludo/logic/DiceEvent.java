@@ -102,4 +102,5 @@ public class DiceEvent extends java.util.EventObject {
 		dicestring.append("Player: " + getPlayer() + " Dice: " + getDice());
 		return dicestring.toString();
 	}
+
 }
