@@ -269,6 +269,10 @@ public class Ludo {
 				players.add(i, sb.toString());
 				found = true;
 				
+				for(int pi = 0; pi < PIECES; pi++) {
+					playerPieces[i][pi] = 0;
+				}
+				
 				// alerts all other players that a player
 				// has left the game / has come inactive
 				alertPlayers(new PlayerEvent(this, activePlayer, PlayerEvent.LEFTGAME));
