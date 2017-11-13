@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 
 /**
  * Database class that handles the interaction with the database
@@ -36,7 +37,8 @@ public class Database {
 			Statement stmt = con.createStatement();
 			
 			//stmt.execute("DROP TABLE userdb");
-			//stmt.execute("DROP TABLE log");
+			//stmt.execute("DROP TABLE chat");
+			//stmt.execute("DROP TABLE UserToChat");
 			//stmt.execute("DROP TABLE test");
 			//stmt.execute("DROP TABLE test1");
 			
@@ -57,21 +59,35 @@ public class Database {
 			}
 			
 			try {
-				System.err.println("log");
+				System.err.println("chat");
 				// time: 13.11.2017 10:11
-				stmt.execute( "CREATE TABLE log ("
+				stmt.execute( "CREATE TABLE chat ("
 							+ "id bigint NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
-							+ "time timestamp NOT NULL,"
-							+ "userId bigint NOT NULL,"
-							+ "message varchar(3000) NOT NULL,"
-							+ "PRIMARY KEY (id),"
-							+ "FOREIGN KEY (userId) REFERENCES userdb(id))");
+							//+ "chatName varchar(10) NOT NULL,"
+							+ "PRIMARY KEY (id))");
 				
-				System.err.println("Log table created!");
+				System.err.println("Chat table created!");
 			}	
 			catch (SQLException sqle) {
-				System.err.println("Log already exists!");
+				System.err.println("Chat already exists!");
 				//sqle.printStackTrace();
+			}
+			
+			try {
+				System.err.println("message");
+				stmt.execute("CREATE TABLE message ("
+							+ "chatId bigint NOT NULL,"
+							+ "userId bigint NOT NULL,"
+							+ "time timestamp NOT NULL,"
+							+ "message varchar(3000) NOT NULL,"
+							+ "PRIMARY KEY (chatId, userId),"
+							+ "FOREIGN KEY chatId REFERENCES chat(id),"
+							+ "FOREIGN KEY userId REFERENCES userdb(id)");
+				
+				System.err.println("Message table created!");
+			}
+			catch (SQLException sqle) {
+				System.err.println("Message already exitsts");
 			}
 			
 			//con.close();
@@ -122,12 +138,31 @@ public class Database {
 		}
 	}
 	
+	
 	/**
 	 * Tries to enter a logentry into the log-table
+	 * @param userId Id of the user who sent the message
+	 * @param chatId Id of the chat the given user spoke in
+	 * @param message The message to be logged
 	 */
-	public void log() {
-		
+	public void logMessage(int userId, int chatId, String message) {
+		try {
+			Statement stmt = con.createStatement();
+			
+			stmt.execute("INSERT INTO message ("
+						+ "chatId, userId, time, message)"
+						+ " VALUES ("
+						+ "'" + userId + "', "
+						+ "'" + chatId + "', "
+						+ "CURRENT_TIMESTAMP, "
+						+ "'" + message + "')");
+			
+		}
+		catch (SQLException sqle) {
+			sqle.printStackTrace();
+		}
 	}
+	
 	
 	/**
 	 * @deprecated Because of weird id increments
@@ -173,6 +208,7 @@ public class Database {
 		
 		return userdata;
 	}
+	
 	
 	/**
 	 * Gets the data of the given user
@@ -224,5 +260,38 @@ public class Database {
 		catch (SQLException sqle) {
 			
 		}
+	}
+	
+	private void display() {
+		try {
+			Statement stmt = con.createStatement();
+			
+			ResultSet res = stmt.executeQuery("SELECT * FROM message");
+			
+			System.err.print("USER\t| CHAT\t| TIME\t\t| MESSAGE\n");
+			while(res.next()) {
+				int userId = res.getInt("userId");
+				int chatId = res.getInt("chatId");
+				Timestamp ts = res.getTimestamp("time");
+				String msg = res.getString("message");
+				
+				
+				System.err.print(userId + "\t| " + chatId + "\t| "
+							+ ts + "\t\t| " + msg + "\n");
+			}
+			
+			System.err.println("\n\n");
+			
+			res = stmt.executeQuery("SELECT * FROM chat");
+			
+			System.err.print("CHAT\t");
+			while(res.next()) {
+				
+			}
+		}
+		catch (SQLException sqle) {
+			
+		}
+		
 	}
 }
