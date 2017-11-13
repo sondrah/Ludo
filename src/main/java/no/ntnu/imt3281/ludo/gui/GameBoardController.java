@@ -3,6 +3,7 @@ import no.ntnu.imt3281.ludo.logic.PlayerEvent;
 import no.ntnu.imt3281.ludo.logic.DiceEvent;
 // import no.ntnu.imt3281.ludo.logic.Ludo;
 
+import java.awt.Event;
 import java.awt.Point;
 import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
@@ -14,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 /**
@@ -114,7 +116,15 @@ public class GameBoardController extends no.ntnu.imt3281.ludo.logic.Ludo{
 		moveFrom.setFill(new ImagePattern(new Image(getClass().getResourceAsStream("/images/selected.png"))));
 		moveFrom.setX(-100);
 		moveFrom.setY(-100);
+		boardPane.getChildren().add(moveFrom);
+		moveTo.setFill(new ImagePattern(new Image(getClass().getResourceAsStream("/images/selected.png"))));
+		moveTo.setX(-100);
+		moveTo.setY(-100);
+		boardPane.getChildren().add(moveTo);
+		moveTo.setOnMouseClicked(e->movePiece(e));
 	}
+
+
 
 	/**
 	 * When the player change, this is called from playerListener
@@ -161,6 +171,69 @@ public class GameBoardController extends no.ntnu.imt3281.ludo.logic.Ludo{
 		}
 		
 	}
+	
+	/**
+	 * 
+	 * @param e
+	 */
+	@FXML
+	void throwDice(ActionEvent e) {
+		connection.send(new ThrowDice(gameId));
+		
+	}
+	
+	/**
+	 * 
+	 */
+	@Override 
+	public int throwDice(int dice) {
+		super.throwDice(dice);
+		shouldMove = false;
+		if(CurrentPlayer == activePlayer() && shouldMove()) {
+			diceValue = dice;
+			shouldMove = true;
+			Platform.runLater(()-> {
+				throwTheDice.setText("Nå flyttes brikke!!");	// TODO I18N
+				throwTheDice.setDisable(true);
+			});	
+		}
+	}
+	/**
+	 * 
+	 */
+	public void updateBoard() {
+		// TODO 
+	}
+	/**
+	 * 
+	 * @param event
+	 */
+	@FXML
+	void clickOnPiece(MouseEvent event) {
+		if(shouldMove) {	// Skjer bare hvis spiller skal flytte
+			movePlayerPieceFrom = movePieceFrom(event);
+			if(movePlayerPieceFrom > -1) {	// Dersom bruker trykket på aktiv spiller sin brikke
+				// TODO sjekke brikke eller lignende canMove(movePlayerPieceFrom)
+				if(canMove()) {	// Dersom brikken kan flytte
+					if(movePlayerPieceFrom ==0) {		// Dersom fra start, flytt til 1
+						moveTo.setX(corners.point[userGridToLudoBoardGrid(CurrentPlayer, 1)].getX());
+						moveTo.setY(corners.point[userGridToLudoBoardGrid(CurrentPlayer, 1)].getY());
+					}
+					else {					// TODO skulle vært til? 
+						// flytter brikken til point
+							// Finner riktig ved å hente ut rikitg pos (svart verdi) .get er ukjent hvorfor
+						moveTo.setX(corners.point[userGridToLudoBoardGrid(CurrentPlayer, movePlayerPieceFrom)].getX());
+						moveTo.setY(corners.point[userGridToLudoBoardGrid(CurrentPlayer, movePlayerPieceFrom)].getY());
+					}
+				}
+				else {	// Error?? skal ikke skje?? burde vært ikke gjør noe
+					moveFrom.setX(-100);
+					moveFrom.setY(-100);
+				}
+			}
+			
+		}
+	}
 	/**
 	 * 
 	 * @param player
@@ -171,7 +244,42 @@ public class GameBoardController extends no.ntnu.imt3281.ludo.logic.Ludo{
 		
 	}
 
+	/**
+	 * 
+	 * @param e
+	 */
+	private void movePiece(MouseEvent e) {			// Trenger chould move?? 
+		connection.send(new MovePiece(gameId, CurrentPlayer, movePlayerPieceFrom, movePlayerPieceFrom==0 && shouldMove));
+		
+	}
 	
+	/**
+	 * 
+	 * @param e
+	 */
+	private int movePieceFrom(MouseEvent event) {
+		int correctValue = -1;
+		int x = (int) event.getX();
+		int y = (int) event.getY(); 
+		
+		Object ob = event.getSource();
+		for (int pi = 0; pi<4; pi++) {
+			if( ob.equals(playerPieces[CurrentPlayer][pi])) {
+				int blackPos = userGridToLudoBoardGrid(CurrentPlayer, getPlayerPieces(CurrentPlayer)[i]);
+				int offset = 0;
+				
+				if(getPlayerPieces(CurrentPlayer)[pi] == 0) {
+					offset = pi;
+				}
+				correctValue = getPlayerPieces(CurrentPlayer)[pi];
+				moveFrom.setX(corners.point[blackPos+offset].getX());
+				moveFrom.setY(corners.point[blackPos+offset].getY());
+				// TODO ikke ferdig 
+			}
+		}
+		
+		return correctValue;
+	}
 	/**
 	 * Holds all the different positions on the board 
 	 */
