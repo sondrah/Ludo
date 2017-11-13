@@ -46,7 +46,6 @@ public class GameBoardController extends no.ntnu.imt3281.ludo.logic.Ludo{
 	private Rectangle moveTo = new Rectangle(46,46);
 	private int MAX_PLAYERS = 4; 
 	private int PIECES = 4;
-	private Point point[]; 			// rikitg lengde?? TODO
 	private int CurrentPlayer = RED; 
 	private boolean shouldMove = false; 
 	private int movePlayerPieceFrom = -1;
@@ -102,6 +101,7 @@ public class GameBoardController extends no.ntnu.imt3281.ludo.logic.Ludo{
 				
 				playerPieces[pl][pi] = new Rectangle(SQUARE,SQUARE);
 				playerPieces[pl][pi].setFill(new ImagePattern(playerPieceImages[pl]));
+				
 				// Forskyver litt pga at alle skal synes når brikkene er på samme plass, for eks tårn/ mål
 				playerPieces[pl][pi].setX(corners.point[pl*4+pi].getX()-8+pi*4);
 				playerPieces[pl][pi].setY(corners.point[pl*4+pi].getX()-2+pi*2);
@@ -110,16 +110,16 @@ public class GameBoardController extends no.ntnu.imt3281.ludo.logic.Ludo{
 			}
 		}
 		
-		// Set up tiles used for showing selected pice and target square 
+		// Set up tiles used for showing selected piece and target square 
 		moveFrom.setFill(new ImagePattern(new Image(getClass().getResourceAsStream("/images/selected.png"))));
 		moveFrom.setX(-100);
 		moveFrom.setY(-100);
 	}
 
 	/**
-	 * When the player change, this is called vfrom playerListener
-	 * Will be called when the stat change between ( PLAYING,  WAITING, LEFTGAME, WON) 
-	 * @param player  that change state
+	 * When the player change, this is called from playerListener
+	 * Will be called when the state change between ( PLAYING,  WAITING, LEFTGAME, WON) 
+	 * @param player the player it concerns 
 	 * @param state the new state
 	 */
 	public void playerChange(int player, int state) { 	
@@ -128,31 +128,31 @@ public class GameBoardController extends no.ntnu.imt3281.ludo.logic.Ludo{
 		case PlayerEvent.PLAYING: { 
 			diceThrown.setImage(new Image(getClass().getResourceAsStream ("/images/rolldice.png")));
 			changePlayerState(player, false);
-		break;
+			break;
 		}
 		case PlayerEvent.WAITING: {
 			changePlayerState(player, true);
-		break;
+			break;
 		}
 		case PlayerEvent.LEFTGAME: {
 			switch(player) {
 				case RED:{
 					player1Active.setImage( new Image(getClass().getResourceAsStream("/images/red.png")));
-				break;
+					break;
 				}
 				case BLUE: {
-					player1Active.setImage( new Image(getClass().getResourceAsStream("/images/red.png")));
-				break;
+					player1Active.setImage( new Image(getClass().getResourceAsStream("/images/blue.png")));
+					break;
 				}
 				case YELLOW: {
-					player1Active.setImage( new Image(getClass().getResourceAsStream("/images/red.png")));
-				break;
+					player1Active.setImage( new Image(getClass().getResourceAsStream("/images/yellow.png")));
+					break;
 				}
 				case GREEN: {
-					player1Active.setImage( new Image(getClass().getResourceAsStream("/images/red.png")));
-				break;
+					player1Active.setImage( new Image(getClass().getResourceAsStream("/images/green.png")));
+					break;
+				}
 			}
-		break;
 		}
 		case PlayerEvent.WON: {
 			
@@ -166,24 +166,28 @@ public class GameBoardController extends no.ntnu.imt3281.ludo.logic.Ludo{
 	 * @param player
 	 * @param b
 	 */
-	private void changePlayerState(int player, boolean b) {
+	private void changePlayerState(int player, boolean b) {		// Ka e tanken her?
 		// TODO Auto-generated method stub
 		
 	}
 
 	
-	class TopLeftCorners{
+	/**
+	 * Holds all the different positions on the board 
+	 */
+	class TopLeftCorners {
 		
 		Point point[] = new Point[92];
+		
 		/**
-		 * Set all corners inn position 0-91
-		 * Hint: line358
+		 * Sets all top left corners inn position 0-91
 		 */
 		public TopLeftCorners() {
+			
 			for(int i = 0; i<point.length; i ++) {		
-				// ?? Hvordan genereres point length? burde vært 91?
 				point[i] = new Point(); 
 			}
+			
 			// Set RED start fields
 			point[0].setLocation(554, 74);
 			point[1].setLocation(554+SQUARE, 74+SQUARE);
@@ -208,27 +212,30 @@ public class GameBoardController extends no.ntnu.imt3281.ludo.logic.Ludo{
 			point[14].setLocation(122, 74+SQUARE*2);
 			point[15].setLocation(122-SQUARE, 74+SQUARE);
 			
-			// Set board 16-67
 			
-			int xr = 0;  // For runnway
-			int yr = 0;	   // For runnway
+			//////// Set board 16-91 ////////////////////
 			
-			int x = 8*SQUARE; // start på 16
-			int y = SQUARE;	   // start på 16
+			int xr = 0;  			// For runaway
+			int yr = 0;	   			// For runaway
+			
+			int x = 8*SQUARE;		// starts on square 16
+			int y = SQUARE;	   		
+			
 			for(int pos = 16; pos <= 20; pos++) {
 				point[pos].setLocation(x, y);
 				y += SQUARE;
 			}
+			
 			x += SQUARE;
 			for(int pos = 21; pos <= 26; pos++) {
 				point[pos].setLocation(x, y);
 				x += SQUARE;
 			}
-			x -= SQUARE; y += SQUARE;
 			
+			x -= SQUARE; y += SQUARE;
 			point[27].setLocation(x, y);
 			
-			// Blue Runway
+			// Blue Runaway 
 			xr=x;
 			yr=y;
 			xr -= SQUARE;
@@ -236,15 +243,15 @@ public class GameBoardController extends no.ntnu.imt3281.ludo.logic.Ludo{
 				point[pos].setLocation(xr, yr);
 				xr -= SQUARE;
 			}
-			// Done runway
-			y += SQUARE;
+			// Done Blue runaway
 			
+			y += SQUARE;
 			for(int pos = 28; pos <= 33; pos++) {
 				point[pos].setLocation(x, y);
 				x -= SQUARE;
 			}
-			y += SQUARE;
 			
+			y += SQUARE;
 			for(int pos = 34; pos <= 39; pos++) {
 				point[pos].setLocation(x, y);
 				y += SQUARE;
@@ -253,7 +260,7 @@ public class GameBoardController extends no.ntnu.imt3281.ludo.logic.Ludo{
 			x -= SQUARE; y -= SQUARE;
 			point[40].setLocation(x, y);
 			
-			// Yellow Runway
+			// Yellow Runaway
 			xr=x;
 			yr=y;
 			yr -= SQUARE;
@@ -261,23 +268,27 @@ public class GameBoardController extends no.ntnu.imt3281.ludo.logic.Ludo{
 				point[pos].setLocation(xr, yr);
 				yr -= SQUARE;
 			}
-			// Done runway
-			x -= SQUARE;
+			// Done Yellow runaway
 			
+			x -= SQUARE;
 			for(int pos = 41; pos <= 46; pos++) {
 				point[pos].setLocation(x, y);
 				y -= SQUARE;
 			}
-			x -= SQUARE;
 			
+			x -= SQUARE;
 			for(int pos = 47; pos < 52; pos++) {
 				point[pos].setLocation(x, y);
 				x -= SQUARE;
 			}
+			
 			point[52].setLocation(x, y);
+			
+			
 			y -= SQUARE;
 			point[53].setLocation(x, y);
-			// Green Runway
+			
+			// Green Runaway
 			xr=x;
 			yr=y;
 			xr += SQUARE;
@@ -285,23 +296,25 @@ public class GameBoardController extends no.ntnu.imt3281.ludo.logic.Ludo{
 				point[pos].setLocation(xr, yr);
 				xr += SQUARE;
 			}
-			// Done runway
-			y -= SQUARE;
+			// Done Green runaway
 			
+			y -= SQUARE;
 			for(int pos = 54; pos <= 59; pos++) {
 				point[pos].setLocation(x, y);
 				x += SQUARE;
 			}
-			y -= SQUARE;
 			
+			y -= SQUARE;
 			for(int pos = 60; pos < 65; pos++) {
 				point[pos].setLocation(x, y);
 				y -= SQUARE;
 			}
+			
 			point[65].setLocation(x, y);
 			x += SQUARE;
 			point[66].setLocation(x, y);
-			// Red Runway
+			
+			// Red Runaway
 			xr=x;
 			yr=y;
 			yr += SQUARE;
@@ -309,7 +322,8 @@ public class GameBoardController extends no.ntnu.imt3281.ludo.logic.Ludo{
 				point[pos].setLocation(xr, yr);
 				yr += SQUARE;
 			}
-			// Done runway
+			// Done Red runaway
+			
 			x += SQUARE;
 			point[67].setLocation(x, y);
 			
