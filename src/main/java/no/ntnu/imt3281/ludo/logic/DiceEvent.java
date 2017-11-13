@@ -1,5 +1,7 @@
 	package no.ntnu.imt3281.ludo.logic;
 
+import java.util.Objects;
+
 /**
  * @author Snorre
  *
@@ -39,9 +41,28 @@ public class DiceEvent extends java.util.EventObject {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		DiceEvent temp = (DiceEvent) obj;
-		return (this.player == temp.getPlayer() && this.dice == temp.getDice());
+		if(obj == this) {
+			return true;
+		}
+		
+		if(obj != null && obj instanceof DiceEvent) {
+			DiceEvent temp = (DiceEvent) obj;
+			return (this.player == temp.getPlayer() && this.dice == temp.getDice());
+		
+		} else {
+			return false;
+		}
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+    public int hashCode() {
+		// makes a hash put of the given paramenters
+        return Objects.hash(player, dice);
+    }
 	
 	/**
 	 * gets player in the current turn

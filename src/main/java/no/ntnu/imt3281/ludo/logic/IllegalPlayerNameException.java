@@ -11,7 +11,7 @@ public class IllegalPlayerNameException extends java.lang.RuntimeException {
 	 * given message
 	 * @param txt Exceptionmessage
 	 */
-	public IllegalPlayerNameException(String txt){
+	public IllegalPlayerNameException(String txt) {
 		super(txt);
 		System.err.printf(txt);
 	}
