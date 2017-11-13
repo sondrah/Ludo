@@ -105,7 +105,7 @@ public class ChatClient extends JFrame {
             input = new BufferedReader(new InputStreamReader(
                     connection.getInputStream()));
             myName = JOptionPane.showInputDialog(this, "Your nickname?");
-            if (myName == null || myName.equals("")) {
+            if (myName == null || myName.equals("")) {		// TODO legge inn sjekk mot Db
                 JOptionPane.showMessageDialog(this, "No nick given");
                 System.exit(1);
             }
