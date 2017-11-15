@@ -44,9 +44,5 @@ public class User {
 	public Vector<Integer> getFriendlist() {
 		return friendlist;
 	}
-	
-	
-	
-	
-	
+
 }
