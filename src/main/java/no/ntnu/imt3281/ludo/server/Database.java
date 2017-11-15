@@ -122,8 +122,9 @@ public class Database {
 	 */
 	public static void main(String[] args) {
 		Database db = new Database();
+		User user1 = new User("BobKaare", "123");
 		
-		db.addUser("Skjare", "123");
+		db.addUser(user1);
 		
 		//System.err.println(db.getUser("Skjare")[0]);
 		//System.err.println(db.getUser("Skjare")[1]);
