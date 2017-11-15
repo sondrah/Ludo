@@ -1,5 +1,6 @@
 package no.ntnu.imt3281.ludo.server;
 
+
 import java.sql.SQLException;
 
 /**
@@ -20,7 +21,7 @@ public class ServerController {
 	public ServerController() {		
 		
 		try {
-			Database db = new Database(url);	// tries to connect to DB	
+			Database db = new Database(url);		// tries to connect to DB	
 		} catch(SQLException sqle) {			
 			url += "create=true";				
 			sqle.printStackTrace();
@@ -34,8 +35,7 @@ public class ServerController {
 		
 		ChatServer cs = new ChatServer();	
 		
-		
-		
+	
 		
 		
 		

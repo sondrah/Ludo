@@ -117,6 +117,8 @@ public class Database {
 	// ONLY FOR TESTING
 	/*
 	public static void main(String[] args) {
+		User user1 = new User("BobKaare", "123");
+	
 		try {
 			Database db = new Database("jdbc:derby:BadgerDB;");
 			
@@ -129,8 +131,8 @@ public class Database {
 			db.logMessage(u, c, "Halla på re");
 			
 			db.logMessage(u, c, "Din korthåra lomtjuv");
-			
-			
+	
+			db.addUser(user1);
 			db.display();
 			db.close();
 		} catch(SQLException sqle) {
