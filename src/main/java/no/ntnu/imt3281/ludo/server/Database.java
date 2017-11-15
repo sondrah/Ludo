@@ -36,16 +36,16 @@ public class Database {
 
 			Statement stmt = con.createStatement();
 			
-			//stmt.execute("DROP TABLE userdb");
+			//stmt.execute("DROP TABLE usertable");
 			//stmt.execute("DROP TABLE chat");
 			//stmt.execute("DROP TABLE message");
 			
 			try {
 				System.err.println("user");
 				
-				stmt.execute("CREATE TABLE userdb ("
+				stmt.execute("CREATE TABLE usertable ("
 						+ "id bigint NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
-						+ "nickname varchar(20) NOT NULL,"
+						+ "username varchar(20) NOT NULL,"
 						+ "password varchar(128) NOT NULL,"
 						+ "PRIMARY KEY (id))");
 				
@@ -78,35 +78,19 @@ public class Database {
 							+ "userId bigint NOT NULL,"
 							+ "time timestamp NOT NULL,"
 							+ "message varchar(3000) NOT NULL,"
-							+ "CONSTRAINT message_PK PRIMARY KEY (chatId, userId),"
+							/*+ "CONSTRAINT message_PK PRIMARY KEY (chatId, userId),"
 							+ "CONSTRAINT chat_FK FOREIGN KEY (chatId) REFERENCES chat(id),"
-							+ "CONSTRAINT user_FK FOREIGN KEY (userId) REFERENCES usertable(id))");
-				
-				System.err.println("Message table created!");
-			}
-			catch (SQLException sqle) {
-				sqle.printStackTrace();
-				System.err.println("Message already exitsts");
-			}
-			
-			/*
-			try {
-				System.err.println("message");
-				stmt.execute("CREATE TABLE message ("
-							+ "chatId bigint NOT NULL,"
-							+ "userId bigint NOT NULL,"
-							+ "time timestamp NOT NULL,"
-							+ "message varchar(3000) NOT NULL,"
+							+ "CONSTRAINT user_FK FOREIGN KEY (userId) REFERENCES usertable(id))");*/
 							+ "PRIMARY KEY (chatId, userId),"
-							+ "FOREIGN KEY chatId REFERENCES chat(id),"
-							+ "FOREIGN KEY userId REFERENCES userdb(id)");
+							+ "FOREIGN KEY (chatId) REFERENCES chat(id),"
+							+ "FOREIGN KEY (userId) REFERENCES usertable(id))");
 				
 				System.err.println("Message table created!");
 			}
 			catch (SQLException sqle) {
-				sqle.printStackTrace();
+				//sqle.printStackTrace();
 				System.err.println("Message already exitsts");
-			}*/
+			}
 			
 			//con.close();
 		}
@@ -123,7 +107,8 @@ public class Database {
 	public static void main(String[] args) {
 		Database db = new Database();
 		
-		db.addUser("Skjare", "123");
+		//db.addUser("Skjare", "123");
+		
 		
 		//System.err.println(db.getUser("Skjare")[0]);
 		//System.err.println(db.getUser("Skjare")[1]);
@@ -134,22 +119,18 @@ public class Database {
 	
 	
 	/**
-	 * Tries to add a user to the userdb table
-	 * @param nickname The nickname of the user
+	 * Tries to add a user to the usertable table
+	 * @param username The username of the user
 	 * @param password The password of the user
 	 */
-	public void addUser(String nickname, String password) {
+	public void addUser(User user) {
 		
-		// TODO: sjekk om om bruker finnes fra før
-		// evt implementere unike brukernavn
-		
-		// TODO: sjekk for 'null' argument
 		try {
 			Statement stmt = con.createStatement();
 			
 			System.err.println("addUser");
-			stmt.execute( "INSERT INTO userdb (nickname, password)"
-						+ "VALUES ('" + nickname + "', '" + password + "')");
+			stmt.execute( "INSERT INTO usertable (username, password)"
+						+ "VALUES ('" + user.getUsername() + "', '" + user.getPassword() + "')");
 		}
 		catch (SQLException sqle) {
 			sqle.printStackTrace();
@@ -188,7 +169,7 @@ public class Database {
 	 * @return An array with (index: content): <br>
 	 * <ul>
 	 *   <li>0: The users id</li>
-	 *   <li>1: The users nickname</li>
+	 *   <li>1: The users username</li>
 	 *   <li>2: The users password</li>
 	 * </ul>
 	 */
@@ -200,7 +181,7 @@ public class Database {
 			Statement stmt = con.createStatement();
 		
 			System.err.println("getUser1");
-			ResultSet resultSet = stmt.executeQuery("SELECT * FROM userdb");
+			ResultSet resultSet = stmt.executeQuery("SELECT * FROM usertable");
 			
 			while(resultSet.next()) {
 				if(id == Integer.parseInt(resultSet.getString("id"))) {
@@ -230,15 +211,15 @@ public class Database {
 	
 	/**
 	 * Gets the data of the given user
-	 * @param nickname The user to get
+	 * @param username The user to get
 	 * @return An array with (index: content): <br>
 	 * <ul>
 	 *   <li>0: The users id</li>
-	 *   <li>1: The users nickname</li>
+	 *   <li>1: The users username</li>
 	 *   <li>2: The users password</li>
 	 * </ul>
 	 */
-	public String[] getUser(String nickname) {
+	public String[] getUser(String username) {
 		String[] userdata = new String[3];
 		
 		
@@ -246,10 +227,10 @@ public class Database {
 			Statement stmt = con.createStatement();
 		
 			System.err.println("getUser2");
-			ResultSet resultSet = stmt.executeQuery("SELECT * FROM userdb");
+			ResultSet resultSet = stmt.executeQuery("SELECT * FROM usertable");
 			
 			while(resultSet.next()) {
-				if(nickname.equals(resultSet.getString("nickname"))) {
+				if(username.equals(resultSet.getString("username"))) {
 					for(int i = 0; i < USERCOLUMNS; i++) {
 						userdata[i] = resultSet.getString(i + 1);
 					} // for
@@ -313,9 +294,9 @@ public class Database {
 			
 			System.err.println("\n\n");
 			
-			res = stmt.executeQuery("SELECT * FROM userdb");
+			res = stmt.executeQuery("SELECT * FROM usertable");
 			
-			System.err.print("USER \t| username \t| password\n");
+			System.err.print("USER \t| USERNAME \t| PASSWORD\n");
 			while(res.next()) {
 				int userId = res.getInt("userId");
 				String username = res.getString("username");
