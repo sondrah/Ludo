@@ -38,9 +38,7 @@ public class Database {
 			
 			//stmt.execute("DROP TABLE userdb");
 			//stmt.execute("DROP TABLE chat");
-			//stmt.execute("DROP TABLE UserToChat");
-			//stmt.execute("DROP TABLE test");
-			//stmt.execute("DROP TABLE test1");
+			//stmt.execute("DROP TABLE message");
 			
 			try {
 				System.err.println("user");
@@ -63,7 +61,7 @@ public class Database {
 				// time: 13.11.2017 10:11
 				stmt.execute( "CREATE TABLE chat ("
 							+ "id bigint NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
-							//+ "chatName varchar(10) NOT NULL,"
+							+ "chatName varchar(10) NOT NULL,"
 							+ "PRIMARY KEY (id))");
 				
 				System.err.println("Chat table created!");
@@ -82,13 +80,33 @@ public class Database {
 							+ "message varchar(3000) NOT NULL,"
 							+ "PRIMARY KEY (chatId, userId),"
 							+ "FOREIGN KEY chatId REFERENCES chat(id),"
+							+ "FOREIGN KEY userId REFERENCES usertabel");
+				
+				System.err.println("Message table created!");
+			}
+			catch (SQLException sqle) {
+				sqle.printStackTrace();
+				System.err.println("Message already exitsts");
+			}
+			
+			/*
+			try {
+				System.err.println("message");
+				stmt.execute("CREATE TABLE message ("
+							+ "chatId bigint NOT NULL,"
+							+ "userId bigint NOT NULL,"
+							+ "time timestamp NOT NULL,"
+							+ "message varchar(3000) NOT NULL,"
+							+ "PRIMARY KEY (chatId, userId),"
+							+ "FOREIGN KEY chatId REFERENCES chat(id),"
 							+ "FOREIGN KEY userId REFERENCES userdb(id)");
 				
 				System.err.println("Message table created!");
 			}
 			catch (SQLException sqle) {
+				sqle.printStackTrace();
 				System.err.println("Message already exitsts");
-			}
+			}*/
 			
 			//con.close();
 		}
@@ -107,10 +125,10 @@ public class Database {
 		
 		db.addUser("Skjare", "123");
 		
-		//System.err.println(db.getUser(701));
-		System.err.println(db.getUser("Skjare")[0]);
-		System.err.println(db.getUser("Skjare")[1]);
-		System.err.println(db.getUser("Skjare")[2]);
+		//System.err.println(db.getUser("Skjare")[0]);
+		//System.err.println(db.getUser("Skjare")[1]);
+		//System.err.println(db.getUser("Skjare")[2]);
+		db.display();
 		db.close();
 	}
 	
@@ -263,6 +281,7 @@ public class Database {
 	}
 	
 	private void display() {
+		System.err.println("DISPLAY\n");
 		try {
 			Statement stmt = con.createStatement();
 			
@@ -284,13 +303,30 @@ public class Database {
 			
 			res = stmt.executeQuery("SELECT * FROM chat");
 			
-			System.err.print("CHAT\t");
+			System.err.print("CHAT \t| NAME\n");
 			while(res.next()) {
+				int chatId = res.getInt("chatId");
+				String name = res.getString("name");
 				
+				System.err.print(chatId + " \t| " + name + "\n");
+			}
+			
+			System.err.println("\n\n");
+			
+			res = stmt.executeQuery("SELECT * FROM userdb");
+			
+			System.err.print("USER \t| username \t| password\n");
+			while(res.next()) {
+				int userId = res.getInt("userId");
+				String username = res.getString("username");
+				String password = res.getString("password");
+				
+				System.err.print(userId + " \t| " + username +
+						" \t| " + password + "\n");
 			}
 		}
 		catch (SQLException sqle) {
-			
+			sqle.printStackTrace();
 		}
 		
 	}
