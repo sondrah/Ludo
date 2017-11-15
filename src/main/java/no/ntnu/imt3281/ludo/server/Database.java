@@ -73,14 +73,14 @@ public class Database {
 			
 			try {
 				System.err.println("message");
-				stmt.execute("CREATE TABLE message ("
+				stmt.execute( "CREATE TABLE message ("
 							+ "chatId bigint NOT NULL,"
 							+ "userId bigint NOT NULL,"
 							+ "time timestamp NOT NULL,"
 							+ "message varchar(3000) NOT NULL,"
-							+ "PRIMARY KEY (chatId, userId),"
-							+ "FOREIGN KEY chatId REFERENCES chat(id),"
-							+ "FOREIGN KEY userId REFERENCES usertabel");
+							+ "CONSTRAINT message_PK PRIMARY KEY (chatId, userId),"
+							+ "CONSTRAINT chat_FK FOREIGN KEY (chatId) REFERENCES chat(id),"
+							+ "CONSTRAINT user_FK FOREIGN KEY (userId) REFERENCES usertable(id))");
 				
 				System.err.println("Message table created!");
 			}
