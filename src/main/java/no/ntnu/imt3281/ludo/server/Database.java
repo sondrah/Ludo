@@ -35,20 +35,20 @@ public class Database {
 
 		Statement stmt = con.createStatement();
 		
-		//stmt.execute("DROP TABLE userdb");
+	
+		//stmt.execute("DROP TABLE usertable");
 		//stmt.execute("DROP TABLE chat");
-		//stmt.execute("DROP TABLE UserToChat");
-		//stmt.execute("DROP TABLE test");
-		//stmt.execute("DROP TABLE test1");
+		//stmt.execute("DROP TABLE message");
 		
 		try {
 			System.err.println("user");
 			
-			stmt.execute("CREATE TABLE userdb ("
+			stmt.execute("CREATE TABLE usertable ("
 					+ "id bigint NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
-					+ "nickname varchar(20) NOT NULL,"
+					+ "username varchar(20) NOT NULL,"
 					+ "password varchar(128) NOT NULL,"
 					+ "PRIMARY KEY (id))");
+		
 			
 			System.err.println("User table created!");
 		}
@@ -57,12 +57,13 @@ public class Database {
 			//sqle.printStackTrace();
 		}
 		
+	
 		try {
 			System.err.println("chat");
 			// time: 13.11.2017 10:11
 			stmt.execute( "CREATE TABLE chat ("
 						+ "id bigint NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
-						//+ "chatName varchar(10) NOT NULL,"
+						+ "chatName varchar(10) NOT NULL,"
 						+ "PRIMARY KEY (id))");
 			
 			System.err.println("Chat table created!");
@@ -80,12 +81,13 @@ public class Database {
 						+ "time timestamp NOT NULL,"
 						+ "message varchar(3000) NOT NULL,"
 						+ "PRIMARY KEY (chatId, userId),"
-						+ "FOREIGN KEY chatId REFERENCES chat(id),"
-						+ "FOREIGN KEY userId REFERENCES userdb(id)");
+						+ "FOREIGN KEY (chatId) REFERENCES chat(id),"
+						+ "FOREIGN KEY (userId) REFERENCES usertable(id)");
 			
 			System.err.println("Message table created!");
 		}
 		catch (SQLException sqle) {
+			sqle.printStackTrace();
 			System.err.println("Message already exitsts");
 		}
 		
@@ -104,31 +106,27 @@ public class Database {
 		
 		db.addUser("Skjare", "123");
 		
-		//System.err.println(db.getUser(701));
-		System.err.println(db.getUser("Skjare")[0]);
-		System.err.println(db.getUser("Skjare")[1]);
-		System.err.println(db.getUser("Skjare")[2]);
+		//System.err.println(db.getUser("Skjare")[0]);
+		//System.err.println(db.getUser("Skjare")[1]);
+		//System.err.println(db.getUser("Skjare")[2]);
+		db.display();
 		db.close();
 	}
 	*/
 	
 	/**
-	 * Tries to add a user to the userdb table
-	 * @param nickname The nickname of the user
+	 * Tries to add a user to the usertable table
+	 * @param username The username of the user
 	 * @param password The password of the user
 	 */
-	public void addUser(String nickname, String password) {
+	public void addUser(User user) {
 		
-		// TODO: sjekk om om bruker finnes fra før
-		// evt implementere unike brukernavn
-		
-		// TODO: sjekk for 'null' argument
 		try {
 			Statement stmt = con.createStatement();
 			
 			System.err.println("addUser");
-			stmt.execute( "INSERT INTO userdb (nickname, password)"
-						+ "VALUES ('" + nickname + "', '" + password + "')");
+			stmt.execute( "INSERT INTO usertable (username, password)"
+						+ "VALUES ('" + user.getUsername() + "', '" + user.getPassword() + "')");
 		}
 		catch (SQLException sqle) {
 			sqle.printStackTrace();
@@ -167,7 +165,7 @@ public class Database {
 	 * @return An array with (index: content): <br>
 	 * <ul>
 	 *   <li>0: The users id</li>
-	 *   <li>1: The users nickname</li>
+	 *   <li>1: The users username</li>
 	 *   <li>2: The users password</li>
 	 * </ul>
 	 */
@@ -179,7 +177,7 @@ public class Database {
 			Statement stmt = con.createStatement();
 		
 			System.err.println("getUser1");
-			ResultSet resultSet = stmt.executeQuery("SELECT * FROM userdb");
+			ResultSet resultSet = stmt.executeQuery("SELECT * FROM usertable");
 			
 			while(resultSet.next()) {
 				if(id == Integer.parseInt(resultSet.getString("id"))) {
@@ -209,15 +207,15 @@ public class Database {
 	
 	/**
 	 * Gets the data of the given user
-	 * @param nickname The user to get
+	 * @param username The user to get
 	 * @return An array with (index: content): <br>
 	 * <ul>
 	 *   <li>0: The users id</li>
-	 *   <li>1: The users nickname</li>
+	 *   <li>1: The users username</li>
 	 *   <li>2: The users password</li>
 	 * </ul>
 	 */
-	public String[] getUser(String nickname) {
+	public String[] getUser(String username) {
 		String[] userdata = new String[3];
 		
 		
@@ -225,10 +223,10 @@ public class Database {
 			Statement stmt = con.createStatement();
 		
 			System.err.println("getUser2");
-			ResultSet resultSet = stmt.executeQuery("SELECT * FROM userdb");
+			ResultSet resultSet = stmt.executeQuery("SELECT * FROM usertable");
 			
 			while(resultSet.next()) {
-				if(nickname.equals(resultSet.getString("nickname"))) {
+				if(username.equals(resultSet.getString("username"))) {
 					for(int i = 0; i < USERCOLUMNS; i++) {
 						userdata[i] = resultSet.getString(i + 1);
 					} // for
@@ -260,6 +258,7 @@ public class Database {
 	}
 	
 	private void display() {
+		System.err.println("DISPLAY\n");
 		try {
 			Statement stmt = con.createStatement();
 			
@@ -281,13 +280,30 @@ public class Database {
 			
 			res = stmt.executeQuery("SELECT * FROM chat");
 			
-			System.err.print("CHAT\t");
+			System.err.print("CHAT \t| NAME\n");
 			while(res.next()) {
+				int chatId = res.getInt("chatId");
+				String name = res.getString("name");
 				
+				System.err.print(chatId + " \t| " + name + "\n");
+			}
+			
+			System.err.println("\n\n");
+			
+			res = stmt.executeQuery("SELECT * FROM userdb");
+			
+			System.err.print("USER \t| username \t| password\n");
+			while(res.next()) {
+				int userId = res.getInt("userId");
+				String username = res.getString("username");
+				String password = res.getString("password");
+				
+				System.err.print(userId + " \t| " + username +
+						" \t| " + password + "\n");
 			}
 		}
 		catch (SQLException sqle) {
-			
+			sqle.printStackTrace();
 		}
 		
 	}

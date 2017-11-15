@@ -41,8 +41,8 @@ public class User {
 		return password;
 	}
 	
-	
-	
-	
-	
+	public Vector<Integer> getFriendlist() {
+		return friendlist;
+	}
+
 }
