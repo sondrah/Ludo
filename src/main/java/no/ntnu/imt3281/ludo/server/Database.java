@@ -21,98 +21,77 @@ public class Database {
 	private final static int LOGCOLUMNS = 4;
 	
 	/** The 'url' to our database (local) */
-	private final static String url = "jdbc:derby:BadgerDB;create=true";
+	//private final static String url = "jdbc:derby:BadgerDB;create=true";
 	
 	
 	/**
 	 * Constructor that tries to create the needed tables
 	 * in the database. 
 	 */
-	public Database(){
+	public Database(String url) throws SQLException {
+		
+		con = DriverManager.getConnection(url);
+
+
+		Statement stmt = con.createStatement();
+		
+	
+		//stmt.execute("DROP TABLE usertable");
+		//stmt.execute("DROP TABLE chat");
+		//stmt.execute("DROP TABLE message");
 		
 		try {
-			con = DriverManager.getConnection(url);
-
-
-			Statement stmt = con.createStatement();
+			System.err.println("user");
 			
-			//stmt.execute("DROP TABLE usertable");
-			//stmt.execute("DROP TABLE chat");
-			//stmt.execute("DROP TABLE message");
+			stmt.execute("CREATE TABLE usertable ("
+					+ "id bigint NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
+					+ "username varchar(20) NOT NULL,"
+					+ "password varchar(128) NOT NULL,"
+					+ "PRIMARY KEY (id))");
+		
 			
-			try {
-				System.err.println("user");
-				
-				stmt.execute("CREATE TABLE usertable ("
+			System.err.println("User table created!");
+		}
+		catch (SQLException sqle) {
+			System.err.println("Table excists!");
+			//sqle.printStackTrace();
+		}
+		
+	
+		try {
+			System.err.println("chat");
+			// time: 13.11.2017 10:11
+			stmt.execute( "CREATE TABLE chat ("
 						+ "id bigint NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
-						+ "username varchar(20) NOT NULL,"
-						+ "password varchar(128) NOT NULL,"
+						+ "chatName varchar(10) NOT NULL,"
 						+ "PRIMARY KEY (id))");
-				
-				System.err.println("User table created!");
-			}
-			catch (SQLException sqle) {
-				System.err.println("Table excists!");
-				//sqle.printStackTrace();
-			}
 			
-			try {
-				System.err.println("chat");
-				// time: 13.11.2017 10:11
-				stmt.execute( "CREATE TABLE chat ("
-							+ "id bigint NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
-							+ "chatName varchar(10) NOT NULL,"
-							+ "PRIMARY KEY (id))");
-				
-				System.err.println("Chat table created!");
-			}	
-			catch (SQLException sqle) {
-				System.err.println("Chat already exists!");
-				//sqle.printStackTrace();
-			}
-			
-			try {
-				System.err.println("message");
-				stmt.execute("CREATE TABLE message ("
-							+ "chatId bigint NOT NULL,"
-							+ "userId bigint NOT NULL,"
-							+ "time timestamp NOT NULL,"
-							+ "message varchar(3000) NOT NULL,"
-							+ "PRIMARY KEY (chatId, userId),"
-							+ "FOREIGN KEY chatId REFERENCES chat(id),"
-							+ "FOREIGN KEY userId REFERENCES usertable(id)");
-				
-				System.err.println("Message table created!");
-			}
-			catch (SQLException sqle) {
-				sqle.printStackTrace();
-				System.err.println("Message already exitsts");
-			}
-			
-			/*
-			try {
-				System.err.println("message");
-				stmt.execute("CREATE TABLE message ("
-							+ "chatId bigint NOT NULL,"
-							+ "userId bigint NOT NULL,"
-							+ "time timestamp NOT NULL,"
-							+ "message varchar(3000) NOT NULL,"
-							+ "PRIMARY KEY (chatId, userId),"
-							+ "FOREIGN KEY chatId REFERENCES chat(id),"
-							+ "FOREIGN KEY userId REFERENCES userdb(id)");
-				
-				System.err.println("Message table created!");
-			}
-			catch (SQLException sqle) {
-				sqle.printStackTrace();
-				System.err.println("Message already exitsts");
-			}*/
-			
-			//con.close();
+			System.err.println("Chat table created!");
+		}	
+		catch (SQLException sqle) {
+			System.err.println("Chat already exists!");
+			//sqle.printStackTrace();
 		}
-		catch(Exception e) {
-			e.printStackTrace();
+		
+		try {
+			System.err.println("message");
+			stmt.execute("CREATE TABLE message ("
+						+ "chatId bigint NOT NULL,"
+						+ "userId bigint NOT NULL,"
+						+ "time timestamp NOT NULL,"
+						+ "message varchar(3000) NOT NULL,"
+						+ "PRIMARY KEY (chatId, userId),"
+						+ "FOREIGN KEY (chatId) REFERENCES chat(id),"
+						+ "FOREIGN KEY (userId) REFERENCES usertable(id))");
+			
+			System.err.println("Message table created!");
 		}
+		catch (SQLException sqle) {
+			//sqle.printStackTrace();
+			System.err.println("Message already exitsts");
+		}
+		
+		//con.close();
 	}
 	
 	
@@ -120,17 +99,19 @@ public class Database {
 	 * The main method just for testing
 	 * @param args cmd-line args
 	 */
+	
+	
 	public static void main(String[] args) {
-		Database db = new Database();
 		User user1 = new User("BobKaare", "123");
-		
-		db.addUser(user1);
-		
-		//System.err.println(db.getUser("Skjare")[0]);
-		//System.err.println(db.getUser("Skjare")[1]);
-		//System.err.println(db.getUser("Skjare")[2]);
-		db.display();
-		db.close();
+	
+		try {
+			Database db = new Database("jdbc:derby:BadgerDB;");
+			db.addUser(user1);
+			db.display();
+			db.close();
+		} catch(SQLException sqle) {
+		}
+
 	}
 	
 	
@@ -310,9 +291,9 @@ public class Database {
 			
 			System.err.println("\n\n");
 			
-			res = stmt.executeQuery("SELECT * FROM userdb");
+			res = stmt.executeQuery("SELECT * FROM usertable");
 			
-			System.err.print("USER \t| username \t| password\n");
+			System.err.print("USER \t| USERNAME \t| PASSWORD\n");
 			while(res.next()) {
 				int userId = res.getInt("userId");
 				String username = res.getString("username");
