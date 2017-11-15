@@ -102,19 +102,16 @@ public class Database {
 	
 	
 	public static void main(String[] args) {
+		User user1 = new User("BobKaare", "123");
+	
 		try {
 			Database db = new Database("jdbc:derby:BadgerDB;");
+			db.addUser(user1);
 			db.display();
 			db.close();
 		} catch(SQLException sqle) {
 		}
-		
-		//db.addUser("Skjare", "123");
-		
-		
-		//System.err.println(db.getUser("Skjare")[0]);
-		//System.err.println(db.getUser("Skjare")[1]);
-		//System.err.println(db.getUser("Skjare")[2]);
+
 	}
 	
 	
