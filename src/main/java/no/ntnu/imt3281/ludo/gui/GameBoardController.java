@@ -1,7 +1,7 @@
 package no.ntnu.imt3281.ludo.gui;
 import no.ntnu.imt3281.ludo.logic.PlayerEvent;
 import no.ntnu.imt3281.ludo.logic.DiceEvent;
-// import no.ntnu.imt3281.ludo.logic.Ludo;
+import no.ntnu.imt3281.ludo.logic.Ludo;
 
 import java.awt.Event;
 import java.awt.Point;
@@ -23,7 +23,7 @@ import javafx.scene.layout.AnchorPane;
  * A FXML controller class that handles all visuals for the
  * gameboard that the user sees and interacts with
  */
-public class GameBoardController extends no.ntnu.imt3281.ludo.logic.Ludo{
+public class GameBoardController extends Ludo {
 
     @FXML private Label player1Name;
     @FXML private ImageView player1Active;
