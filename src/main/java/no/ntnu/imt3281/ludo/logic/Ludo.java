@@ -19,11 +19,11 @@ public class Ludo {
 	/** Green player */
 	public static final int GREEN = 3;
 	/** Maximum number of players */
-	private static final int MAX_PLAYERS = 4;
+	public static final int MAX_PLAYERS = 4;
 	/** Minimum number of players */
-	private static final int MIN_PLAYERS = 2;
+	public static final int MIN_PLAYERS = 2;
 	/** Number of pieces */
-	private static final int PIECES = 4;
+	public static final int PIECES = 4;
 	/** Number of shared/common squares on the board
 	 * , also the start of the runway */
 	private static final int COMMON_GRID_COUNT = 54;
@@ -41,10 +41,10 @@ public class Ludo {
 	private Vector<String> players;
 	
 	/** The current activePlayer */
-	private int activePlayer;
+	protected int activePlayer;
 	
 	/** The last dicethrow-value */
-	private int dice;
+	protected int dice;
 	
 	/** Used to simulate dicethrows */
 	private Random randomGenerator;
