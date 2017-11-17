@@ -40,7 +40,7 @@ public class WelcomeController {
     		AnchorPane gameBoard = loader.load();
         	Tab tab = new Tab("Game");
     		tab.setContent(gameBoard);
-        	tabbedPane.getTabs().add(tab);
+        	//tabbedPane.getTabs().add(tab);
     	} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
