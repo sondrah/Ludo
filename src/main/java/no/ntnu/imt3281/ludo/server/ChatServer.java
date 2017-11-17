@@ -49,8 +49,8 @@ public class ChatServer extends JFrame {
      * in turn to see if any messages have been received. If a message has been received 
      * that message is put on the queue to be handled by the message sending thread.
      */
-    public ChatServer() {
-        super("Chat server");
+    public ChatServer(String chatname) {
+        super(chatname);
 
         // Sets up the status area where all communications is logged.
         status = new JTextArea();
@@ -169,16 +169,7 @@ public class ChatServer extends JFrame {
         SwingUtilities.invokeLater(() -> status.append(text));
     }
 
-    /**
-     * Starts the server, the server will listen to port 12345.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-        ChatServer application = new ChatServer();
-        application.setDefaultCloseOperation(EXIT_ON_CLOSE);
-    }
-
+   
     /**
      * A new object of this class is created for all new clients.
      * When a socket is created by the serverSockets accept method
