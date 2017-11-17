@@ -21,14 +21,17 @@ public class GameServer {
 
 	public GameServer() {
 		
-		Ludo game = new Ludo();		// parametre ??
-		
 		try {
 			sokk = new ServerSocket(12345);
 			gameThread = Executors.newCachedThreadPool();
 		} catch(IOException ioe) {
 			ioe.printStackTrace();
 		}
+		
+		
+		
+		
+		
 		
 	}
 	

@@ -32,8 +32,10 @@ public class ServerController {
 				sqle2.printStackTrace();
 			}
 		}
+													// Makes masterchat for all logged in players
+		ChatServer masterchat = new ChatServer("Master chat");	 // ID?
 		
-		ChatServer cs = new ChatServer();	
+		
 		
 	
 		
