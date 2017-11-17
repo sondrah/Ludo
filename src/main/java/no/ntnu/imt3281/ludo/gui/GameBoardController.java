@@ -1,9 +1,19 @@
 package no.ntnu.imt3281.ludo.gui;
 
 import no.ntnu.imt3281.ludo.logic.*;
+import no.ntnu.imt3281.ludo.server.GameInfo;
+import no.ntnu.imt3281.ludo.server.GameEvent;
 
 import java.awt.Event;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
+import javax.naming.CommunicationException;
+
 import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -76,13 +86,16 @@ public class GameBoardController extends Ludo {
 	private int diceValue = -1;
 	private int gameID;
 	//private static int SQUARE = 48;
-	//private Communication connection = Communication.getConnection();
+	private Socket connection;
 	
 	/**
 	 * Start the game gui for this game
 	 */
-	public void StartGameBoard(StartGame gameInfo){
-		this.gameID = gameInfo.getGameCode(); 
+	public void StartGameBoard(GameInfo gameInfo){
+		this.gameID = gameInfo.getGameID();
+		
+		// find the connection somhow
+		// connection
 		
 		// Hente ut spillernes navn 
 		for ( String playerName : gameInfo.getPlayerNames()) {
@@ -98,6 +111,7 @@ public class GameBoardController extends Ludo {
 		
 		// ROTAT som fy
 		// Finne ut hvilken spiller er hvilken farge
+		/*
 		if(Ludo.properties.getProperties().getProoerty("username").equals(getPlayerName(BLUE)))
 			CurrentPlayer = BLUE;
 		if(Ludo.properties.getProperties().getProoerty("username").equals(getPlayerName(YELLOW)))
@@ -106,6 +120,7 @@ public class GameBoardController extends Ludo {
 			CurrentPlayer = BLUE;
 		if(CurrentPlayer == activePlayer())			// Sjekker med Ludo Logic
 			throwTheDice.setDisable(false);
+		*/
 		
 		
 		// adds a new listner that displays the current dicethrow
@@ -116,10 +131,10 @@ public class GameBoardController extends Ludo {
 				);
 		
 		// adds a new listner that changes the view
-		// when events happen serverside
+		// when Playerevents happen
 		// This is run in the gui-thread
 		addPlayerListener(pEvent -> {
-			Platform.runLater(() -> playerChange(pEvent.getActivePlayer(), pEvent.getState()));
+			Platform.runLater(() -> playerChange(pEvent));
 		});
 		
 		// TODO komprimere valgt bilde fra 300x300 til 48x48
@@ -134,6 +149,12 @@ public class GameBoardController extends Ludo {
 		playerPieceImages[1] = new Image(getClass().getResourceAsStream("/images/blue.png"));
 		playerPieceImages[2] = new Image(getClass().getResourceAsStream("/images/yellow.png"));
 		playerPieceImages[3] = new Image(getClass().getResourceAsStream("/images/green.png"));
+		
+		// Show RED as active player
+		player1Active.setVisible(true);
+		player2Active.setVisible(false);
+		player3Active.setVisible(false);
+		player4Active.setVisible(false);
 		
 		
 		/* Looping through the players and their pieces
@@ -203,62 +224,159 @@ public class GameBoardController extends Ludo {
 	/**
 	 * When the player change, this is called from playerListener
 	 * Will be called when the state change between ( PLAYING,  WAITING, LEFTGAME, WON) 
-	 * @param player the player it concerns 
-	 * @param state the new state
+	 * @param event The playerevent that was coused 
 	 */
-	public void playerChange(int player, int state) { 	
+	public void playerChange(PlayerEvent event) { 
 		
-		switch(state) {
-		case PlayerEvent.PLAYING: { 
-			diceThrown.setImage(new Image(getClass().getResourceAsStream ("/images/rolldice.png")));
-			changePlayerState(player, false);
+		int state = event.getState();
+		int player = event.getActivePlayer();
+		
+		switch(player) {
+			case RED:
+				switch(state) {
+					case PlayerEvent.PLAYING:
+						player1Active.setVisible(true);
+						break;
+						
+					case PlayerEvent.WAITING:
+						player1Active.setVisible(false);
+						break;
+						
+					case PlayerEvent.LEFTGAME:
+						// kommer bare hit om RED har blitt REMOVED
+						//removePlayer(getPlayerName(RED));
+						break;
+					case PlayerEvent.WON:
+						//endGame();
+						break;
+						
+					default: break;
+				} // state switch
+			// red break
 			break;
-		}
-		case PlayerEvent.WAITING: {
-			changePlayerState(player, true);
+				
+			case BLUE:
+				switch(state) {
+					case PlayerEvent.PLAYING:
+						player2Active.setVisible(true);
+						break;
+						
+					case PlayerEvent.WAITING:
+						player2Active.setVisible(false);
+						break;
+						
+					case PlayerEvent.LEFTGAME:
+						// kommer bare hit om BLUE har blitt REMOVED
+						//removePlayer(getPlayerName(BLUE));
+						break;
+					case PlayerEvent.WON:
+						//endGame(YELLOW);
+						break;
+						
+					default: break;
+				} // stateswitch
+			// break blue
 			break;
-		}
-		case PlayerEvent.LEFTGAME: {
-			switch(player) {
-				case RED:{
-					player1Active.setImage( new Image(getClass().getResourceAsStream("/images/red.png")));
-					break;
-				}
-				case BLUE: {
-					player1Active.setImage( new Image(getClass().getResourceAsStream("/images/blue.png")));
-					break;
-				}
-				case YELLOW: {
-					player1Active.setImage( new Image(getClass().getResourceAsStream("/images/yellow.png")));
-					break;
-				}
-				case GREEN: {
-					player1Active.setImage( new Image(getClass().getResourceAsStream("/images/green.png")));
-					break;
-				}
-			}
-		}
-		case PlayerEvent.WON: {
+				
+			case YELLOW:
+				switch(state) {
+					case PlayerEvent.PLAYING:
+						player3Active.setVisible(true);
+						break;
+						
+					case PlayerEvent.WAITING:
+						player3Active.setVisible(false);
+						break;
+						
+					case PlayerEvent.LEFTGAME:
+						// kommer bare hit om YELLOW har blitt REMOVED
+						//removePlayer(getPlayerName(YELLOW));
+						break;
+					case PlayerEvent.WON:
+						//endGame(YELLOW);
+						break;
+						
+					default: break;	
+				} // stateswitch
+			// break yellow
+			break;
 			
+			case GREEN:
+				switch(state) {
+					case PlayerEvent.PLAYING:
+						player4Active.setVisible(true);
+						break;
+						
+					case PlayerEvent.WAITING:
+						player4Active.setVisible(false);
+						break;
+						
+					case PlayerEvent.LEFTGAME:
+						// kommer bare hit om GREEN har blitt REMOVED
+						//removePlayer(getPlayerName(GREEN));
+						break;
+					case PlayerEvent.WON:
+						//endGame(GREEN);
+						break;
+						
+					default: break;	
+				} // stateswitch
+			// break green
 			break;
-			}
-		}
-		
+		} // playerswitch
 	}
 	
 	/**
-	 * 
-	 * @param e
+	 * Handles the press on the 'throwDice'-button. Asks
+	 * server to throw a dice
+	 * @param e - The action performed (should be a buttonpress)
 	 */
 	@FXML
 	void throwDice(ActionEvent e) {
-		connection.send(new ThrowDice(gameId));
-		
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
+			// send a DiceEvent to proc the server to throw a dice
+			oos.writeObject(new GameEvent(gameID, new DiceEvent(this, activePlayer, 0)));
+			
+			// TODO: We should be in blockingmode here
+			// TODO: get the events in some listner
+			ObjectInputStream ois = new ObjectInputStream(connection.getInputStream());
+			Object obj = ois.readObject();
+			
+			// we only want to handle GameEvents here
+			if(obj instanceof GameEvent) {
+				GameEvent ge = (GameEvent) obj;
+				
+				// we want to ensure we don't do changes
+				// that isn't for our game
+				if(ge.getGameID() == gameID) {
+					
+					// we only want to handle DiceEvents here
+					if(ge.getEvent() instanceof DiceEvent) {
+						DiceEvent de = (DiceEvent) obj;
+						
+						// check if we are synched
+						if(de.getPlayer() == activePlayer) {
+							
+							// throw the dice in this instance
+							// of the game and change the view
+							super.throwDice(de.getDice());
+							diceThrown.setImage(new Image(getClass()
+									.getResourceAsStream("/images/dice" + dice + ".png")));
+						} // if player
+					} // if diceEvent
+				} // if gameid
+			} // if gameEvent
+		}
+		catch(IOException ioe) {
+			// TODO: socket not found?
+		}
+		catch(ClassNotFoundException cnfe) {
+			// TODO: invalid class
+		}
 	}
 	
-	/**
-	 * 
-	 */
+	/*
 	@Override 
 	public int throwDice(int dice) {
 		super.throwDice(dice);
@@ -271,27 +389,39 @@ public class GameBoardController extends Ludo {
 				throwTheDice.setDisable(true);
 			});	
 		}
-	}
+	}*/
 	
 	
 	/**
 	 * 
 	 */
-	public void updateBoard() {
+	public void updateBoard(){
 		// TODO 
 	}
 	
 	
 	/**
-	 * 
+	 * Handles mouseclicks on the board
 	 * @param event
 	 */
 	@FXML
 	void clickOnPiece(MouseEvent event) {
 	
+	int tile = 0;
+	Object obj = event.getSource();
+			
+	for (int pi = 0; pi < PIECES; pi++) {
+		if(obj.equals(playerPieces[activePlayer][pi])) {
+			tile = corners.findTile(event.getSceneX(), event.getSceneY());
+			moveFrom.setX(corners.point[tile].getX());
+			moveFrom.setY(corners.point[tile].getY());
+			
+			moveTo.setX(corners.point[tile + dice].getX());
+			moveTo.setY(corners.point[tile + dice].getY());
+		}
+	}
 		
-		
-		
+	/*	
 		// Skjer bare hvis spiller skal flytte
 		if(shouldMove) {	
 	
@@ -318,7 +448,7 @@ public class GameBoardController extends Ludo {
 				}
 			}
 			
-		}
+		}*/
 	}
 	
 	
@@ -333,71 +463,67 @@ public class GameBoardController extends Ludo {
 	}
 
 	/**
-	 * 
-	 * @param e
+	 *  Handle the clickevent to mova a piece
+	 * @param e The event from the click
 	 */
-	private void movePiece(MouseEvent e) {			// Trenger chould move?? 
+	private void movePiece(MouseEvent e) { 
 		
-		int moveFromTile = corners.findTile(e.getSceneX(), e.getSceneY());
-		int i = 0;
-		
-		// gets which piece is selected? 
-		while(playerPieces[activePlayer][i].equals(moveFrom) && i++ < PIECES);
-		
-		int piece = getPieceAt(activePlayer, moveFromTile);
-		int from = getPosition(activePlayer, piece);
-		
-		if(super.movePiece(activePlayer, from, from + dice)) {
-			// TODO: call the function that moves the piece
-			// on the screen
-			// OR
-			// just do this?
-			// playerPieces[activePlayer][i].setX(moveTo.getX());
-			// playerPieces[activePlayer][i].setY(moveTo.getY());
+		if(e.getEventType() == MouseEvent.MOUSE_CLICKED) {
+			int moveFromTile = corners.findTile(e.getSceneX(), e.getSceneY());
+			int i = 0;
 			
-			// send the info to the server
-			connection.send(new GameEvent(gameId, new PieceEvent(this, activePlayer, piece, from, from +dice)));
-			//connection.send(new MovePiece(gameId, activePlayer, from, from + dice));
-		}
-		else {
-			// If we can't move, remove destination selection
-			// as indicator that the user can't move (with that piece)
-			moveTo.setX(-100);
-			moveTo.setY(-100);
-		}
-	}
-	
-	/**
-	 * 
-	 * @param event
-	 * @return
-	 */
-	private int selectTile(MouseEvent event) {
-		// we wanna start at -2 becouse 'findTile' will
-		// return -1 if no valid tile where found
-		int tile = -2;
-		
-		Object obj = event.getSource();
-		
-		for (int pi = 0; pi < PIECES; pi++) {
-			if(obj.equals(playerPieces[activePlayer][pi])) {
-				tile = corners.findTile(event.getSceneX(), event.getSceneY());
-				moveFrom.setX(corners.point[tile].getX());
-				moveFrom.setY(corners.point[tile].getY());
+			// gets which piece is selected
+			while(playerPieces[activePlayer][i].equals(moveFrom) && i++ < PIECES);
+			
+			int piece = getPieceAt(activePlayer, moveFromTile);
+			int from = getPosition(activePlayer, piece);
+			
+			if(super.movePiece(activePlayer, from, from + dice)) {
+				// TODO: call the function that moves the piece
+				// on the screen
+				// OR
+				// just do this?
+				// playerPieces[activePlayer][i].setX(moveTo.getX());
+				// playerPieces[activePlayer][i].setY(moveTo.getY());
 				
-				moveTo.setX(corners.point[tile + dice].getX());
-				moveTo.setY(corners.point[tile + dice].getY());
+				try {
+					// send the info to the server
+					ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
+					oos.writeObject(new GameEvent(gameID, new PieceEvent(this, activePlayer, piece, from, from + dice)));
+					//connection.send(new MovePiece(gameId, activePlayer, from, from + dice));
+					
+					//playerPieces[activePlayer][i].setX();
+				}
+				catch(IOException ioe) {
+					// TODO: log?
+				}
+			}
+			else {
+				// If we can't move, remove destination selection
+				// as indicator that the user can't move (with that piece)
+				moveTo.setX(-100);
+				moveTo.setY(-100);
 			}
 		}
-			
-		return tile; 
+		// ELSE do nothing
+		
 	}
 	
 	
+	/**
+	 * Tries to get a piece from the given player at the given position (actual)
+	 * @param player The players to retrieve a piece from
+	 * @param from The actual tileposition on the board
+	 * @return The index of the players piece at the given position, or
+	 * -1 if no piece where found
+	 */
 	private int getPieceAt(int player, int from) {
 		boolean found = false;
 		int i = 0;
 		
+		// loops through all a players pieces and sees if
+		// their position matches the given
+		// IF so, we select this piece
 		while(!found && i < PIECES) {
 			int pos = userGridToLudoBoardGrid(player, getPosition(player, i));
 			
@@ -413,50 +539,30 @@ public class GameBoardController extends Ludo {
 		return i;
 	}
 		
-	
-	/**
-	 * 
-	 * @param e
-	 */
+	/*
 	private int movePieceFrom(MouseEvent event) {
 		int correctValue = -1;
 		int x = (int) event.getX();
 		int y = (int) event.getY(); 
 		
-		// we wanna start at -2 becouse 'findTile' will
-		// return -1 if no valid tile where found
-		int tile = -2;
-		
-		Object obj = event.getSource();
-		
-		for (int pi = 0; pi < PIECES; pi++) {
-			if(obj.equals(playerPieces[activePlayer][pi])) {
-				tile = corners.findTile(event.getSceneX(), event.getSceneY());
-				moveFrom.setX(corners.point[tile].getX());
-				moveFrom.setY(corners.point[tile].getY());
-				
-				moveTo.setX(corners.point[tile + dice].getX());
-				moveTo.setY(corners.point[tile + dice].getY());
-			}
-		}
+		Object ob = event.getSource();
 		
 			
-			/*
-			if( ob.equals(playerPieces[CurrentPlayer][pi])) {
-				int blackPos = userGridToLudoBoardGrid(CurrentPlayer, getPlayerPieces(CurrentPlayer)[i]);
-				int offset = 0;
-				
-				if(getPlayerPieces(CurrentPlayer)[pi] == 0) {
-					offset = pi;
-				}
-				correctValue = getPlayerPieces(CurrentPlayer)[pi];
-				moveFrom.setX(corners.point[blackPos+offset].getX());
-				moveFrom.setY(corners.point[blackPos+offset].getY());
-				// TODO ikke ferdig 
-			}*/
+		if( ob.equals(playerPieces[CurrentPlayer][pi])) {
+			int blackPos = userGridToLudoBoardGrid(CurrentPlayer, getPlayerPieces(CurrentPlayer)[i]);
+			int offset = 0;
+			
+			if(getPlayerPieces(CurrentPlayer)[pi] == 0) {
+				offset = pi;
+			}
+			correctValue = getPlayerPieces(CurrentPlayer)[pi];
+			moveFrom.setX(corners.point[blackPos+offset].getX());
+			moveFrom.setY(corners.point[blackPos+offset].getY());
+			// TODO ikke ferdig 
+		}
 		
-		return tile;
-	}
+		return ;
+	}*/
 	
 	
 	
