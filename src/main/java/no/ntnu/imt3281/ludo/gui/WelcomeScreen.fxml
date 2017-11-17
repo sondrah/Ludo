@@ -11,7 +11,7 @@ Passord samsvarer ikke! Vennligst prøv på nytt
 Brukernavn er opptatt! Vennligst velg et annet
 Ugyldig brukernavn! Vennligst prøv på nytt -->
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="409.0" prefWidth="594.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="409.0" prefWidth="594.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Button defaultButton="true" layoutX="86.0" layoutY="205.0" mnemonicParsing="false" text="Logg inn">
          <font>

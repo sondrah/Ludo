@@ -23,6 +23,16 @@ public class WelcomeController {
 		
     	try {
     		Pane loginScreen = loader.load();
+    		e.getSource();
+    		
+    		Object obj = e.getSource();
+    		if(obj instanceof Button) {
+    			Button btn = (Button) obj;
+    			
+    			// FIXME
+    			btn.getParent().getChildrenUnmodifiable().add(loginScreen);
+    		}
+    		
     	} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
