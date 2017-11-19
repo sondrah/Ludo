@@ -26,7 +26,7 @@ import no.ntnu.imt3281.ludo.client.ChatClient;
 import no.ntnu.imt3281.ludo.logic.NotEnoughPlayersException;
 import no.ntnu.imt3281.ludo.server.ChatServer.Client;
 
-/*
+/**
  * Server for a specific chat. A game chat, master chat or a private chat.
  * @clients list of people connected to this chat
  * @messages all the messages that are in buffer ready to be sent
@@ -111,8 +111,14 @@ public class TheChatServer extends JFrame {
     }
     
     
-    /*
-     * 
+    /**
+     * Each object of this class represents a connected client to the chat.
+     * When serverSocket creates a new socket it makes a new object of this class
+     * based on that socket. 
+     * name of client using the connection
+     * socket connected with serverSocket
+     * input reads object streams arriving on socket
+     * output sends object streams on socket
      */
     class Client {
         private String name;
@@ -124,15 +130,9 @@ public class TheChatServer extends JFrame {
         
         
         /**
-         * Construct a new Client object based on the given socket object.
-         * A buffered reader and a buffered writer will be created based on the
-         * input stream and output stream of the given socket object. Then
-         * the nickname of the user using the connecting client will be read.
-         * If no LOGIN:username message can be read from the client
-         * an IOException is thrown. 
          * 
-         * @param socket the socket object from the server sockets accept call.
-         * @throws IOException if any errors occurs during the initial IO operations
+         * @param socket
+         * @throws IOException
          */
         public Client(Socket socket) throws IOException {	//FIXME
             this.socket = socket;
@@ -157,7 +157,7 @@ public class TheChatServer extends JFrame {
 
         /**
          * Closes the buffered reader, the buffered writer and the socket
-         * socket.
+         * socket.	
          * 
          * @throws IOException
          */

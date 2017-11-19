@@ -5,17 +5,19 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 /**
- * Master-server who controls DB, chat & Game  
- *
+ * Master-server who controls DB, chats & games  
+ * 
  */
 public class ServerController {
 
-	
 	/** The 'url' to our database (local) */
 	private String url = "jdbc:derby:BadgerDB;";
-	
+	/** Unique ID for each chat */
+	private int chatID = 0;
+	/** A vector all chats */
 	public Vector<TheChatServer> chats;
 	
+	/** Starts up an object of ServerController */
 	public static void main(String[] args) {
 		ServerController servercontroller = new ServerController();
 	}
@@ -36,7 +38,7 @@ public class ServerController {
 			}
 		}
 													// Makes masterchat for all logged in players
-		TheChatServer masterchat = new TheChatServer("Master chat", 1);
+		TheChatServer masterchat = new TheChatServer("Master chat", ++chatID);
 		// TODO
 		// alle nye chats som skal legges til sjekkes at det ikke er duplikater
 		//  av chatname og ID før chatserver blir laget

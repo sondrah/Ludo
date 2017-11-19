@@ -1,7 +1,7 @@
 package no.ntnu.imt3281.ludo.server;
 
 
-/*
+/**
  * Holds one chat-text with information about what chatSever
  * it belongs to
  * @chatID unique ID for every chat

@@ -8,6 +8,8 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
@@ -38,17 +40,15 @@ public class ChatClient extends JFrame {
     private JList<String> participants;
     private DefaultListModel<String> participantsModel;
     private String myName;
-    private BufferedWriter output;
-    private BufferedReader input;
-    private Socket connection;
+    private ObjectOutputStream output;	
+    private ObjectInputStream input;	
+    private Socket socket;
+    
 
     /**
-     * Constructor that sets up the GUI. The GUI consists of a textarea where
-     * all messages is displayed, a list with all connected users and a
-     * textfield where the user can enter the text to send. To actually send a
-     * message the user must press enter in the textfield.
+     * Clients side of connection with a specific chat server
      */
-    public ChatClient() {
+    public ChatClient() {		// param: chatname
         super("Chat client");
 
         // Set up the textarea used to display all messages
@@ -89,7 +89,7 @@ public class ChatClient extends JFrame {
 
     /**
      * Connects to the server, on port 12345 and localhost. This would be
-     * changed for a production version. Once the socket connection is
+     * changed for a production version. Once the socket socket is
      * established a bufferedReader and a bufferedWriter is created, this is our
      * input and output.
      * 
@@ -99,11 +99,9 @@ public class ChatClient extends JFrame {
      */
     public void connect() {
         try {
-            connection = new Socket("localhost", 12345);
-            output = new BufferedWriter(new OutputStreamWriter(
-                    connection.getOutputStream()));
-            input = new BufferedReader(new InputStreamReader(
-                    connection.getInputStream()));
+            socket = new Socket("localhost", 12345);
+            input = new ObjectInputStream(socket.getInputStream());
+            output = new ObjectOutputStream(socket.getOutputStream());
             myName = JOptionPane.showInputDialog(this, "Your nickname?");
             if (myName == null || myName.equals("")) {		// TODO legge inn sjekk mot Db
                 JOptionPane.showMessageDialog(this, "No nick given");
@@ -186,9 +184,11 @@ public class ChatClient extends JFrame {
      */
     private void sendText(String textToSend) {
         try {
-            output.write(textToSend);
+            /*
+        	output.write(textToSend);
             output.newLine();
             output.flush();
+            */
         } catch (IOException ioe) {
             JOptionPane
                     .showMessageDialog(this, "Error sending message: " + ioe);
