@@ -2,6 +2,7 @@ package no.ntnu.imt3281.ludo.server;
 
 
 import java.sql.SQLException;
+import java.util.Vector;
 
 /**
  * Master-server who controls DB, chat & Game  
@@ -9,12 +10,14 @@ import java.sql.SQLException;
  */
 public class ServerController {
 
+	
 	/** The 'url' to our database (local) */
 	private String url = "jdbc:derby:BadgerDB;";
 	
+	public Vector<TheChatServer> chats;
 	
 	public static void main(String[] args) {
-		ServerController foo = new ServerController();
+		ServerController servercontroller = new ServerController();
 	}
 	
 	
@@ -33,20 +36,10 @@ public class ServerController {
 			}
 		}
 													// Makes masterchat for all logged in players
-		ChatServer masterchat = new ChatServer("Master chat");	 // ID?
-		
-		
-		
-	
-		
-		
-		
-		/*
-		 Lage div chat
-		 funksjoner som interakterer med DB
-		 */
-		
-		
+		TheChatServer masterchat = new TheChatServer("Master chat", 1);
+		// TODO
+		// alle nye chats som skal legges til sjekkes at det ikke er duplikater
+		//  av chatname og ID før chatserver blir laget
 		
 		
 	}
