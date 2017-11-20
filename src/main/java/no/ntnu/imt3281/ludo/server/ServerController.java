@@ -178,6 +178,9 @@ public class ServerController {
 	    	                    // eks CHAT,3,0,msg
 	    	                    // 	   type idRom/game, info??trengs?, melding
 	    	                	if (type.equals("CHAT")) {					// Hvis meldingen er av typen CHAT
+	    	                		// 1. finn riktig chat 
+	    	                		// 2. finn riktige  deltagere
+	    	                		// 3. send info til disse 
 	    	                		Iterator<Chat> chatNri = chats.iterator();		// Iterer gjennom alle chatte rom
 				                    while (chatNri.hasNext()) {					// hvis flere
 				                        Chat curChat = chatNri.next();			// Hvilken sjekkes nå
@@ -190,20 +193,19 @@ public class ServerController {
 				                        	while (clientNri.hasNext()) {			// For hver client i aktuelt chatte rom
 						                        Client curCli = clientNri.next();	
 					                        	try {						// Prøv å send en melding
-					                        		newClient.sendText("CHAT,"+curChat.getId()+","+fromClientID+","+message);	
+					                        								// Format: CHAT idTilChat, FraClientID, Melding
+					                        		curCli.sendText("CHAT,"+curChat.getId()+","+fromClientID+","+message);	
 					                        	} catch (IOException ioelocal) {
 					                        		// TODO fiks exception handling
 					                        	}
 				                        	}
 				                        }
 				                    }	// While chat slutt, sjekket alle
-		                        	chats.// finn riktig chat 
-	    	                		// finn deltagere
-	    	                		// send info til disse 
+		                        	
 		                        }
 		                        else if (type.equals("GAME")) {
 		                        	// finn riktig chat 
-	    	                		// finn deltagere
+	    	                		// finn aktuele deltagere
 	    	                		// send info til disse 
 		                        }
 		                        
@@ -387,10 +389,17 @@ public class ServerController {
     
     class Game {
     	private int ID;
+    	private int relatedChatId;
     	private Vector<Client> participants;
     	
     	public Game(int ID) {
     		this.ID = ID; 	
+    	}
+    	public void setThisGamerelatedChatId(int chatID) {
+    		this.relatedChatId = chatID; 	
+    	}
+    	public int getThisGamerelatedChatId() {
+    		return relatedChatId; 	
     	}
     	
     	public void addParticipant(Client c) {
