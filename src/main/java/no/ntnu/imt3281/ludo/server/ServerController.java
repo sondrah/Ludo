@@ -31,13 +31,16 @@ public class ServerController {
 	private String url = "jdbc:derby:BadgerDB;";
 	/** Unique ID for each chat */
 	//private int chatID = 0;
-	/** A vector all chats */
-	public Vector<Integer> chats;
+	//private int gameID = 0;
 	/** Socket that all communication goes through */
 	private ServerSocket serverSocket;
 	/** ArrayList wit all logged in clients */
 	private ArrayList<Client> clients = new ArrayList<Client>();
-    
+	/** A vector all chats */
+	private ArrayList<Chat> chats = new ArrayList<Chat>();
+	/** A vector all chats */
+	private ArrayList<Game> games = new ArrayList<Game>();
+	   
 	
 	
 	private ArrayBlockingQueue<String> messages = new ArrayBlockingQueue<String>(50);
@@ -67,8 +70,9 @@ public class ServerController {
 			}
 		}
 		
-		// Makes masterchat for all logged in players
-		Chat masterchat = new Chat("Master chat", 1);
+		// ServerController have only one masterChat
+		Chat masterChat = new Chat("masterChat", 1);
+		chats.add(masterChat);
 		// TODO
 		// alle nye chats som skal legges til sjekkes at det ikke er duplikater
 		//  av chatname og ID før chatserver blir laget
@@ -92,6 +96,8 @@ public class ServerController {
 	private void startLoginMonitor() {
         executorService.execute(() -> {
             while (!shutdown) {
+            	// If message type = LOGIN 
+            	translateMessage(msg, 5).equals("LOGIN");
                 try {
                     Socket s = serverSocket.accept();
                     Client c = new Client(s);
@@ -103,8 +109,8 @@ public class ServerController {
 	                        Client c1 = i.next();
 	                        if (c!=c1)
 	                        	try {
-	                        		// add client to master chat
-	                        		c.sendText("Chat,1,"+c.name+","+c.name+"logged inn");	
+	                        		chats.get(0).addParticipant(c);		// Legger Klient til i masterChat 
+	                        		c.sendText("CHAT,1,"+c.name+","+c.name+"logged inn");	
 	                        	} catch (IOException ioelocal) {
 	                        		// Lost connection, but doesn't bother to handle it here
 	                        	}
@@ -123,10 +129,74 @@ public class ServerController {
         });
     }
 	
+    private void startMessageListener() {
+        executorService.execute(() -> {			// Thread
+            while (!shutdown) {
+                try {
+                	synchronized (clients) {	// Only one thread at a time might use the clients object 
+	                    Iterator<Client> i = clients.iterator();	// Iterate throug all clients
+	                    while (i.hasNext()) {			
+	                        Client c = i.next();		// TODO SA - hopper over første?
+	                        try {
+		                        String msg = c.read();
+		                        
+		                        
+		                       
+		                        if (msg != null && !msg.equals(">>>LOGOUT<<<"))
+		                            messages.put(c.name+"> "+msg);
+		                        else if (msg != null) {	// >>>LOGOUT<<< received, remove the client
+		                            i.remove();
+		                            messages.put("LOGOUT:"+c.name);
+		                            messages.put(c.name+" logged out");
+		                        }
+	                        } catch (IOException ioe) {	// Unable to communicate with the client, remove it
+	                        	i.remove();
+	                            messages.put("LOGOUT:"+c.name);
+	                            messages.put(c.name+" got lost in hyperspace");
+	                        }
+	                    }
+                	}
+                } catch (InterruptedException ie) {
+                	ie.printStackTrace();
+                } 
+           }
+        });
+    }
+
+    private void startMessageSender() {
+        executorService.execute(() -> {
+            while (!shutdown) {
+                try {
+                    String message = messages.take();
+                    displayMessage("Sending '" + message + "' to "
+                            + clients.size() + " clients\n");
+                    synchronized (clients) {		// Only one thread at a time might use the clients object
+	                    Iterator<Client> i = clients.iterator();
+	                    while (i.hasNext()) {
+	                        Client c = i.next();
+	                        try {
+	                        	c.sendText(message);
+	                        } catch (IOException ioe) {	// Unable to communicate with the client, remove it
+	                        	i.remove();
+	                        	messages.add("LOGOUT:"+c.name);
+	                        	messages.add(c.name+" got lost in hyperspace");
+	                        }
+	                    }
+                    }
+                } catch (InterruptedException ie) {
+                    ie.printStackTrace();
+                }
+            }
+        });
+    }
 	private void displayMessage(String text) {
 		SwingUtilities.invokeLater(() -> status.append(text));
 	}
 	
+	private String translateMessage(String msg , int nr) {
+		 String[] parts = msg.split(",");        
+         return parts[nr];
+	}
 	
 	
 	
@@ -164,7 +234,7 @@ public class ServerController {
                     connection.getInputStream()));
             output = new BufferedWriter(new OutputStreamWriter(
                     connection.getOutputStream()));
-            name = input.readLine();
+            name = input.readLine();		// TODO ikke hele linja
             if (!name.startsWith("LOGIN:"))
                 throw new IOException("No login received from client");
             name = name.substring(6);
@@ -213,14 +283,55 @@ public class ServerController {
 	
     
     class Chat {
+    	private String chatName;
     	private int ID;
-    	private Vector<Integer> participantID;
+    	private Vector<Client> participants;
     	
-    	public Chat(String chatname, int ID) {
-    		//participantID.add(ID);
+    	public Chat(String chatname, int ID) {   	 
+    		this.ID = ID; 			//participantID.add(ID);
+    		this.chatName = chatname; 			
     	}
+    	public String getChatName() {
+    		return this.chatName; 			
+    	}
+    	
+    	public void addParticipant(Client c) {
+    		participants.add(c);
+    		
+    	}
+    	public void removeParticipant(Client c) {
+    		participants.removeElement(c);
+    		
+    	}
+    	public Vector<Client> getParticipant() {
+    		return participants; 
+    		
+    	}
+    	// TODO, trengs en funskjon
     }
     
+    class Game {
+    	private int ID;
+    	private Vector<Client> participants;
+    	
+    	public Game(int ID) {
+    		this.ID = ID; 	
+    	}
+    	
+    	public void addParticipant(Client c) {
+    		participants.add(c);
+    		
+    	}
+    	public void removeParticipant(Client c) {
+    		participants.removeElement(c);
+    		
+    	}
+    	public Vector<Client> getParticipant() {
+    		return participants; 
+    		
+    	}
+    	// TODO, trengs en funskjon for kommunikasjon?
+    }
 	
 	
 	
