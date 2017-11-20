@@ -13,9 +13,9 @@ Passord samsvarer ikke! Vennligst prøv på nytt
 Brukernavn er opptatt! Vennligst velg et annet
 Ugyldig brukernavn! Vennligst prøv på nytt -->
 
-<Pane fx:id="paneHome" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="409.0" prefWidth="594.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.ntnu.imt3281.ludo.gui.WelcomeController">
+<Pane fx:id="paneHome" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="409.0" prefWidth="594.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.ntnu.imt3281.ludo.gui.WelcomeController">
    <children>
-      <Button fx:id="btnHomeLogin" defaultButton="true" layoutX="40.0" layoutY="270.0" mnemonicParsing="false" onAction="#goToLogin" text="Logg inn">
+      <Button fx:id="btnHomeLogin" defaultButton="true" layoutX="40.0" layoutY="270.0" mnemonicParsing="false" onAction="#goToLogin" text="Log inn">
          <font>
             <Font size="30.0" />
          </font>
