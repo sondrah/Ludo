@@ -145,18 +145,18 @@ public class Database {
 	/**
 	 * Tries to add a user to the usertable table
 	 * @param username The username of the user
-	 * @param password The password of the user
+	 * @param password The hashed password
 	 */
-	public void addUser(User user) {
+	public void addUser(String username, String password) {
 		
 		try {
 			Statement stmt = con.createStatement();
 			
 			System.err.println("addUser");
 			stmt.execute( "INSERT INTO usertable (username, password)"
-						+ "VALUES ('" + user.getUsername() + "', '" + user.getPassword() + "')");
+						+ "VALUES ('" + username + "', '" + password + "')");
 			
-			System.err.println("added: " + user.getUsername());
+			System.err.println("added: " + username);
 		}
 		catch (DerbySQLIntegrityConstraintViolationException dicve) {
 			System.err.println("Constraint error: " + dicve.getMessage());

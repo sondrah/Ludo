@@ -4,9 +4,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
+ * Borrowed from this:
+ * https://stackoverflow.com/questions/6592010/encrypt-and-decrypt-a-password-in-java
  * 
- * 
- *
  */
 public class MD5Encrypt {
    private static MessageDigest md;
@@ -18,7 +18,7 @@ public class MD5Encrypt {
         md.reset();
         byte[] digested = md.digest(passBytes);
         StringBuffer sb = new StringBuffer();
-        for(int i=0;i<digested.length;i++){
+        for(int i = 0; i < digested.length; i++){
             sb.append(Integer.toHexString(0xff & digested[i]));
         }
         return sb.toString();
