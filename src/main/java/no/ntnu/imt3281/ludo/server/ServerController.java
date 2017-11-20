@@ -37,9 +37,9 @@ public class ServerController {
 	private ServerSocket serverSocket;
 	/** ArrayList wit all logged in clients */
 	private ArrayList<Client> clients = new ArrayList<Client>();
-	/** A vector all chats */
+	/** Array list of all chats */
 	private ArrayList<Chat> chats = new ArrayList<Chat>();
-	/** A vector all chats */
+	/** Array list of all games */
 	private ArrayList<Game> games = new ArrayList<Game>();
 	   
 	
@@ -140,9 +140,9 @@ public class ServerController {
                     	
                     }	// Sync ferdig
                  
-                    displayMessage("CLIENT CONNECTED:" + userName + "\n");
+                    displayMessage("CLIENT CONNECTED:" + newClient.ID + "\n");
                     try {
-                        messages.put("LOGIN:" + newClient.name);
+                        messages.put("LOGIN:" + newClient.ID);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -235,21 +235,22 @@ public class ServerController {
         executorService.execute(() -> {
             while (!shutdown) {
                 try {
-                    String message = messages.take();
-                    displayMessage("Sending '" + message + "' to "
-                            + clients.size() + " clients\n");
+                    String txt = messages.take();
+                    String[] parts = txt.split(",");
+                    String type = parts[0];
+                    String id = parts[1];
+                    String message, command;
+                    if(type.equals("CHAT")) {
+                    	// message = parts[x];
+                    }
+                    else if(type.equals("GAME")) {
+                    	// command = parts[x];
+                    }
+                    
                     synchronized (clients) {		// Only one thread at a time might use the clients object
-	                    Iterator<Client> i = clients.iterator();
-	                    while (i.hasNext()) {
-	                        Client c = i.next();
-	                        try {
-	                        	c.sendText(message);
-	                        } catch (IOException ioe) {	// Unable to communicate with the client, remove it
-	                        	i.remove();
-	                        	messages.add("LOGOUT:"+c.name);
-	                        	messages.add(c.name+" got lost in hyperspace");
-	                        }
-	                    }
+                    	if(type.equals("CHAT")) {
+                    		// TODO finn riktig chat object i liste
+                    	}
                     }
                 } catch (InterruptedException ie) {
                     ie.printStackTrace();
@@ -374,17 +375,28 @@ public class ServerController {
     	
     	public void addParticipant(Client c) {
     		participants.add(c);
-    		
     	}
     	public void removeParticipant(Client c) {
     		participants.removeElement(c);
-    		
     	}
     	public Vector<Client> getParticipants() {
     		return participants; 
-    		
     	}
-    	// TODO, trengs en funskjon
+    	
+    	public boolean sendChatMessage(String msg) {
+    		Iterator<Client> i = participants.iterator();
+    		while(i.hasNext()) {
+    			Client client = i.next();
+    			try {
+    				client.sendText(msg);
+    			} catch(IOException ioe) {
+    				i.remove();
+                	messages.add("LOGOUT:"+client.ID);
+                	messages.add(client.ID+" got lost in hyperspace");
+    			}
+    		}
+    	}
+    	
     }
     
     class Game {
