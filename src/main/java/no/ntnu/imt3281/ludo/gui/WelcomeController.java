@@ -122,6 +122,7 @@ public class WelcomeController {
 		lblUsername.setVisible(false);
 		lblPassword.setVisible(false);
 		lblPassword2.setVisible(false);
+		lblError.setVisible(false);
 		txtFieldUsername.setVisible(false);
 		txtFieldPassword.setVisible(false);
 		txtFieldPassword2.setVisible(false);
