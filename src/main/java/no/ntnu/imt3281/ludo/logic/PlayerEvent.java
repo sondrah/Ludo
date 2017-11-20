@@ -106,5 +106,10 @@ public class PlayerEvent extends java.util.EventObject {
 		playerstring.append("Active Player: " + getActivePlayer() + " State: " + getState());
 		return playerstring.toString();
 	}
+
+	public int getPlayer() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 }
