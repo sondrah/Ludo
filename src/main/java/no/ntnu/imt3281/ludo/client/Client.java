@@ -48,7 +48,7 @@ public class Client extends Application{
     		
     		//root.getChildren().remove(pane);
     		
-    		primaryStage.setScene(new Scene(root, 1020, 750));
+    		primaryStage.setScene(new Scene(root, 600, 400));
             primaryStage.show();
     	}
     	catch (IOException ioe){
