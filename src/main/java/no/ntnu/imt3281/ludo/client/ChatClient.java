@@ -8,6 +8,8 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
@@ -21,6 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 /**
+ * ************** This code is borrowed from okolloen **********************
  * This is the client in the multiuser chat system. It is a fairly basic chat
  * system with only one room but an unlimited number of simultaneous users. When
  * started the client asks the user for a nickname and that is used throughout
@@ -37,19 +40,17 @@ public class ChatClient extends JFrame {
     private JTextField textToSend;
     private JList<String> participants;
     private DefaultListModel<String> participantsModel;
-    private String myName;
-    private BufferedWriter output;
-    private BufferedReader input;
-    private Socket connection;
+    private String name;
+    private BufferedWriter output;	
+    private BufferedReader input;	
+    private Socket socket;
+    
 
     /**
-     * Constructor that sets up the GUI. The GUI consists of a textarea where
-     * all messages is displayed, a list with all connected users and a
-     * textfield where the user can enter the text to send. To actually send a
-     * message the user must press enter in the textfield.
+     * Clients side of connection with a specific chat server
      */
-    public ChatClient() {
-        super("Chat client");
+    public ChatClient(String chatname) {		
+        super("Chat client: "+chatname);
 
         // Set up the textarea used to display all messages
         dialog = new JTextArea();
@@ -89,7 +90,7 @@ public class ChatClient extends JFrame {
 
     /**
      * Connects to the server, on port 12345 and localhost. This would be
-     * changed for a production version. Once the socket connection is
+     * changed for a production version. Once the socket socket is
      * established a bufferedReader and a bufferedWriter is created, this is our
      * input and output.
      * 
@@ -99,17 +100,17 @@ public class ChatClient extends JFrame {
      */
     public void connect() {
         try {
-            connection = new Socket("localhost", 12345);
-            output = new BufferedWriter(new OutputStreamWriter(
-                    connection.getOutputStream()));
+            socket = new Socket("localhost", 12345);
             input = new BufferedReader(new InputStreamReader(
-                    connection.getInputStream()));
-            myName = JOptionPane.showInputDialog(this, "Your nickname?");
-            if (myName == null || myName.equals("")) {		// TODO legge inn sjekk mot Db
+                    socket.getInputStream()));
+            output = new BufferedWriter(new OutputStreamWriter(
+                    socket.getOutputStream()));
+            
+            if (name == null || name.equals("")) {		// TODO legge inn sjekk mot Db
                 JOptionPane.showMessageDialog(this, "No nick given");
                 System.exit(1);
             }
-            sendText("LOGIN:" + myName);
+            sendText("LOGIN:" + name);
         } catch (IOException ioe) { // If we are unable to connect, alert the
                                     // user and exit
             JOptionPane.showMessageDialog(this, "Error connecting to server: "
@@ -186,9 +187,11 @@ public class ChatClient extends JFrame {
      */
     private void sendText(String textToSend) {
         try {
-            output.write(textToSend);
+            
+        	output.write(textToSend);
             output.newLine();
             output.flush();
+            
         } catch (IOException ioe) {
             JOptionPane
                     .showMessageDialog(this, "Error sending message: " + ioe);
@@ -202,7 +205,7 @@ public class ChatClient extends JFrame {
      *            not used
      */
     public static void main(String[] args) {
-        ChatClient application = new ChatClient();
+        ChatClient application = new ChatClient("chat navn her");
         application.setDefaultCloseOperation(EXIT_ON_CLOSE);
         application.connect(); // Connect to the server
         application.processConnection(); // Start processing messages from the

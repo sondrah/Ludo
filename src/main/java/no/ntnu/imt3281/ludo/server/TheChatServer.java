@@ -26,6 +26,12 @@ import no.ntnu.imt3281.ludo.client.ChatClient;
 import no.ntnu.imt3281.ludo.logic.NotEnoughPlayersException;
 import no.ntnu.imt3281.ludo.server.ChatServer.Client;
 
+/**
+ * Server for a specific chat. A game chat, master chat or a private chat.
+ * @clients list of people connected to this chat
+ * @messages all the messages that are in buffer ready to be sent
+ * @serverSocket socket which communicates with the different clients' "chat client"
+ */
 public class TheChatServer extends JFrame {
 	
 	private JTextArea status;
@@ -34,10 +40,16 @@ public class TheChatServer extends JFrame {
     private ServerSocket serverSocket;
     private ExecutorService executorService;
     private boolean shutdown = false;
+    
+    private String chatname;
+    private int ID;
 
     
-    public TheChatServer(String chatname) {
+    public TheChatServer(String chatname, int ID) {
     	super(chatname);
+    	
+    	this.chatname = chatname; 		
+    	this.ID = ID;
     	
     	//* Dette kan eventuellt fjernes senere når vi vet at ChatServer fungerer
     	// Sets up window which shows logged communication
@@ -66,24 +78,28 @@ public class TheChatServer extends JFrame {
     	executorService.execute(() -> {
     		while(!shutdown) {
     			try {
-    				synchronized(clients) {
+    				synchronized(clients) {		// Only one thread has access to clients object at a time
     					Iterator<Client> i = clients.iterator();
     					while(i.hasNext()) {
     						Client client = i.next();
     						try {
     							Chat chat = (Chat) client.read();
-    							if(chat.getID() == 0) {
-    								
-    							}
-    						
-    							// check for correct chatID
-    							
-    							
-    							
-    						} catch(Exception e) { // no connection to client
+    							if(this.ID == chat.getID()) {
+    								String msg = chat.getMessage();		
+    								if (msg != null && !msg.equals(">>>LOGOUT<<<")) {		
+    									messages.put(client.name+"> " + msg);
+    								} else if(msg != null) {
+    									messages.put("LOGOUT:" + client.name);
+    		                            messages.put(client.name + " got lost in hyperspace");
+    								}
+    							} else {
+    								System.err.println("This chat id: " + this.ID);
+    								System.err.println("Chat object id: " + ID);
+    							}						// no connection to client
+    						} catch(Exception e) { 		// sent to wrong chat
     							i.remove();
-    							messages.put("LOGOUT:" +client.name);
-	                            messages.put(client.name + " logged out");
+    							messages.put("LOGOUT:" + client.name);		// TODO 
+	                            messages.put(client.name + " logged out");	// hvis feil ID, fortsatt log ut?
     						}
     					}
     				}
@@ -91,17 +107,19 @@ public class TheChatServer extends JFrame {
     				ie.printStackTrace();
     			}
     		}
-    		
     	});	
     }
     
     
-    
-    
-    
-    
-    
-    
+    /**
+     * Each object of this class represents a connected client to the chat.
+     * When serverSocket creates a new socket it makes a new object of this class
+     * based on that socket. 
+     * name of client using the connection
+     * socket connected with serverSocket
+     * input reads object streams arriving on socket
+     * output sends object streams on socket
+     */
     class Client {
         private String name;
         private Socket socket;
@@ -112,15 +130,9 @@ public class TheChatServer extends JFrame {
         
         
         /**
-         * Construct a new Client object based on the given socket object.
-         * A buffered reader and a buffered writer will be created based on the
-         * input stream and output stream of the given socket object. Then
-         * the nickname of the user using the connecting client will be read.
-         * If no LOGIN:username message can be read from the client
-         * an IOException is thrown. 
          * 
-         * @param socket the socket object from the server sockets accept call.
-         * @throws IOException if any errors occurs during the initial IO operations
+         * @param socket
+         * @throws IOException
          */
         public Client(Socket socket) throws IOException {	//FIXME
             this.socket = socket;
@@ -145,7 +157,7 @@ public class TheChatServer extends JFrame {
 
         /**
          * Closes the buffered reader, the buffered writer and the socket
-         * socket.
+         * socket.	
          * 
          * @throws IOException
          */

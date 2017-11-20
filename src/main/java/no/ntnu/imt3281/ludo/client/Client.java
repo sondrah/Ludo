@@ -4,15 +4,21 @@ import java.io.IOException;
 import java.util.ResourceBundle;
 
 import javafx.application.Application;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import no.ntnu.imt3281.ludo.gui.WelcomeController;
+import javafx.event.ActionEvent;
 
 public class Client extends Application{
-
+	
 	
 	public Client() {
 		//Stage primaryStage = new Stage();
@@ -46,8 +52,9 @@ public class Client extends Application{
             primaryStage.show();
     	}
     	catch (IOException ioe){
-    		
+    		ioe.printStackTrace();
     	}
 		
 	}
+	
 }
