@@ -25,45 +25,45 @@ Ugyldig brukernavn! Vennligst prøv på nytt -->
             <Font size="30.0" />
          </font>
       </Button>
-      <Label fx:id="lblHeader" alignment="CENTER" contentDisplay="CENTER" layoutX="74.0" layoutY="22.0" text="%welcomescreen.welcome" textAlignment="CENTER">
+      <Label fx:id="lblHeader" alignment="CENTER" contentDisplay="CENTER" layoutX="50.0" layoutY="20.0" prefHeight="60.0" prefWidth="500.0" text="%welcomescreen.welcome" textAlignment="CENTER" textOverrun="CENTER_ELLIPSIS">
          <font>
             <Font size="38.0" />
          </font>
       </Label>
-      <Label fx:id="lblInfo" alignment="CENTER" contentDisplay="CENTER" layoutX="219.0" layoutY="77.0" text="%welcomescreen.infotext" textAlignment="CENTER">
+      <Label fx:id="lblInfo" alignment="CENTER" contentDisplay="CENTER" layoutX="75.0" layoutY="90.0" prefHeight="20.0" prefWidth="450.0" text="%welcomescreen.infotext">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <Label fx:id="lblPassword" layoutX="150.0" layoutY="187.0" prefHeight="30.0" prefWidth="102.0" text="%welcomescreen.passwordField" visible="false">
+      <Label fx:id="lblPassword" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="40.0" layoutY="190.0" prefHeight="30.0" prefWidth="170.0" text="%welcomescreen.passwordField" textAlignment="RIGHT" visible="false">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
       <PasswordField fx:id="txtFieldPassword" layoutX="236.0" layoutY="192.0" visible="false" />
       <TextField fx:id="txtFieldUsername" layoutX="235.0" layoutY="154.0" visible="false" />
-      <Button fx:id="btnLogin" defaultButton="true" layoutX="257.0" layoutY="270.0" mnemonicParsing="false" onAction="#login" prefHeight="44.0" prefWidth="107.0" text="%welcomescreen.loginBtn" visible="false">
+      <Button fx:id="btnLogin" defaultButton="true" layoutX="240.0" layoutY="270.0" mnemonicParsing="false" onAction="#login" prefHeight="40.0" prefWidth="120.0" text="%welcomescreen.loginBtn" visible="false">
          <font>
             <Font size="20.0" />
          </font>
       </Button>
-      <Label fx:id="lblError" layoutX="259.0" layoutY="326.0" text="Feilmelding" textAlignment="CENTER" textFill="#aa1414" visible="false">
+      <Label fx:id="lblError" alignment="CENTER" contentDisplay="CENTER" layoutX="30.0" layoutY="326.0" prefHeight="65.0" prefWidth="538.0" text="Feilmelding" textAlignment="CENTER" textFill="#aa1414" visible="false" wrapText="true">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
       <PasswordField fx:id="txtFieldPassword2" layoutX="235.0" layoutY="232.0" visible="false" />
-      <Label fx:id="lblUsername" layoutX="118.0" layoutY="151.0" prefHeight="30.0" prefWidth="107.0" text="%welcomescreen.username" visible="false">
+      <Label fx:id="lblUsername" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="40.0" layoutY="150.0" prefHeight="30.0" prefWidth="170.0" text="%welcomescreen.username" textAlignment="RIGHT" visible="false">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
-      <Label fx:id="lblPassword2" layoutX="86.0" layoutY="230.0" prefHeight="30.0" prefWidth="149.0" text="%welcomescreen.passwordField2" visible="false">
+      <Label fx:id="lblPassword2" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="40.0" layoutY="230.0" prefHeight="30.0" prefWidth="170.0" text="%welcomescreen.passwordField2" textAlignment="RIGHT" visible="false">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
-      <Button fx:id="btnRegister" defaultButton="true" layoutX="256.0" layoutY="270.0" mnemonicParsing="false" onAction="#register" prefHeight="44.0" prefWidth="107.0" text="%welcomescreen.registerBtn" visible="false">
+      <Button fx:id="btnRegister" defaultButton="true" layoutX="240.0" layoutY="270.0" mnemonicParsing="false" onAction="#register" prefHeight="40.0" prefWidth="120.0" text="%welcomescreen.registerBtn" visible="false">
          <font>
             <Font size="20.0" />
          </font>
