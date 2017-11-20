@@ -2,12 +2,20 @@ package no.ntnu.imt3281.ludo.gui;
 
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import no.ntnu.imt3281.i18n.I18N;
 
@@ -17,13 +25,82 @@ import no.ntnu.imt3281.i18n.I18N;
  * functionalities like starting new games
  */
 public class LudoController {
-
+    
+    @FXML
+    private MenuBar menuBar;
+    @FXML
+    private Menu file;
+    @FXML
+    private MenuItem connect;
+    @FXML
+    private MenuItem close;
+    @FXML
+    private Menu game;
+    @FXML
+    private MenuItem challenge;
     @FXML
     private MenuItem random;
+    @FXML
+    private Menu chat;
+    @FXML
+    private MenuItem join;
+    @FXML
+    private MenuItem listRooms;
+    @FXML
+    private Menu help;
+    @FXML
+    private MenuItem about;
+    @FXML
+    private TextArea masterChat;
+    @FXML
+    private Button say;
+    @FXML
+    private TextField toSay;
 
     @FXML
     private TabPane tabbedPane;
 
+    
+    @FXML
+    public void connect(ActionEvent e) {
+    	// TODO:
+    }
+    
+    
+    @FXML
+    public void close(ActionEvent e) {
+    	Platform.exit();
+    }
+    
+    @FXML
+    public void challenge(ActionEvent e) {
+    	// TODO: vis liste av alle active spillere
+    	// TODO: kunne velge disse
+    	// TODO: sende request
+    	// TODO: motta svar?
+    }
+    
+    
+    @FXML
+    public void joinChat(ActionEvent e) {
+    	// TODO: Ta inn chatnavn, la person joine om finnes
+    }
+    
+    
+    @FXML
+    public void listRooms(ActionEvent e) {
+    	// TODO: make a list of all available chats
+    	
+    	// ScrollPane(chat.show())
+    }
+    
+    
+    @FXML
+    public void about(ActionEvent e) {
+    	JOptionPane.showConfirmDialog(null, "LEL");
+    }
+    
+    
     /**
      * Handles the action of one player that tries to enter a
      * new random game with said button
@@ -49,4 +126,8 @@ public class LudoController {
 			e1.printStackTrace();
 		}
     }
+    
+    
+    
+    
 }

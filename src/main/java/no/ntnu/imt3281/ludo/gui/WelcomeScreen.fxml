@@ -32,7 +32,7 @@ Ugyldig brukernavn! Vennligst prøv på nytt -->
       </Label>
       <Label fx:id="lblInfo" alignment="CENTER" contentDisplay="CENTER" layoutX="75.0" layoutY="90.0" prefHeight="20.0" prefWidth="450.0" text="%welcomescreen.infotext">
          <font>
-            <Font size="14.0" />
+            <Font size="16.0" />
          </font>
       </Label>
       <Label fx:id="lblPassword" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="40.0" layoutY="190.0" prefHeight="30.0" prefWidth="170.0" text="%welcomescreen.passwordField" textAlignment="RIGHT" visible="false">
