@@ -96,29 +96,52 @@ public class ServerController {
 	private void startLoginMonitor() {
         executorService.execute(() -> {
             while (!shutdown) {
-            	// If message type = LOGIN 
-            	translateMessage(msg, 5).equals("LOGIN");
+            
                 try {
                     Socket s = serverSocket.accept();
-                    Client c = new Client(s);
-                    //messages.add ("Login,"+getClientID() + ",0,LOGIN:");
+                    Client newClient = new Client(s);
                     synchronized (clients) {
-                    	clients.add(c);
-                    	Iterator<Client> i = clients.iterator();
-	                    while (i.hasNext()) {		// Send message to all clients that a new person has joined
-	                        Client c1 = i.next();
-	                        if (c!=c1)
-	                        	try {
-	                        		chats.get(0).addParticipant(c);		// Legger Klient til i masterChat 
-	                        		c.sendText("CHAT,1,"+c.name+","+c.name+"logged inn");	
-	                        	} catch (IOException ioelocal) {
-	                        		// Lost connection, but doesn't bother to handle it here
-	                        	}
-	                    }
-                    }
-                    displayMessage("CLIENT CONNECTED:" + c.name + "\n");
+                    	String msg = newClient.read();
+                    	String[] parts = msg.split(",");   
+                    	String type = parts[0];
+	                    String operation = parts[1];
+	                    String userName = parts[2];
+	                    String pwd = parts[3];
+
+	                	if(type.equals("LOGIN")) {
+	                		if(operation.equals("0")) {		// REgistrer ny bruker
+	                			db.addUser(userName, pwd);
+	                		}
+	                		// Melding tilbake til bruker su er registrert og kan nå logge inn
+	                	
+		                	else if(operation.equals("1")) {	// Logge inn
+		                		int id = db.getUser(userName, pwd);
+		                		if(id !=-1) {
+		                			newClient.setId(id);
+		                			clients.add(newClient);
+		                			chats.get(0).addParticipant(newClient);		// Legger Klient til i masterChat 
+		                		}
+		                		Iterator<Client> i = clients.iterator();
+			                    while (i.hasNext()) {		// Send message to all clients that a new person has joined
+			                        Client c1 = i.next();
+			                        if (newClient!=c1) { // Hvis ny ikke er lik en som allerede er aktiv, avbbryt               	
+			                        	try {
+			                        		newClient.sendText("CHAT,1,"+userName+","+userName+"logged inn");	
+			                        	} catch (IOException ioelocal) {
+			                        		// Lost connection, but doesn't bother to handle it here
+			                        	}
+			                        }
+			                    }	// While slutt, sagt i fra til alle
+		                	}	// faktisk Logg inn ferdig
+	                	}      // Logg inn type ferdig
+                    	
+                    }			// Sync ferdig
+                   
+                    
+                    
+                    displayMessage("CLIENT CONNECTED:" + userName + "\n");
                     try {
-                        messages.put("LOGIN:" + c.name);
+                        messages.put("LOGIN:" + newClient.name);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -128,8 +151,9 @@ public class ServerController {
             }
         });
     }
-	
-    private void startMessageListener() {
+
+
+	private void startMessageListener() {
         executorService.execute(() -> {			// Thread
             while (!shutdown) {
                 try {
@@ -140,6 +164,24 @@ public class ServerController {
 	                        try {
 		                        String msg = c.read();
 		                        
+		                        
+		                        
+		                        String type = translateMessage(msg, 0);
+		                        String Id = translateMessage(msg, 1);
+		                        String Info = translateMessage(msg, 2);
+		                        String message = translateMessage(msg, 3);
+		                        if (type.equals("LOGIN")) {
+		                        	
+		                        }
+		                        else if (type.equals("LOGOUT")) {
+		                        	
+		                        }
+		                        else if (type.equals("GAME")) {
+		                        	
+		                        }
+		                        else if (type.equals("CHAT")) {
+		                        	
+		                        }
 		                        
 		                       
 		                        if (msg != null && !msg.equals(">>>LOGOUT<<<"))
@@ -192,13 +234,7 @@ public class ServerController {
 	private void displayMessage(String text) {
 		SwingUtilities.invokeLater(() -> status.append(text));
 	}
-	
-	private String translateMessage(String msg , int nr) {
-		 String[] parts = msg.split(",");        
-         return parts[nr];
-	}
-	
-	
+		
 	
 	/**
      * A new object of this class is created for all new clients.
@@ -212,7 +248,7 @@ public class ServerController {
      *
      */
     class Client {
-        private String name;
+        private int ID;
         private Socket connection;
         private BufferedReader input;
         private BufferedWriter output;
@@ -234,12 +270,15 @@ public class ServerController {
                     connection.getInputStream()));
             output = new BufferedWriter(new OutputStreamWriter(
                     connection.getOutputStream()));
-            name = input.readLine();		// TODO ikke hele linja
-            if (!name.startsWith("LOGIN:"))
-                throw new IOException("No login received from client");
-            name = name.substring(6);
         }
-
+        
+        /**
+         * Sets ID 
+         * @param ID
+         */
+        public void setId(int ID) {
+        	this.ID = ID; 
+        }
         /**
          * Closes the buffered reader, the buffered writer and the socket
          * connection.
