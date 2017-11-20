@@ -48,6 +48,7 @@ public class ServerController {
     private ExecutorService executorService;
     private boolean shutdown = false;
     private JTextArea status;
+    private Database db = null;
 	
 	/** Starts up an object of ServerController */
 	public static void main(String[] args) {
@@ -58,12 +59,12 @@ public class ServerController {
 	public ServerController() {		
 		
 		try {
-			Database db = new Database(url);		// tries to connect to DB	
+			db = new Database(url);			// tries to connect to DB	
 		} catch(SQLException sqle) {			
 			url += "create=true";				
 			sqle.printStackTrace();
 			try {
-				Database db = new Database(url);	// if DB not found, adds "create=true" to make DB
+				db = new Database(url);	// if DB not found, adds "create=true" to make DB
 			} catch(SQLException sqle2) {
 				System.err.println("No DB after 2nd try"); 
 				sqle2.printStackTrace();
@@ -71,12 +72,8 @@ public class ServerController {
 		}
 		
 		// ServerController have only one masterChat
-		Chat masterChat = new Chat("masterChat", 1);
+		Chat masterChat = new Chat("MasterChat", 1);
 		chats.add(masterChat);
-		// TODO
-		// alle nye chats som skal legges til sjekkes at det ikke er duplikater
-		//  av chatname og ID før chatserver blir laget
-		
 		
 		try {
             serverSocket = new ServerSocket(12345);
@@ -96,7 +93,6 @@ public class ServerController {
 	private void startLoginMonitor() {
         executorService.execute(() -> {
             while (!shutdown) {
-            
                 try {
                     Socket s = serverSocket.accept();
                     Client newClient = new Client(s);
@@ -109,36 +105,40 @@ public class ServerController {
 	                    String pwd = parts[3];
 
 	                	if(type.equals("LOGIN")) {
-	                		if(operation.equals("0")) {		// REgistrer ny bruker
-	                			db.addUser(userName, pwd);
+	                		if(operation.equals("0")) {		
+	                			if(db.addUser(userName, pwd)) {		// sends report back to client: 
+	                				newClient.sendText("LOGIN,0,TRUE");
+	                			} else { 
+	                				newClient.sendText("LOGIN,0,FALSE");
+	                			}
 	                		}
-	                		// Melding tilbake til bruker su er registrert og kan nå logge inn
-	                	
-		                	else if(operation.equals("1")) {	// Logge inn
-		                		int id = db.getUser(userName, pwd);
-		                		if(id !=-1) {
+		                	else if(operation.equals("1")) {		// Log in
+		                		int id = db.checkLogin(userName, pwd);
+		                		if(id != -1) {
 		                			newClient.setId(id);
 		                			clients.add(newClient);
-		                			chats.get(0).addParticipant(newClient);		// Legger Klient til i masterChat 
+		                			chats.get(0).addParticipant(newClient);	// Legger Klient til i masterChat 
+		                			newClient.sendText("LOGIN,1,TRUE");		// sends report back to client:s
+		                		} else {
+		                			newClient.sendText("LOGIN,1,FALSE");
 		                		}
+		                		
 		                		Iterator<Client> i = clients.iterator();
-			                    while (i.hasNext()) {		// Send message to all clients that a new person has joined
+			                    while (i.hasNext()) {					// Send message to all clients that a new person has joined
 			                        Client c1 = i.next();
-			                        if (newClient!=c1) { // Hvis ny ikke er lik en som allerede er aktiv, avbbryt               	
+			                        if (newClient!=c1) {                	
 			                        	try {
 			                        		newClient.sendText("CHAT,1,"+userName+","+userName+"logged inn");	
 			                        	} catch (IOException ioelocal) {
-			                        		// Lost connection, but doesn't bother to handle it here
+			                        		// TODO fiks exception handling
 			                        	}
 			                        }
 			                    }	// While slutt, sagt i fra til alle
 		                	}	// faktisk Logg inn ferdig
-	                	}      // Logg inn type ferdig
+	                	} 	// Logg inn type ferdig
                     	
-                    }			// Sync ferdig
-                   
-                    
-                    
+                    }	// Sync ferdig
+                 
                     displayMessage("CLIENT CONNECTED:" + userName + "\n");
                     try {
                         messages.put("LOGIN:" + newClient.name);
