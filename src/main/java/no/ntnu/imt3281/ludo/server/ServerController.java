@@ -139,9 +139,9 @@ public class ServerController {
                     	
                     }	// Sync ferdig
                  
-                    displayMessage("CLIENT CONNECTED:" + userName + "\n");
+                    displayMessage("CLIENT CONNECTED:" + newClient.ID + "\n");
                     try {
-                        messages.put("LOGIN:" + newClient.name);
+                        messages.put("LOGIN:" + newClient.ID);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -336,17 +336,18 @@ public class ServerController {
     	
     	public void addParticipant(Client c) {
     		participants.add(c);
-    		
     	}
     	public void removeParticipant(Client c) {
     		participants.removeElement(c);
-    		
     	}
     	public Vector<Client> getParticipant() {
     		return participants; 
+    	}
+    	
+    	public boolean sendChatMessage(String msg) {
     		
     	}
-    	// TODO, trengs en funskjon
+    	
     }
     
     class Game {
