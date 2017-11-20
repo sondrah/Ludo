@@ -13,7 +13,7 @@ Passord samsvarer ikke! Vennligst prøv på nytt
 Brukernavn er opptatt! Vennligst velg et annet
 Ugyldig brukernavn! Vennligst prøv på nytt -->
 
-<Pane fx:id="paneHome" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="409.0" prefWidth="594.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.ntnu.imt3281.ludo.gui.WelcomeController">
+<Pane fx:id="paneHome" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="409.0" prefWidth="594.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.ntnu.imt3281.ludo.gui.WelcomeController">
    <children>
       <Button fx:id="btnHomeLogin" defaultButton="true" layoutX="49.0" layoutY="294.0" mnemonicParsing="false" onAction="#goToLogin" prefHeight="65.0" prefWidth="174.0" text="%welcomescreen.loginBtn">
          <font>
@@ -30,7 +30,7 @@ Ugyldig brukernavn! Vennligst prøv på nytt -->
             <Font size="38.0" />
          </font>
       </Label>
-      <Label fx:id="lblInfo" layoutX="270.0" layoutY="77.0" text="Infotekst">
+      <Label fx:id="lblInfo" alignment="CENTER" contentDisplay="CENTER" layoutX="219.0" layoutY="77.0" text="%welcomescreen.infotext" textAlignment="CENTER">
          <font>
             <Font size="14.0" />
          </font>
@@ -63,11 +63,11 @@ Ugyldig brukernavn! Vennligst prøv på nytt -->
             <Font size="20.0" />
          </font>
       </Label>
-      <Button fx:id="btnRegister" defaultButton="true" layoutX="256.0" layoutY="270.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="107.0" text="%welcomescreen.registerBtn" visible="false">
+      <Button fx:id="btnRegister" defaultButton="true" layoutX="256.0" layoutY="270.0" mnemonicParsing="false" onAction="#register" prefHeight="44.0" prefWidth="107.0" text="%welcomescreen.registerBtn" visible="false">
          <font>
             <Font size="20.0" />
          </font>
       </Button>
-      <Button fx:id="btnHome" layoutX="14.0" layoutY="24.0" mnemonicParsing="false" onAction="#back" prefHeight="25.0" prefWidth="88.0" text="%welcomscreen.back" visible="false" />
+      <Button fx:id="btnHome" layoutX="14.0" layoutY="24.0" mnemonicParsing="false" onAction="#back" prefHeight="25.0" prefWidth="54.0" text="%welcomescreen.backBtn" visible="false" />
    </children>
 </Pane>

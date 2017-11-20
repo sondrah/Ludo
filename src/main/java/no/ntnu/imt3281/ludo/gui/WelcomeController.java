@@ -10,6 +10,7 @@ import java.net.Socket;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -18,6 +19,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import no.ntnu.imt3281.i18n.I18N;
 import no.ntnu.imt3281.ludo.client.MD5Encrypt;
@@ -116,7 +118,9 @@ public class WelcomeController {
 		btnHomeRegister.setVisible(true);
 		lblInfo.setVisible(true);
 		lblHeader.setText(I18N.tr("welcomescreen.welcome"));
+		lblHeader.setAlignment(Pos.CENTER);
 		lblInfo.setText(I18N.tr("welcomescreen.infotext"));
+		lblInfo.setTextAlignment(TextAlignment.CENTER);
 		
 		btnHome.setVisible(false);
 		lblUsername.setVisible(false);
@@ -204,10 +208,9 @@ public class WelcomeController {
 	
 		if(usr.length() <= 0 || usr.length() > 20 || pwd.length() <= 0) {
 			lblError.setVisible(true);
-			// TODO i18n
 			lblError.setText(I18N.tr("errors.notValidUserOrPassword"));
 		}
-		else if(pwd != pwd2) {
+		else if(!pwd.equals(pwd2)) {
 			lblError.setVisible(true);
 			lblError.setText(I18N.tr("errors.equalPassword"));
 		}
