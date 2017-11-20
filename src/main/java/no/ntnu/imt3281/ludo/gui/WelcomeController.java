@@ -24,8 +24,10 @@ import no.ntnu.imt3281.ludo.client.MD5Encrypt;
 
 
 /**
- *
- *
+ * This class acts as a controller for the "home" menus.
+ * Performs different actions based on button clicks, and sets
+ * labels, buttons, textfield to true/false based on what the
+ * current menu is.
  */
 public class WelcomeController {
 	@FXML
@@ -60,6 +62,10 @@ public class WelcomeController {
 	private PasswordField txtFieldPassword2;
 	
 	
+	/**
+	 * determines the visual elements for the login screen
+	 * @param event button click caused by the login button of the home screen
+	 */
 	@FXML
 	public void goToLogin(ActionEvent event) {
 		btnHomeLogin.setVisible(false);
@@ -74,6 +80,10 @@ public class WelcomeController {
 		btnHome.setVisible(true);
 	}
 	
+	/**
+	 * determines the visual elements for the register screen
+	 * @param event button click caused by the register button of the home screen
+	 */
 	@FXML
 	public void goToRegister(ActionEvent event) {
 		
@@ -91,6 +101,10 @@ public class WelcomeController {
 		btnHome.setVisible(true);
 	}
 	
+	/**
+	 * determines the visual elements for the home screen
+	 * @param event button click caused by the back button of the login/register screen
+	 */
 	@FXML
 	public void back(ActionEvent event) {
 				
@@ -109,6 +123,12 @@ public class WelcomeController {
 		btnLogin.setVisible(false);
 	}
 	
+	/**
+	 * Checks the login credentials with the server.
+	 * Displays an error message if login not successful,
+	 * else opens Ludo
+	 * @param event button click caused login button of the login screen
+	 */
 	@FXML
 	public void login(ActionEvent event) {
 		Parent root;
@@ -160,6 +180,12 @@ public class WelcomeController {
 		}
 	}
 	
+	/**
+	 * Registers a new users if inputed values are valid, and updates
+	 * this information with server and database.
+	 * Displays error message if not valid. 
+	 * @param event button click caused register button of the register screen
+	 */
 	@FXML	
 	public void register(ActionEvent event) {
 		String usr, pwd, pwd2;
@@ -180,6 +206,7 @@ public class WelcomeController {
 			lblError.setVisible(false);	// TODO sjekk mot server 
 			lblInfo.setVisible(true);
 			lblInfo.setText("Bruker er registrert! Trykk tilbake for å logge inn.");
+			txtFieldUsername.setText("");
 		}
 		txtFieldPassword.setText("");
 		txtFieldPassword2.setText("");
