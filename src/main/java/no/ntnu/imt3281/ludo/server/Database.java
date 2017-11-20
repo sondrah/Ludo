@@ -146,8 +146,11 @@ public class Database {
 	 * Tries to add a user to the usertable table
 	 * @param username The username of the user
 	 * @param password The hashed password
+	 * @return True if user where found, false otherwise
 	 */
-	public void addUser(String username, String password) {
+	public boolean addUser(String username, String password) {
+		
+		boolean added = true;
 		
 		try {
 			Statement stmt = con.createStatement();
@@ -160,10 +163,13 @@ public class Database {
 		}
 		catch (DerbySQLIntegrityConstraintViolationException dicve) {
 			System.err.println("Constraint error: " + dicve.getMessage());
+			added = false;
 		}
 		catch (SQLException sqle) {
 			sqle.printStackTrace();
 		}
+		
+		return added;
 	}
 	
 	

@@ -71,7 +71,9 @@ public class WelcomeController {
 		btnHomeLogin.setVisible(false);
 		btnHomeRegister.setVisible(false);
 		lblInfo.setVisible(false);
-		lblHeader.setText("Logg inn her");
+		
+		lblHeader.setText(I18N.tr("welcomescreen.login"));
+		
 		lblUsername.setVisible(true);
 		lblPassword.setVisible(true);
 		txtFieldUsername.setVisible(true);
@@ -90,7 +92,9 @@ public class WelcomeController {
 		btnHomeLogin.setVisible(false);
 		btnHomeRegister.setVisible(false);
 		lblInfo.setVisible(false);
-		lblHeader.setText("Registrer her");
+		
+		lblHeader.setText(I18N.tr("welcomescreen.register"));
+		
 		lblUsername.setVisible(true);
 		lblPassword.setVisible(true);
 		lblPassword2.setVisible(true);
@@ -111,7 +115,9 @@ public class WelcomeController {
 		btnHomeLogin.setVisible(true);
 		btnHomeRegister.setVisible(true);
 		lblInfo.setVisible(true);
-		lblHeader.setText("Velkommen til Ludo!");
+		lblHeader.setText(I18N.tr("welcomescreen.welcome"));
+		lblInfo.setText(I18N.tr("welcomescreen.infotext"));
+		
 		btnHome.setVisible(false);
 		lblUsername.setVisible(false);
 		lblPassword.setVisible(false);
@@ -144,6 +150,7 @@ public class WelcomeController {
 				
 				String hashedPwd = MD5Encrypt.cryptWithMD5(pwd);
 				
+				// sends login-request: LOGIN,1,usr,pwd
 				bw.write("LOGIN,1," + usr + "," + hashedPwd);
 				
 				bw.close();
@@ -152,9 +159,11 @@ public class WelcomeController {
 						new InputStreamReader(socket.getInputStream()));
 				
 				
+				// gets the true/false of: LOGIN,1,true/false
 				String res = br.readLine();
+				res = res.split(",")[2];
 				
-				if(res == "true") {
+				if(res.toUpperCase() == "FALSE") {
 					try {
 			            root = FXMLLoader.load(getClass().getResource("Ludo.fxml"));
 			            Stage stage = new Stage();
@@ -196,16 +205,16 @@ public class WelcomeController {
 		if(usr.length() <= 0 || usr.length() > 20 || pwd.length() <= 0) {
 			lblError.setVisible(true);
 			// TODO i18n
-			lblError.setText("Ugyldig passord eller brukernavn. Brukernavn og passord må inneholde en tekst");
+			lblError.setText(I18N.tr("errors.notValidUserOrPassword"));
 		}
 		else if(pwd != pwd2) {
 			lblError.setVisible(true);
-			lblError.setText("Begge passordfelt må være like");
+			lblError.setText(I18N.tr("errors.equalPassword"));
 		}
 		else {
 			lblError.setVisible(false);	// TODO sjekk mot server 
 			lblInfo.setVisible(true);
-			lblInfo.setText("Bruker er registrert! Trykk tilbake for å logge inn.");
+			lblInfo.setText(I18N.tr("register.success"));
 			txtFieldUsername.setText("");
 		}
 		txtFieldPassword.setText("");
