@@ -17,20 +17,30 @@ import javafx.stage.Stage;
 import no.ntnu.imt3281.ludo.gui.WelcomeController;
 import javafx.event.ActionEvent;
 
+/**
+ * 
+ *
+ */
 public class Client extends Application{
 	
-	
+	/**
+	 * Constructs a new client
+	 */
 	public Client() {
 		//Stage primaryStage = new Stage();
 		//start(primaryStage);
 	}
 	
+	/**
+	 * launches the application
+	 * @param args command line arguments
+	 */
 	public static void main(String[] args) {
 		Client c = new Client();
 		launch(args);
 	}
 	
-	
+	// Launches the initial window of the application (Welcome screen)
 	@Override
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("Ludo");
