@@ -54,7 +54,7 @@ public class ChatServer extends JFrame {
     public ChatServer(String chatname, int ID) {
         super("Chat server: "+chatname);
         
-        this.ID = ID;	// nødvendig?
+        //this.ID = ID;	// nødvendig?
 
         // Sets up the status area where all communications is logged.
         status = new JTextArea();
