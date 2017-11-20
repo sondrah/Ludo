@@ -19,25 +19,25 @@
          <top>
             <MenuBar BorderPane.alignment="CENTER">
               <menus>
-                <Menu mnemonicParsing="false" text="File">
+                <Menu mnemonicParsing="false" text="%ludo.file">
                   <items>
                         <MenuItem mnemonicParsing="false" text="Connect" />
                     <MenuItem mnemonicParsing="false" text="Close" />
                   </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Game">
+                <Menu mnemonicParsing="false" text="%ludo.game">
                   <items>
                     <MenuItem fx:id="random" mnemonicParsing="false" onAction="#joinRandomGame" text="Random game" />
                         <MenuItem mnemonicParsing="false" text="Challenge players" />
                   </items>
                 </Menu>
-                  <Menu mnemonicParsing="false" text="Chat">
+                  <Menu mnemonicParsing="false" text="%ludo.chat">
                     <items>
                       <MenuItem mnemonicParsing="false" text="Join room" />
                         <MenuItem mnemonicParsing="false" text="List rooms" />
                     </items>
                   </Menu>
-                <Menu mnemonicParsing="false" text="Help">
+                <Menu mnemonicParsing="false" text="%ludo.help">
                   <items>
                     <MenuItem mnemonicParsing="false" text="About" />
                   </items>
@@ -48,7 +48,7 @@
          <center>
             <TabPane fx:id="tabbedPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
                <tabs>
-                  <Tab text="Home">
+                  <Tab text="%ludo.home">
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>

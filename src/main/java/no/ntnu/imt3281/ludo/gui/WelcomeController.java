@@ -147,7 +147,7 @@ public class WelcomeController {
 		String usr = txtFieldUsername.getText();
 		String pwd = txtFieldPassword.getText();
 		
-		if(usr.length() < 0 || usr.length() > 20 || pwd.length() < 0) {
+		if(usr.length() <= 0 || usr.length() > 20 || pwd.length() <= 0) {
 			lblError.setVisible(true);
 			lblError.setText(I18N.tr("errors.notValidUserOrPassword"));
 			
@@ -224,6 +224,7 @@ public class WelcomeController {
 			lblInfo.setVisible(true);
 			lblInfo.setText(I18N.tr("register.success"));
 			txtFieldUsername.setText("");
+			btnRegister.setVisible(false);
 		}
 		txtFieldPassword.setText("");
 		txtFieldPassword2.setText("");
