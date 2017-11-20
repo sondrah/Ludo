@@ -9,6 +9,7 @@ import com.sun.javafx.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -21,6 +22,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 /**
@@ -111,7 +113,19 @@ public class WelcomeController {
 	
 	@FXML
 	public void login(ActionEvent event) {
-		
+		 Parent root;
+	        try {
+	            root = FXMLLoader.load(getClass().getResource("Ludo.fxml"));
+	            Stage stage = new Stage();
+	            stage.setTitle("Ludo");
+	            stage.setScene(new Scene(root, 1050, 800));
+	            stage.show();
+	            // Hide this current window (if this is what you want)
+	            ((Node)(event.getSource())).getScene().getWindow().hide();
+	        }
+	        catch (IOException e) {
+	            e.printStackTrace();
+	        }
 	}
 	
 	@FXML	

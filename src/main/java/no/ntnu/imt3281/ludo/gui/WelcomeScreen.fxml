@@ -25,7 +25,7 @@ Ugyldig brukernavn! Vennligst prøv på nytt -->
             <Font size="30.0" />
          </font>
       </Button>
-      <Label fx:id="lblHeader" layoutX="123.0" layoutY="24.0" text="Velkommen til Ludo!">
+      <Label fx:id="lblHeader" alignment="CENTER" layoutX="123.0" layoutY="24.0" text="Velkommen til Ludo!" textAlignment="CENTER">
          <font>
             <Font size="38.0" />
          </font>
@@ -63,7 +63,7 @@ Ugyldig brukernavn! Vennligst prøv på nytt -->
             <Font size="20.0" />
          </font>
       </Label>
-      <Button fx:id="btnRegister" defaultButton="true" layoutX="256.0" layoutY="270.0" mnemonicParsing="false" onAction="#register" text="Registrer" visible="false">
+      <Button fx:id="btnRegister" defaultButton="true" layoutX="256.0" layoutY="270.0" mnemonicParsing="false" text="Registrer" visible="false">
          <font>
             <Font size="20.0" />
          </font>

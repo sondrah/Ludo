@@ -32,7 +32,7 @@ public class LudoController {
     @FXML
     public void joinRandomGame(ActionEvent e) {  	
     	FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
-    	loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.I18N.i18n"));
+    	loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.i18n.i18n"));
 
 		GameBoardController controller = loader.getController();
 		// Use controller to set up communication for this game.
