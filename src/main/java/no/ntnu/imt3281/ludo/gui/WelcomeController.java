@@ -126,6 +126,7 @@ public class WelcomeController {
 		lblUsername.setVisible(false);
 		lblPassword.setVisible(false);
 		lblPassword2.setVisible(false);
+		lblError.setVisible(false);
 		txtFieldUsername.setVisible(false);
 		txtFieldPassword.setVisible(false);
 		txtFieldPassword2.setVisible(false);
@@ -147,6 +148,10 @@ public class WelcomeController {
 		String pwd = txtFieldPassword.getText();
 		
 		if(usr.length() < 0 || usr.length() > 20 || pwd.length() < 0) {
+			lblError.setVisible(true);
+			lblError.setText(I18N.tr("errors.notValidUserOrPassword"));
+			
+		} else {
 			try {
 				Socket socket = new Socket("localhost", 12345);
 				BufferedWriter bw = new BufferedWriter(
@@ -188,7 +193,7 @@ public class WelcomeController {
 				}
 			}
 			catch(IOException ioe) {
-				
+				ioe.printStackTrace();
 			}
 		}
 	}
