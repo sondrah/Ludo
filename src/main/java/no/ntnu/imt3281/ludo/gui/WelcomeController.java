@@ -1,29 +1,27 @@
 package no.ntnu.imt3281.ludo.gui;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.ResourceBundle;
-
-import com.sun.glass.ui.Window.Level;
-import com.sun.javafx.logging.Logger;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import no.ntnu.imt3281.i18n.I18N;
+import no.ntnu.imt3281.ludo.client.MD5Encrypt;
+
 
 /**
  *
@@ -113,19 +111,53 @@ public class WelcomeController {
 	
 	@FXML
 	public void login(ActionEvent event) {
-		 Parent root;
-	        try {
-	            root = FXMLLoader.load(getClass().getResource("Ludo.fxml"));
-	            Stage stage = new Stage();
-	            stage.setTitle("Ludo");
-	            stage.setScene(new Scene(root, 1050, 800));
-	            stage.show();
-	            // Hide this current window (if this is what you want)
-	            ((Node)(event.getSource())).getScene().getWindow().hide();
-	        }
-	        catch (IOException e) {
-	            e.printStackTrace();
-	        }
+		Parent root;
+		
+		String usr = txtFieldUsername.getText();
+		String pwd = txtFieldPassword.getText();
+		
+		if(usr.length() < 0 || usr.length() > 20 || pwd.length() < 0) {
+			try {
+				Socket socket = new Socket("localhost", 12345);
+				BufferedWriter bw = new BufferedWriter(
+						new OutputStreamWriter(socket.getOutputStream()));
+				
+				String hashedPwd = MD5Encrypt.cryptWithMD5(pwd);
+				
+				bw.write("LOGIN,1," + usr + "," + hashedPwd);
+				
+				bw.close();
+				
+				BufferedReader br = new BufferedReader(
+						new InputStreamReader(socket.getInputStream()));
+				
+				
+				String res = br.readLine();
+				
+				if(res == "true") {
+					try {
+			            root = FXMLLoader.load(getClass().getResource("Ludo.fxml"));
+			            Stage stage = new Stage();
+			            stage.setTitle("Ludo");
+			            stage.setScene(new Scene(root, 1050, 800));
+			            stage.show();
+			            
+			            // hiding the login window (effecevly: closing it)
+			            ((Node)(event.getSource())).getScene().getWindow().hide();
+			        }
+			        catch (IOException e) {
+			            e.printStackTrace();
+			        }
+					
+				} else {
+					lblError.setVisible(true);
+					lblError.setText(I18N.tr("errors.failedToLogIn"));
+				}
+			}
+			catch(IOException ioe) {
+				
+			}
+		}
 	}
 	
 	@FXML	
