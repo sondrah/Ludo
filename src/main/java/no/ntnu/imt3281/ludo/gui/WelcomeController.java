@@ -1,29 +1,27 @@
 package no.ntnu.imt3281.ludo.gui;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.ResourceBundle;
-
-import com.sun.glass.ui.Window.Level;
-import com.sun.javafx.logging.Logger;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import no.ntnu.imt3281.i18n.I18N;
+import no.ntnu.imt3281.ludo.client.MD5Encrypt;
+
 
 /**
  * This class acts as a controller for the "home" menus.
@@ -73,7 +71,9 @@ public class WelcomeController {
 		btnHomeLogin.setVisible(false);
 		btnHomeRegister.setVisible(false);
 		lblInfo.setVisible(false);
-		lblHeader.setText("Logg inn her");
+		
+		lblHeader.setText(I18N.tr("welcomescreen.login"));
+		
 		lblUsername.setVisible(true);
 		lblPassword.setVisible(true);
 		txtFieldUsername.setVisible(true);
@@ -92,7 +92,9 @@ public class WelcomeController {
 		btnHomeLogin.setVisible(false);
 		btnHomeRegister.setVisible(false);
 		lblInfo.setVisible(false);
-		lblHeader.setText("Registrer her");
+		
+		lblHeader.setText(I18N.tr("welcomescreen.register"));
+		
 		lblUsername.setVisible(true);
 		lblPassword.setVisible(true);
 		lblPassword2.setVisible(true);
@@ -113,7 +115,9 @@ public class WelcomeController {
 		btnHomeLogin.setVisible(true);
 		btnHomeRegister.setVisible(true);
 		lblInfo.setVisible(true);
-		lblHeader.setText("Velkommen til Ludo!");
+		lblHeader.setText(I18N.tr("welcomescreen.welcome"));
+		lblInfo.setText(I18N.tr("welcomescreen.infotext"));
+		
 		btnHome.setVisible(false);
 		lblUsername.setVisible(false);
 		lblPassword.setVisible(false);
@@ -133,20 +137,56 @@ public class WelcomeController {
 	 */
 	@FXML
 	public void login(ActionEvent event) {
-		 Parent root;
-	        try {
-	        	// TODO sjekk mot server
-	            root = FXMLLoader.load(getClass().getResource("Ludo.fxml"));
-	            Stage stage = new Stage();
-	            stage.setTitle("Ludo");
-	            stage.setScene(new Scene(root, 1050, 800));
-	            stage.show();
-	            // Hide this current window (if this is what you want)
-	            ((Node)(event.getSource())).getScene().getWindow().hide();
-	        }
-	        catch (IOException e) {
-	            e.printStackTrace();
-	        }
+		Parent root;
+		
+		String usr = txtFieldUsername.getText();
+		String pwd = txtFieldPassword.getText();
+		
+		if(usr.length() < 0 || usr.length() > 20 || pwd.length() < 0) {
+			try {
+				Socket socket = new Socket("localhost", 12345);
+				BufferedWriter bw = new BufferedWriter(
+						new OutputStreamWriter(socket.getOutputStream()));
+				
+				String hashedPwd = MD5Encrypt.cryptWithMD5(pwd);
+				
+				// sends login-request: LOGIN,1,usr,pwd
+				bw.write("LOGIN,1," + usr + "," + hashedPwd);
+				
+				bw.close();
+				
+				BufferedReader br = new BufferedReader(
+						new InputStreamReader(socket.getInputStream()));
+				
+				
+				// gets the true/false of: LOGIN,1,true/false
+				String res = br.readLine();
+				res = res.split(",")[2];
+				
+				if(res.toUpperCase() == "FALSE") {
+					try {
+			            root = FXMLLoader.load(getClass().getResource("Ludo.fxml"));
+			            Stage stage = new Stage();
+			            stage.setTitle("Ludo");
+			            stage.setScene(new Scene(root, 1050, 800));
+			            stage.show();
+			            
+			            // hiding the login window (effecevly: closing it)
+			            ((Node)(event.getSource())).getScene().getWindow().hide();
+			        }
+			        catch (IOException e) {
+			            e.printStackTrace();
+			        }
+					
+				} else {
+					lblError.setVisible(true);
+					lblError.setText(I18N.tr("errors.failedToLogIn"));
+				}
+			}
+			catch(IOException ioe) {
+				
+			}
+		}
 	}
 	
 	/**
@@ -165,16 +205,16 @@ public class WelcomeController {
 		if(usr.length() <= 0 || usr.length() > 20 || pwd.length() <= 0) {
 			lblError.setVisible(true);
 			// TODO i18n
-			lblError.setText("Ugyldig passord eller brukernavn. Brukernavn og passord må inneholde en tekst");
+			lblError.setText(I18N.tr("errors.notValidUserOrPassword"));
 		}
 		else if(pwd != pwd2) {
 			lblError.setVisible(true);
-			lblError.setText("Begge passordfelt må være like");
+			lblError.setText(I18N.tr("errors.equalPassword"));
 		}
 		else {
 			lblError.setVisible(false);	// TODO sjekk mot server 
 			lblInfo.setVisible(true);
-			lblInfo.setText("Bruker er registrert! Trykk tilbake for å logge inn.");
+			lblInfo.setText(I18N.tr("register.success"));
 			txtFieldUsername.setText("");
 		}
 		txtFieldPassword.setText("");

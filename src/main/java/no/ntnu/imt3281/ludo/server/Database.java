@@ -145,25 +145,31 @@ public class Database {
 	/**
 	 * Tries to add a user to the usertable table
 	 * @param username The username of the user
-	 * @param password The password of the user
+	 * @param password The hashed password
+	 * @return True if user where found, false otherwise
 	 */
-	public void addUser(User user) {
+	public boolean addUser(String username, String password) {
+		
+		boolean added = true;
 		
 		try {
 			Statement stmt = con.createStatement();
 			
 			System.err.println("addUser");
 			stmt.execute( "INSERT INTO usertable (username, password)"
-						+ "VALUES ('" + user.getUsername() + "', '" + user.getPassword() + "')");
+						+ "VALUES ('" + username + "', '" + password + "')");
 			
-			System.err.println("added: " + user.getUsername());
+			System.err.println("added: " + username);
 		}
 		catch (DerbySQLIntegrityConstraintViolationException dicve) {
 			System.err.println("Constraint error: " + dicve.getMessage());
+			added = false;
 		}
 		catch (SQLException sqle) {
 			sqle.printStackTrace();
 		}
+		
+		return added;
 	}
 	
 	
@@ -334,6 +340,33 @@ public class Database {
 		}
 		
 		return chatid;
+	}
+	
+	/**
+	 * This is used to check valid login parameters
+	 * @param username The username of the user
+	 * @param password The password of the user (should be encryptet)
+	 * @return The id of the user or -1 if login credential was a missmatch
+	 */
+	public int checkLogin(String username, String password) {
+		
+		int userid = -1;
+		
+		try {
+			Statement stmt = con.createStatement();
+			
+			ResultSet res = stmt.executeQuery("SELECT id FROM usertable "
+									+ "WHERE chatname = '" + username + "'"
+									+ "AND password = '" + password + "'");
+			
+			res.next();
+			userid = res.getInt("id");
+		}
+		catch (SQLException sqle) {
+			sqle.printStackTrace();
+		}
+		
+		return userid;
 	}
 	
 	

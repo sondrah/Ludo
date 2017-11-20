@@ -1,7 +1,6 @@
 package no.ntnu.imt3281.ludo.gui;
 
 import java.io.IOException;
-import java.util.ResourceBundle;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,6 +9,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
+import no.ntnu.imt3281.i18n.I18N;
 
 /**
  * Controlls all actions on the homepage
@@ -32,7 +32,7 @@ public class LudoController {
     @FXML
     public void joinRandomGame(ActionEvent e) {  	
     	FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
-    	loader.setResources(ResourceBundle.getBundle("no.ntnu.imt3281.i18n.i18n"));
+    	loader.setResources(I18N.getRsb());
 
 		GameBoardController controller = loader.getController();
 		// Use controller to set up communication for this game.
