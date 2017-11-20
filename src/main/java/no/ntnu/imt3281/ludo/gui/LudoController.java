@@ -12,8 +12,9 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 
 /**
- * This class controlls the flow of the game and comunications between server
- * and the different clients
+ * Controlls all actions on the homepage
+ * Has the masterchat, friendlists and other
+ * functionalities like starting new games
  */
 public class LudoController {
 

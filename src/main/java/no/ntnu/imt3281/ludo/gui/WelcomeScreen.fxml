@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<!-- Feilmeldinger:
+Ugyldig passord! Vennligst prøv på nytt
+Passord samsvarer ikke! Vennligst prøv på nytt
+Brukernavn er opptatt! Vennligst velg et annet
+Ugyldig brukernavn! Vennligst prøv på nytt -->
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="409.0" prefWidth="594.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Button defaultButton="true" layoutX="86.0" layoutY="205.0" mnemonicParsing="false" text="Logg inn">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </Button>
+      <Button layoutX="330.0" layoutY="205.0" mnemonicParsing="false" text="Registrer">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </Button>
+      <Label layoutX="123.0" layoutY="24.0" text="Velkommen til Ludo!">
+         <font>
+            <Font size="38.0" />
+         </font>
+      </Label>
+      <Label layoutX="179.0" layoutY="79.0" text="Logg inn eller registrer deg for å spille">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+   </children>
+</Pane>
