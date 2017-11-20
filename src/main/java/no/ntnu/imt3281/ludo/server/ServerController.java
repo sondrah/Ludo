@@ -72,12 +72,8 @@ public class ServerController {
 		}
 		
 		// ServerController have only one masterChat
-		Chat masterChat = new Chat("masterChat", 1);
+		Chat masterChat = new Chat("MasterChat", 1);
 		chats.add(masterChat);
-		// TODO
-		// alle nye chats som skal legges til sjekkes at det ikke er duplikater
-		//  av chatname og ID før chatserver blir laget
-		
 		
 		try {
             serverSocket = new ServerSocket(12345);
@@ -110,18 +106,23 @@ public class ServerController {
 
 	                	if(type.equals("LOGIN")) {
 	                		if(operation.equals("0")) {		
-	                			if(db.addUser(userName, pwd)) {			// if no username duplicate 
+	                			if(db.addUser(userName, pwd)) {		// sends report back to client: 
 	                				newClient.sendText("LOGIN,0,TRUE");
+	                			} else { 
+	                				newClient.sendText("LOGIN,0,FALSE");
 	                			}
-	                			newClient.sendText("LOGIN,0,FALSE");
 	                		}
-		                	else if(operation.equals("1")) {			// Log in
-		                		int id = db.getUser(userName, pwd);
-		                		if(id !=-1) {
-		                			newClient.setId(id);n
+		                	else if(operation.equals("1")) {		// Log in
+		                		int id = db.checkLogin(userName, pwd);
+		                		if(id != -1) {
+		                			newClient.setId(id);
 		                			clients.add(newClient);
 		                			chats.get(0).addParticipant(newClient);	// Legger Klient til i masterChat 
+		                			newClient.sendText("LOGIN,1,TRUE");		// sends report back to client:s
+		                		} else {
+		                			newClient.sendText("LOGIN,1,FALSE");
 		                		}
+		                		
 		                		Iterator<Client> i = clients.iterator();
 			                    while (i.hasNext()) {					// Send message to all clients that a new person has joined
 			                        Client c1 = i.next();
@@ -137,9 +138,7 @@ public class ServerController {
 	                	} 	// Logg inn type ferdig
                     	
                     }	// Sync ferdig
-                   
-                    
-                    
+                 
                     displayMessage("CLIENT CONNECTED:" + userName + "\n");
                     try {
                         messages.put("LOGIN:" + newClient.name);
