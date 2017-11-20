@@ -23,6 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 /**
+ * ************** This code is borrowed from okolloen **********************
  * This is the client in the multiuser chat system. It is a fairly basic chat
  * system with only one room but an unlimited number of simultaneous users. When
  * started the client asks the user for a nickname and that is used throughout
@@ -39,17 +40,17 @@ public class ChatClient extends JFrame {
     private JTextField textToSend;
     private JList<String> participants;
     private DefaultListModel<String> participantsModel;
-    private String myName;
-    private ObjectOutputStream output;	
-    private ObjectInputStream input;	
+    private String name;
+    private BufferedWriter output;	
+    private BufferedReader input;	
     private Socket socket;
     
 
     /**
      * Clients side of connection with a specific chat server
      */
-    public ChatClient() {		// param: chatname
-        super("Chat client");
+    public ChatClient(String chatname) {		
+        super("Chat client: "+chatname);
 
         // Set up the textarea used to display all messages
         dialog = new JTextArea();
@@ -100,14 +101,16 @@ public class ChatClient extends JFrame {
     public void connect() {
         try {
             socket = new Socket("localhost", 12345);
-            input = new ObjectInputStream(socket.getInputStream());
-            output = new ObjectOutputStream(socket.getOutputStream());
-            myName = JOptionPane.showInputDialog(this, "Your nickname?");
-            if (myName == null || myName.equals("")) {		// TODO legge inn sjekk mot Db
+            input = new BufferedReader(new InputStreamReader(
+                    socket.getInputStream()));
+            output = new BufferedWriter(new OutputStreamWriter(
+                    socket.getOutputStream()));
+            
+            if (name == null || name.equals("")) {		// TODO legge inn sjekk mot Db
                 JOptionPane.showMessageDialog(this, "No nick given");
                 System.exit(1);
             }
-            sendText("LOGIN:" + myName);
+            sendText("LOGIN:" + name);
         } catch (IOException ioe) { // If we are unable to connect, alert the
                                     // user and exit
             JOptionPane.showMessageDialog(this, "Error connecting to server: "
@@ -184,11 +187,11 @@ public class ChatClient extends JFrame {
      */
     private void sendText(String textToSend) {
         try {
-            /*
+            
         	output.write(textToSend);
             output.newLine();
             output.flush();
-            */
+            
         } catch (IOException ioe) {
             JOptionPane
                     .showMessageDialog(this, "Error sending message: " + ioe);
@@ -202,7 +205,7 @@ public class ChatClient extends JFrame {
      *            not used
      */
     public static void main(String[] args) {
-        ChatClient application = new ChatClient();
+        ChatClient application = new ChatClient("chat navn her");
         application.setDefaultCloseOperation(EXIT_ON_CLOSE);
         application.connect(); // Connect to the server
         application.processConnection(); // Start processing messages from the

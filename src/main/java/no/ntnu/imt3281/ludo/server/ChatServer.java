@@ -20,6 +20,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 /**
+ * ****************This code is borrowed from okolloen**************************
  * Multithreaded chat server. Runs three different threads, one for login requests,
  * one for reading incoming messages and one for sending messages out again.
  * 
@@ -37,6 +38,7 @@ public class ChatServer extends JFrame {
     private ServerSocket server;
     private ExecutorService executorService;
     private boolean shutdown = false;
+    
 
     /**
      * Sets up the GUI and starts the threads.
@@ -49,8 +51,10 @@ public class ChatServer extends JFrame {
      * in turn to see if any messages have been received. If a message has been received 
      * that message is put on the queue to be handled by the message sending thread.
      */
-    public ChatServer(String chatname) {
-        super(chatname);
+    public ChatServer(String chatname, int ID) {
+        super("Chat server: "+chatname);
+        
+        this.ID = ID;	// nødvendig?
 
         // Sets up the status area where all communications is logged.
         status = new JTextArea();
