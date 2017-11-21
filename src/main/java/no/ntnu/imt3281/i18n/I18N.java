@@ -36,7 +36,7 @@ public final class I18N{
      * @param file Path to the i18n-file
      */
     public static void getResource(String file) {
-    	rsb = ResourceBundle.getBundle(file);
+    	rsb = ResourceBundle.getBundle(file, new Locale("en", "US"));
     }
     
     /**
