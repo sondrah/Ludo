@@ -146,7 +146,8 @@ public class WelcomeController {
 		
 		String usr = txtFieldUsername.getText();
 		String pwd = txtFieldPassword.getText();
-		
+
+		/*
 		if(usr.length() <= 0 || usr.length() > 20 || pwd.length() <= 0) {
 			lblError.setVisible(true);
 			lblError.setText(I18N.tr("errors.notValidUserOrPassword"));
@@ -172,7 +173,7 @@ public class WelcomeController {
 				String res = br.readLine();
 				res = res.split(",")[2];
 				
-				if(res.toUpperCase() == "FALSE") {
+				if(res.toUpperCase() == "TRUE") {
 					try {
 			            root = FXMLLoader.load(getClass().getResource("Ludo.fxml"));
 			            Stage stage = new Stage();
@@ -194,8 +195,24 @@ public class WelcomeController {
 			}
 			catch(IOException ioe) {
 				ioe.printStackTrace();
+				lblError.setVisible(true);
+				lblError.setText(I18N.tr("errors.connectionError"));
 			}
-		}
+		}*/
+		
+		try {
+            root = FXMLLoader.load(getClass().getResource("Ludo.fxml"), I18N.getRsb());
+            Stage stage = new Stage();
+            stage.setTitle("Ludo");
+            stage.setScene(new Scene(root, 1050, 800));
+            stage.show();
+            
+            // hiding the login window (effecevly: closing it)
+            ((Node)(event.getSource())).getScene().getWindow().hide();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 	
 	/**

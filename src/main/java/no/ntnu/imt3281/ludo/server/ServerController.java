@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -36,9 +37,9 @@ public class ServerController {
 	private ServerSocket serverSocket;
 	/** ArrayList wit all logged in clients */
 	private ArrayList<Client> clients = new ArrayList<Client>();
-	/** A vector all chats */
+	/** Array list of all chats */
 	private ArrayList<Chat> chats = new ArrayList<Chat>();
-	/** A vector all chats */
+	/** Array list of all games */
 	private ArrayList<Game> games = new ArrayList<Game>();
 	   
 	
@@ -72,7 +73,7 @@ public class ServerController {
 		}
 		
 		// ServerController have only one masterChat
-		Chat masterChat = new Chat("MasterChat", 1);
+		Chat masterChat = new Chat(1);
 		chats.add(masterChat);
 		
 		try {
@@ -126,7 +127,7 @@ public class ServerController {
 		                		Iterator<Client> i = clients.iterator();
 			                    while (i.hasNext()) {					// Send message to all clients that a new person has joined
 			                        Client c1 = i.next();
-			                        if (newClient!=c1) {                	
+			                        if (newClient!=c1) {      		// TODO sjekk denne          	
 			                        	try {
 			                        		newClient.sendText("CHAT,1,"+userName+","+userName+"logged inn");	
 			                        	} catch (IOException ioelocal) {
@@ -139,9 +140,9 @@ public class ServerController {
                     	
                     }	// Sync ferdig
                  
-                    displayMessage("CLIENT CONNECTED:" + userName + "\n");
+                    displayMessage("CLIENT CONNECTED:" + newClient.ID + "\n");
                     try {
-                        messages.put("LOGIN:" + newClient.name);
+                        messages.put("LOGIN:" + newClient.ID);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -151,39 +152,64 @@ public class ServerController {
             }
         });
     }
+	
+	private void sendMessageTo() {
+		
+	}
 
-
-	private void startMessageListener() {
-        executorService.execute(() -> {			// Thread
+	private void startMessageListener() {		// En ny melding har dukket opp på stacken
+        executorService.execute(() -> {			// Thread 
             while (!shutdown) {
                 try {
                 	synchronized (clients) {	// Only one thread at a time might use the clients object 
 	                    Iterator<Client> i = clients.iterator();	// Iterate throug all clients
+	                    	// TODO spm, må man gå igjennom alle clientene for å finne meldingen som er sendt?? ref Øyvind eks
 	                    while (i.hasNext()) {			
-	                        Client c = i.next();		// TODO SA - hopper over første?
+	                        Client curClient = i.next();		// TODO SA - hopper over første?
 	                        try {
-		                        String msg = c.read();
-		                        
-		                        
-		                        
-		                        String type = translateMessage(msg, 0);
-		                        String Id = translateMessage(msg, 1);
-		                        String Info = translateMessage(msg, 2);
-		                        String message = translateMessage(msg, 3);
-		                        if (type.equals("LOGIN")) {
-		                        	
-		                        }
-		                        else if (type.equals("LOGOUT")) {
+	                        	String msg = curClient.read();		// Leser inn meldingen 
+	                        	String[] parts = msg.split(",");   	// Splitter den opp på , komma
+	                        	// TODO id til "fra" client ok ?
+	                        	int fromClientID = curClient.getId();
+	                        	String type = parts[0];
+	    	                    int idNr = Integer.parseInt(parts[1]);		//IDnr til rom eller game
+	    	                    String info= parts[2];
+	    	                    String message = parts[3];
+	    	                    // eks CHAT,3,0,msg
+	    	                    // 	   type idRom/game, info??trengs?, melding
+	    	                	if (type.equals("CHAT")) {					// Hvis meldingen er av typen CHAT
+	    	                		// 1. finn riktig chat 
+	    	                		// 2. finn riktige  deltagere
+	    	                		// 3. send info til disse 
+	    	                		Iterator<Chat> chatNri = chats.iterator();		// Iterer gjennom alle chatte rom
+				                    while (chatNri.hasNext()) {					// hvis flere
+				                        Chat curChat = chatNri.next();			// Hvilken sjekkes nå
+				                        if (idNr==curChat.getId()) {   			// Dersom riktig chatterom
+				                        	
+				                        
+				                        	// Iterere gjennom aktuelle klienter i riktig chat
+				                        	Iterator<Client> clientNri = curChat.participants.iterator();
+				                        	// Det samme ?? Iterator<Client> clientNri = curChat.getParticipants().iterator();
+				                        	while (clientNri.hasNext()) {			// For hver client i aktuelt chatte rom
+						                        Client curCli = clientNri.next();	
+					                        	try {						// Prøv å send en melding
+					                        								// Format: CHAT idTilChat, FraClientID, Melding
+					                        		curCli.sendText("CHAT,"+curChat.getId()+","+fromClientID+","+message);	
+					                        	} catch (IOException ioelocal) {
+					                        		// TODO fiks exception handling
+					                        	}
+				                        	}
+				                        }
+				                    }	// While chat slutt, sjekket alle
 		                        	
 		                        }
 		                        else if (type.equals("GAME")) {
-		                        	
-		                        }
-		                        else if (type.equals("CHAT")) {
-		                        	
+		                        	// finn riktig chat 
+	    	                		// finn aktuele deltagere
+	    	                		// send info til disse 
 		                        }
 		                        
-		                       
+	    	                	
 		                        if (msg != null && !msg.equals(">>>LOGOUT<<<"))
 		                            messages.put(c.name+"> "+msg);
 		                        else if (msg != null) {	// >>>LOGOUT<<< received, remove the client
@@ -209,22 +235,43 @@ public class ServerController {
         executorService.execute(() -> {
             while (!shutdown) {
                 try {
-                    String message = messages.take();
-                    displayMessage("Sending '" + message + "' to "
-                            + clients.size() + " clients\n");
-                    synchronized (clients) {		// Only one thread at a time might use the clients object
-	                    Iterator<Client> i = clients.iterator();
-	                    while (i.hasNext()) {
-	                        Client c = i.next();
-	                        try {
-	                        	c.sendText(message);
-	                        } catch (IOException ioe) {	// Unable to communicate with the client, remove it
-	                        	i.remove();
-	                        	messages.add("LOGOUT:"+c.name);
-	                        	messages.add(c.name+" got lost in hyperspace");
-	                        }
-	                    }
+                    String txt = messages.take();
+                    String[] parts = txt.split(",");
+                    String type = parts[0];
+                    int id = Integer.getInteger(parts[1]);	// cast to integer
+                    String client = parts[2];	
+                    
+                    String message, command;
+                    if(type.equals("CHAT")) {
+                    	message = parts[3];	 // riktig nr?
                     }
+                    else if(type.equals("GAME")) {
+                    	command = parts[3];
+                    }
+                    
+                    synchronized (clients) {		// Only one thread at a time might use the clients object
+                    	if(type.equals("CHAT")) {
+                    		Iterator<Chat> i = chats.iterator();
+                    		Chat chat = null;
+                     														// looks for chat object
+                    		while(i.hasNext() && id != chat.getId()) {		//   with correct ID
+                    			chat = i.next();
+                    		}
+                    		if(id == chat.getId()) { 
+                    			chat.sendChatMessage(client+": "+message);	// sends message to all in chatroom	
+                    		}
+                    	}
+                    	else if(type.equals("GAME")) {
+                    		Iterator<Game> i = games.iterator();
+                    		Game game = null;
+                    		
+                    		while(i.hasNext() && id != game.getId()) {
+                    			game = i.next();
+                    		}
+                    		
+                    	}
+                    } // synchronized
+               
                 } catch (InterruptedException ie) {
                     ie.printStackTrace();
                 }
@@ -279,6 +326,14 @@ public class ServerController {
         public void setId(int ID) {
         	this.ID = ID; 
         }
+        
+        /**
+         * Get Client's id
+         * @return
+         */
+        public int getId() {
+        	return ID; 
+        }
         /**
          * Closes the buffered reader, the buffered writer and the socket
          * connection.
@@ -322,40 +377,65 @@ public class ServerController {
 	
     
     class Chat {
-    	private String chatName;
+    	// private String chatName;
     	private int ID;
     	private Vector<Client> participants;
     	
-    	public Chat(String chatname, int ID) {   	 
-    		this.ID = ID; 			//participantID.add(ID);
-    		this.chatName = chatname; 			
+    	public Chat(int ID) {   	 
+    		this.ID = ID; 			//participantID.add(ID);			
     	}
-    	public String getChatName() {
-    		return this.chatName; 			
+    	
+    	/**
+    	 * get
+    	 * @return id for this chat
+    	 */
+    	public int getId() {
+    		return ID;
     	}
     	
     	public void addParticipant(Client c) {
     		participants.add(c);
-    		
     	}
     	public void removeParticipant(Client c) {
     		participants.removeElement(c);
-    		
     	}
-    	public Vector<Client> getParticipant() {
+    	public Vector<Client> getParticipants() {
     		return participants; 
-    		
     	}
-    	// TODO, trengs en funskjon
+    	
+    	public boolean sendChatMessage(String msg) {
+    		Iterator<Client> i = participants.iterator();
+    		while(i.hasNext()) {
+    			Client client = i.next();
+    			try {
+    				client.sendText(msg);
+    			} catch(IOException ioe) {
+    				i.remove();
+                	messages.add("LOGOUT:"+client.ID);
+                	messages.add(client.ID+" got lost in hyperspace");
+    			}
+    		}
+    	}
+    	
     }
     
     class Game {
     	private int ID;
+    	private int relatedChatId;
     	private Vector<Client> participants;
     	
     	public Game(int ID) {
     		this.ID = ID; 	
     	}
+    	public int getId() {
+    		return ID;
+    	}
+    	public void setThisGamerelatedChatId(int chatID) {
+    		this.relatedChatId = chatID; 	
+    	}
+    	public int getThisGamerelatedChatId() {
+    		return relatedChatId; 	
+    	}
     	
     	public void addParticipant(Client c) {
     		participants.add(c);
@@ -367,7 +447,6 @@ public class ServerController {
     	}
     	public Vector<Client> getParticipant() {
     		return participants; 
-    		
     	}
     	// TODO, trengs en funskjon for kommunikasjon?
     }
