@@ -127,9 +127,9 @@ public class WelcomeController {
 		lblPassword.setVisible(false);
 		lblPassword2.setVisible(false);
 		lblError.setVisible(false);
-		txtFieldUsername.setVisible(false);
-		txtFieldPassword.setVisible(false);
-		txtFieldPassword2.setVisible(false);
+		txtFieldUsername.setVisible(false); txtFieldUsername.setText("");
+		txtFieldPassword.setVisible(false);	txtFieldPassword.setText("");
+		txtFieldPassword2.setVisible(false); txtFieldPassword2.setText("");
 		btnRegister.setVisible(false);
 		btnLogin.setVisible(false);
 	}

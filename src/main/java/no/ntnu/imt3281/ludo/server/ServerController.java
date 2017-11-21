@@ -238,20 +238,40 @@ public class ServerController {
                     String txt = messages.take();
                     String[] parts = txt.split(",");
                     String type = parts[0];
-                    String id = parts[1];
+                    int id = Integer.getInteger(parts[1]);	// cast to integer
+                    String client = parts[2];	
+                    
                     String message, command;
                     if(type.equals("CHAT")) {
-                    	// message = parts[x];
+                    	message = parts[3];	 // riktig nr?
                     }
                     else if(type.equals("GAME")) {
-                    	// command = parts[x];
+                    	command = parts[3];
                     }
                     
                     synchronized (clients) {		// Only one thread at a time might use the clients object
                     	if(type.equals("CHAT")) {
-                    		// TODO finn riktig chat object i liste
+                    		Iterator<Chat> i = chats.iterator();
+                    		Chat chat = null;
+                     														// looks for chat object
+                    		while(i.hasNext() && id != chat.getId()) {		//   with correct ID
+                    			chat = i.next();
+                    		}
+                    		if(id == chat.getId()) { 
+                    			chat.sendChatMessage(client+": "+message);	// sends message to all in chatroom	
+                    		}
                     	}
-                    }
+                    	else if(type.equals("GAME")) {
+                    		Iterator<Game> i = games.iterator();
+                    		Game game = null;
+                    		
+                    		while(i.hasNext() && id != game.getId()) {
+                    			game = i.next();
+                    		}
+                    		
+                    	}
+                    } // synchronized
+               
                 } catch (InterruptedException ie) {
                     ie.printStackTrace();
                 }
@@ -407,6 +427,9 @@ public class ServerController {
     	public Game(int ID) {
     		this.ID = ID; 	
     	}
+    	public int getId() {
+    		return ID;
+    	}
     	public void setThisGamerelatedChatId(int chatID) {
     		this.relatedChatId = chatID; 	
     	}
@@ -424,7 +447,6 @@ public class ServerController {
     	}
     	public Vector<Client> getParticipant() {
     		return participants; 
-    		
     	}
     	// TODO, trengs en funskjon for kommunikasjon?
     }
