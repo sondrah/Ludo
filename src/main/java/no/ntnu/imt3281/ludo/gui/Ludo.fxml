@@ -66,7 +66,7 @@
                                     </HBox>
                                  </children>
                               </VBox>
-                              <Button defaultButton="true" layoutX="330.0" layoutY="474.0" mnemonicParsing="false" onAction="#joinRandomGame" prefHeight="78.0" prefWidth="210.0" text="%ludo.play" textAlignment="CENTER">
+                              <Button defaultButton="true" layoutX="330.0" layoutY="482.0" mnemonicParsing="false" onAction="#joinRandomGame" prefHeight="78.0" prefWidth="210.0" text="%ludo.play" textAlignment="CENTER">
                                  <font>
                                     <Font size="20.0" />
                                  </font>
@@ -83,6 +83,16 @@
                                     </AnchorPane>
                                 </content>
                               </TitledPane>
+                              <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="330.0" layoutY="447.0" prefHeight="23.0" prefWidth="210.0" text="%ludo.currentUser" textAlignment="RIGHT">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="userName" layoutX="564.0" layoutY="449.0" prefHeight="18.0" prefWidth="94.0" text="User" textFill="#0a0ee8">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
                            </children></AnchorPane>
                     </content>
                   </Tab>

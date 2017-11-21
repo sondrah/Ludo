@@ -63,12 +63,14 @@ public class LudoController {
     @FXML
     private Label errorMessage;
     @FXML
+    private Label userName;
+    @FXML
     private TextField toSay;
     @FXML
     private TabPane tabbedPane;
     @FXML
     private TitledPane joinOrChallenge;
-    
+
     private int gameId = 0;
     
     private int userId;
