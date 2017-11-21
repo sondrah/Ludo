@@ -31,8 +31,8 @@ public class ServerController {
 	/** The 'url' to our database (local) */
 	private String url = "jdbc:derby:BadgerDB;";
 	/** Unique ID for each chat */
-	//private int chatID = 0;
-	//private int gameID = 0;
+	private int chatID = 0;
+	private int gameID = 0;
 	/** Socket that all communication goes through */
 	private ServerSocket serverSocket;
 	/** ArrayList wit all logged in clients */
