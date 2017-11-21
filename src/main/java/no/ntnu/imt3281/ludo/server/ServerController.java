@@ -45,7 +45,6 @@ public class ServerController {
 	
 	
 	private ArrayBlockingQueue<String> messages = new ArrayBlockingQueue<String>(50);
-    private ServerSocket server;
     private ExecutorService executorService;
     private boolean shutdown = false;
     private JTextArea status;
@@ -84,6 +83,7 @@ public class ServerController {
             startMessageListener();		// Check clients for new messages
             executorService.shutdown();
         } catch (IOException ioe) {
+        	System.err.println("No ServerSocket"); 
             ioe.printStackTrace();
             System.exit(1);
         }
