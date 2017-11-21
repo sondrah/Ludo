@@ -172,7 +172,7 @@ public class WelcomeController {
 				String res = br.readLine();
 				res = res.split(",")[2];
 				
-				if(res.toUpperCase() == "TRUE") {
+				if(Integer.getInteger(res) != 0) {
 					try {
 			            root = FXMLLoader.load(getClass().getResource("Ludo.fxml"));
 			            
@@ -198,21 +198,6 @@ public class WelcomeController {
 				lblError.setVisible(true);
 				lblError.setText(I18N.tr("errors.connectionError"));
 			} 
-			
-			try {
-	            root = FXMLLoader.load(getClass().getResource("Ludo.fxml"), I18N.getRsb());
-	            Stage stage = new Stage();
-	            stage.setTitle("Ludo");
-	            stage.setScene(new Scene(root, 1050, 800));
-	            stage.show();
-	            
-	            // hiding the login window (effecevly: closing it)
-	            ((Node)(event.getSource())).getScene().getWindow().hide();
-	        }
-	        catch (IOException e) {
-	            e.printStackTrace();
-		
-	        }
 		}
 	}
 	
