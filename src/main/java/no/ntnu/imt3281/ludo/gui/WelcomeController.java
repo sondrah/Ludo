@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
+import javax.crypto.CipherInputStream;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -151,9 +153,6 @@ public class WelcomeController {
 		
 		String usr = txtFieldUsername.getText();
 		String pwd = txtFieldPassword.getText();
-        System.err.println(usr);
-        
-        System.err.println(usr);
 
 		if(usr.length() <= 0 || usr.length() > 20 || pwd.length() <= 0) {
 			lblError.setVisible(true);
@@ -180,12 +179,26 @@ public class WelcomeController {
 				String res = br.readLine();
 				res = res.split(",")[2];
 				
-				if(Integer.parseInt(res) != 0) {
+				int id = Integer.parseInt(res);
+				if(id != 0) {
 					try {
 						FXMLLoader loader = new FXMLLoader(getClass().getResource("Ludo.fxml"));
 				    	loader.setResources(I18N.getRsb());
-
-			            root = loader.load();
+				    	
+				    	
+				    	//loader.setController(new LudoController());
+				    	
+				    	root = loader.load();
+				    	LudoController controller = loader.getController();
+				    	if(controller == null) System.err.println("SAD");
+				    	
+				    	controller.setConnection(socket);
+				    	controller.setUserId(id);
+				    	
+				    	System.err.println(usr);
+				    	controller.setUserName(usr);
+				    	
+			           
 			            
 			            Stage stage = new Stage();
 			            stage.setTitle("Ludo");

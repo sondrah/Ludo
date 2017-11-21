@@ -1,6 +1,11 @@
 package no.ntnu.imt3281.ludo.gui;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
 
 import javax.swing.JOptionPane;
 
@@ -63,7 +68,7 @@ public class LudoController {
     @FXML
     private Label errorMessage;
     @FXML
-    private static Label userName;
+    private Label userName;
     @FXML
     private TextField toSay;
     @FXML
@@ -75,9 +80,30 @@ public class LudoController {
     
     private int userId;
     
-    @FXML
-    public static void setUserName() {
-    	userName.setText(WelcomeController.getUsername());
+    
+    public void setUserName(String usr) {
+    	if(userName == null) System.err.println("YENSE");
+    	userName.setText(usr);
+    }
+
+    private int clientId;
+    private Socket socket;
+    private BufferedReader input;
+    private BufferedWriter output;
+
+    
+    public void setConnection(Socket socket) {
+    	try {
+			this.socket = socket;
+			input = new BufferedReader(new InputStreamReader(
+			        socket.getInputStream()));
+			output = new BufferedWriter(new OutputStreamWriter(
+			        socket.getOutputStream()));
+    	} catch(IOException ioe) {
+    		System.err.println("fikk ikke connection, i ludocontroller");
+    		ioe.printStackTrace();
+    		
+    	}
     }
     
     @FXML
@@ -86,8 +112,36 @@ public class LudoController {
     }
     
     public void setUserId(int id) {
-    	this.userId = id;
+    	this.clientId = id;
     }
+    
+    /**
+     * ca 4000 studenter, i gjøvik 30 000 tusen
+     * bra studentmiljø 
+     * This method handles the communication from the server. Note that this
+     * method never returns, messages from the server is read in a loop that
+     * never ends. All other user interaction is handled in the GUI thread.
+     * 
+     * Login and logout messages is used to add/remove users to/from the list of
+     * participants while all other messages are displayed.
+     */
+ /*   public void processConnection() {
+        while (true) {
+            try {
+                String tmp = input.readLine();
+                if (tmp.startsWith("LOGIN:")) { // User is logging in
+                    addUser(tmp.substring(6));
+                } else if (tmp.startsWith("LOGOUT:")) { // User is logging out
+                    removeUser(tmp.substring(7));
+                } else { // All other messages
+                    displayMessage(tmp + "\n");
+                }
+            } catch (IOException ioe) {
+            	JOptionPane.showMessageDialog(this, "Error receiving data: "
+                        + ioe);
+            }
+        }
+    } */
     
     /** 
      * Closes the application
@@ -134,7 +188,27 @@ public class LudoController {
     
     @FXML
     public void saySomething(ActionEvent e) {
-    	// TODO: server/client
+    	String txt = toSay.getText();
+    	if(!txt.equals("")) {
+    		try {								// midlertidlig løsning
+				output.write("CHAT,1,"+ clientId +"," +txt);
+				output.newLine();
+				output.flush();
+				
+				String res = input.readLine();	// vente på melding?
+				String[] msg = res.split(",");
+				String type = msg[0];
+				String chatId = msg[1];	
+				String receivedClientId = msg[2];	
+				String message = msg[3];
+				
+				masterChat.setText(message);
+				
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+    	}
     }
     
     @FXML
