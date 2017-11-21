@@ -147,7 +147,6 @@ public class WelcomeController {
 		String usr = txtFieldUsername.getText();
 		String pwd = txtFieldPassword.getText();
 
-		/*
 		if(usr.length() <= 0 || usr.length() > 20 || pwd.length() <= 0) {
 			lblError.setVisible(true);
 			lblError.setText(I18N.tr("errors.notValidUserOrPassword"));
@@ -198,7 +197,7 @@ public class WelcomeController {
 				lblError.setVisible(true);
 				lblError.setText(I18N.tr("errors.connectionError"));
 			}
-		}*/
+		}
 		
 		try {
             root = FXMLLoader.load(getClass().getResource("Ludo.fxml"), I18N.getRsb());
@@ -237,7 +236,7 @@ public class WelcomeController {
 			lblError.setText(I18N.tr("errors.equalPassword"));
 		}
 		else {
-			lblError.setVisible(false);	// TODO sjekk mot server 
+			lblError.setVisible(false);	// TODO sjekk mot server, lagre på database 
 			lblInfo.setVisible(true);
 			lblInfo.setText(I18N.tr("register.success"));
 			txtFieldUsername.setText("");

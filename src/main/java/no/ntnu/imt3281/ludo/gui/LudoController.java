@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -16,6 +17,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import no.ntnu.imt3281.i18n.I18N;
 
@@ -55,10 +57,19 @@ public class LudoController {
     @FXML
     private Button say;
     @FXML
+    private Button cancel;
+    @FXML
+    private Button send; 
+    @FXML
+    private Label errorMessage;
+    @FXML
     private TextField toSay;
-
     @FXML
     private TabPane tabbedPane;
+    @FXML
+    private TitledPane joinOrChallenge;
+    
+    private int gameId = 0;
 
     
     @FXML
@@ -67,6 +78,10 @@ public class LudoController {
     }
     
     
+    /** 
+     * Closes the application
+     * @param e button click caused by the close menu item
+     */
     @FXML
     public void close(ActionEvent e) {
     	Platform.exit();
@@ -78,12 +93,18 @@ public class LudoController {
     	// TODO: kunne velge disse
     	// TODO: sende request
     	// TODO: motta svar?
+    	joinOrChallenge.setVisible(true);
+    	errorMessage.setVisible(false);
+    	joinOrChallenge.setText(I18N.tr("ludo.challengePlayer"));
     }
     
     
     @FXML
     public void joinChat(ActionEvent e) {
     	// TODO: Ta inn chatnavn, la person joine om finnes
+    	joinOrChallenge.setVisible(true);
+    	errorMessage.setVisible(false);
+    	joinOrChallenge.setText(I18N.tr("ludo.joinChat"));
     }
     
     
@@ -97,7 +118,24 @@ public class LudoController {
     
     @FXML
     public void about(ActionEvent e) {
-    	JOptionPane.showConfirmDialog(null, "LEL");
+    	JOptionPane.showConfirmDialog(null, "Got milk?");
+    }
+    
+    @FXML
+    public void saySomething(ActionEvent e) {
+    	// TODO: server/client
+    }
+    
+    @FXML
+    public void cancel(ActionEvent e) {
+    	// TODO: Lukke current vindu man står i (gå tilbake)
+    	joinOrChallenge.setVisible(false);
+    }
+    
+    @FXML
+    public void sendToServer(ActionEvent e) {
+    	// TODO: Må ta en string som skal sjekkes opp mot server.
+    	// 		 Gir bruker svar/sender videre basert på resultat
     }
     
     
@@ -118,16 +156,16 @@ public class LudoController {
 		
     	try {
     		AnchorPane gameBoard = loader.load();
-        	Tab tab = new Tab("Game");
+    		gameId++;
+        	Tab tab = new Tab("Game" + gameId);
     		tab.setContent(gameBoard);
         	tabbedPane.getTabs().add(tab);
     	} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+    	
     }
-    
-    
     
     
 }
