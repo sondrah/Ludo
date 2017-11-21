@@ -177,7 +177,10 @@ public class LudoController {
     public void about(ActionEvent e) {
     	JOptionPane.showConfirmDialog(null, "Got milk?");
     }
-    
+    /**
+     * Writes a clients message to a chat-room
+     * @param e
+     */
     @FXML
     public void saySomething(ActionEvent e) {
     	String txt = toSay.getText();
@@ -186,6 +189,8 @@ public class LudoController {
 				output.write("CHAT,1,"+ clientId +"," +txt);
 				output.newLine();
 				output.flush();
+				
+				// skal ikke message listener gjøre dette?
 				
 				String res = input.readLine();	// vente på melding?
 				String[] msg = res.split(",");

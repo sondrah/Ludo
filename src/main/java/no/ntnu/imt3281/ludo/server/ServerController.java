@@ -43,11 +43,11 @@ public class ServerController extends JFrame {
 	private ArrayList<Chat> chats = new ArrayList<Chat>();
 	/** Array list of all games */
 	private ArrayList<Game> games = new ArrayList<Game>();
-	   
-	
-	
+	/** List which holds messages waiting to be sent */
 	private ArrayBlockingQueue<String> messages = new ArrayBlockingQueue<String>(50);
-    private ExecutorService executorService;
+    /** Makes threads for different listeners */
+	private ExecutorService executorService;
+	
     private boolean shutdown = false;
     private JTextArea status;
     private Database db = null;
@@ -57,7 +57,9 @@ public class ServerController extends JFrame {
 		ServerController servercontroller = new ServerController();
 	}
 	
-	
+	/**
+	 * Starts up the server with database and different listeners.
+	 */
 	public ServerController() {		
 		
 		status = new JTextArea();
@@ -66,7 +68,7 @@ public class ServerController extends JFrame {
         add(new JScrollPane(status));
 		
 		try {
-			db = new Database(url);			// tries to connect to DB	
+			db = new Database(url);		// tries to connect to DB	
 		} catch(SQLException sqle) {			
 			url += "create=true";				
 			sqle.printStackTrace();
@@ -78,8 +80,7 @@ public class ServerController extends JFrame {
 			}
 		}
 		
-		// ServerController have only one masterChat
-		Chat masterChat = new Chat(1);
+		Chat masterChat = new Chat(1);	// Sets up master-chat-room
 		chats.add(masterChat);
 		
 		try {
@@ -296,21 +297,20 @@ public class ServerController extends JFrame {
             }
         });
     }
+    
 	private void displayMessage(String text) {
 		SwingUtilities.invokeLater(() -> status.append(text));
 	}
 		
 	
 	/**
+     * --Borrowed code from okolloen--
      * A new object of this class is created for all new clients.
      * When a socket is created by the serverSockets accept method
      * a new object of this class is created based on that socket.
      * This object will then contain the socket itself, a bufferedReader,
      * a bufferedWriter and the nickname of the user using the connected
      * client.
-     * 
-     * @author okolloen
-     *
      */
     class Client {
         private int ID;
@@ -319,6 +319,7 @@ public class ServerController extends JFrame {
         private BufferedWriter output;
 
         /**
+         * --Borrowed code from okolloen--
          * Construct a new Client object based on the given socket object.
          * A buffered reader and a buffered writer will be created based on the
          * input stream and output stream of the given socket object. Then
@@ -357,8 +358,7 @@ public class ServerController extends JFrame {
         /**
          * Closes the buffered reader, the buffered writer and the socket
          * connection.
-         * 
-         * @throws IOException
+         * @throws IOException if an error occurs
          */
         public void close() throws IOException {
             input.close();
@@ -396,30 +396,53 @@ public class ServerController extends JFrame {
     }
 	
     
+    /**
+     * Each object of this class represent a chat-room.
+     * 
+     *
+     */
     class Chat {
     	// private String chatName;
     	private int ID;
     	private Vector<Client> participants;
     	
+    	/**
+    	 * Construct a new Chat object supplied with chatID
+    	 * @param ID 
+    	 */
     	public Chat(int ID) {   	 
     		this.ID = ID; 			//participantID.add(ID);		
     		participants = new Vector<>();
     	}
     	
     	/**
-    	 * get
+    	 * Gets chat's ID
     	 * @return id for this chat
     	 */
     	public int getId() {
     		return ID;
     	}
     	
+    	/**
+    	 * Add a client to this chat-room
+    	 * @param c which client to be added
+    	 */
     	public void addParticipant(Client c) {
     		participants.add(c);
     	}
+    	
+    	/**
+    	 * Removes a client from this chat-room
+    	 * @param c which client to be removed
+    	 */
     	public void removeParticipant(Client c) {
     		participants.removeElement(c);
     	}
+    	
+    	/**
+    	 * Returns all clients in this chat-room in a vector
+    	 * @return participants in form of a vector
+    	 */
     	public Vector<Client> getParticipants() {
     		return participants; 
     	}
@@ -440,12 +463,20 @@ public class ServerController extends JFrame {
     	}
     	
 
-    
+    /**
+     * Each object of this class represents the servers version
+     * of a Ludo game. 
+     *
+     */
     class Game {
     	private int ID;
     	private int relatedChatId;
     	private Vector<Client> participants;
     	
+    	/**
+    	 * Construct a game of Ludo supplied with a game-ID
+    	 * @param ID 
+    	 */
     	public Game(int ID) {
     		this.ID = ID; 	
     	}
