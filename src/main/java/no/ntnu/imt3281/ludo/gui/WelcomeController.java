@@ -161,8 +161,8 @@ public class WelcomeController {
 				
 				// sends login-request: LOGIN,1,usr,pwd
 				bw.write("LOGIN,1," + usr + "," + hashedPwd);
-				
-				bw.close();
+				bw.newLine();
+				bw.flush();
 				
 				BufferedReader br = new BufferedReader(
 						new InputStreamReader(socket.getInputStream()));
@@ -172,9 +172,12 @@ public class WelcomeController {
 				String res = br.readLine();
 				res = res.split(",")[2];
 				
-				if(Integer.getInteger(res) != 0) {
+				if(Integer.parseInt(res) != 0) {
 					try {
-			            root = FXMLLoader.load(getClass().getResource("Ludo.fxml"));
+						FXMLLoader loader = new FXMLLoader(getClass().getResource("Ludo.fxml"));
+				    	loader.setResources(I18N.getRsb());
+
+			            root = loader.load();
 			            
 			            Stage stage = new Stage();
 			            stage.setTitle("Ludo");
@@ -228,24 +231,25 @@ public class WelcomeController {
 				Socket socket = new Socket("localhost", 12345);
 				BufferedWriter bw = new BufferedWriter(
 						new OutputStreamWriter(socket.getOutputStream()));
+				BufferedReader br = new BufferedReader(
+						new InputStreamReader(socket.getInputStream()));
 				
 				String hashedPwd = MD5Encrypt.cryptWithMD5(pwd);
 				
 				// sends register-request: LOGIN,0,usr,pwd
 				// REMEMBER! LOGIN is a message type which is 0 for register
 				bw.write("LOGIN,0," + usr + "," + hashedPwd);
-				 
-				bw.close();
+				bw.newLine();
+				bw.flush();
+				// bw.close();
 				
-				BufferedReader br = new BufferedReader(
-						new InputStreamReader(socket.getInputStream()));
 				
 				
 				// gets the true/false of: LOGIN(Register),0,true/false
 				String res = br.readLine();
 				res = res.split(",")[2];
 				
-				if(Integer.getInteger(res) != 0) {
+				if(Integer.parseInt(res) != 0) {
 					lblError.setVisible(false);	 
 					lblInfo.setVisible(true);
 					lblInfo.setText(I18N.tr("register.success"));

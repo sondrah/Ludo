@@ -17,6 +17,7 @@ import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -109,6 +110,13 @@ public class ServerController extends JFrame {
                     Client newClient = new Client(s);
                     synchronized (clients) {
                     	String msg = newClient.read();
+                    	while(msg == null) {
+                    		TimeUnit.MILLISECONDS.sleep(1);
+                    		msg = newClient.read();
+                    	}
+                    	System.out.println("Inne i login listener");
+                    	
+                    	
                     	String[] parts = msg.split(",");   
                     	String type = parts[0];
 	                    String operation = parts[1];
@@ -134,25 +142,25 @@ public class ServerController extends JFrame {
 	                			}
 	                		}
 		                	else if(operation.equals("1")) {		// Log in
-		                		int id = db.checkLogin(userName, pwd);
-		                		if(id != -1) {
-		                			newClient.setId(id);
+		                		int idClient = db.checkLogin(userName, pwd);
+		                		if(idClient != -1) {
+		                			newClient.setId(idClient);
 		                			clients.add(newClient);
 		                			chats.get(0).addParticipant(newClient);	// Legger Klient til i masterChat 
 		                			// newClient.sendText("LOGIN,1,TRUE");		// sends report back to client:s
-		                			messages.put("LOGIN,1,"+id+",Du er logget inn");
+		                			messages.put("LOGIN,1,"+idClient+",Du er logget inn");
 		                			                		
 			                		Iterator<Client> i = clients.iterator();
 				                    while (i.hasNext()) {					// Send message to all clients that a new person has joined
 				                        Client c1 = i.next(); 
 				                        try {
-				                        	messages.put("CHAT,1,"+id+","+userName+"logged inn");	
+				                        	messages.put("CHAT,1,"+idClient+","+userName+" har blitt med i MasterChat");	
 				                        } catch (InterruptedException e) {
 				                            e.printStackTrace();
 				                        }
 				                    }								// While slutt, sagt i fra til alle
 		                		} else {
-		                			messages.put("LOGIN,0,"+id+",Du er IKKE logget inn");
+		                			messages.put("LOGIN,0,"+idClient+",Du er IKKE logget inn");
 		                		}
 		                	}	// faktisk Logg inn ferdig
 	                	} 	// Logg inn type ferdig
@@ -248,18 +256,11 @@ public class ServerController extends JFrame {
                     String id = parts[1];			// LOGIN = 0 ( reg), 1 (login) 
                     								// CHAT = aktuelt chat rom
                     								// GAME = idGame
-                    int clientId = Integer.getInteger(parts[2]);	// cast to integer ID client   
+                    int clientId = Integer.parseInt(parts[2]);	// cast to integer ID client   
                     String message = parts[3];
                     
-                    /*
-                    String message, command;
-                    if(type.equals("CHAT")) {
-                    	message = parts[3];	 // riktig nr? JA
-                    }
-                    else if(type.equals("GAME")) {
-                    	command = parts[3];
-                    }
-                    */
+                    
+              
                     synchronized (clients) {		// Only one thread at a time might use the clients object
                     	
                     	if(type.equals("LOGIN") || type.equals("CHAT")) {
@@ -343,7 +344,9 @@ public class ServerController extends JFrame {
          * @param ID
          */
         public void setId(int ID) {
+        	
         	this.ID = ID; 
+        	System.out.println("Id til Klient " +ID);
         }
         
         /**
@@ -401,7 +404,8 @@ public class ServerController extends JFrame {
     	private Vector<Client> participants;
     	
     	public Chat(int ID) {   	 
-    		this.ID = ID; 			//participantID.add(ID);			
+    		this.ID = ID; 			//participantID.add(ID);		
+    		participants = new Vector<>();
     	}
     	
     	/**

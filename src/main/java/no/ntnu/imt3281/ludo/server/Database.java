@@ -356,11 +356,13 @@ public class Database {
 			Statement stmt = con.createStatement();
 			
 			ResultSet res = stmt.executeQuery("SELECT id FROM usertable "
-									+ "WHERE chatname = '" + username + "'"
+									+ "WHERE username = '" + username + "'"
 									+ "AND password = '" + password + "'");
 			
-			res.next();
-			userid = res.getInt("id");
+			if(res.next()) {
+				userid = res.getInt("id");
+			}
+			else System.out.println("Login unsseccsssfull");
 		}
 		catch (SQLException sqle) {
 			sqle.printStackTrace();
