@@ -40,8 +40,8 @@ Ugyldig brukernavn! Vennligst prøv på nytt -->
             <Font size="20.0" />
          </font>
       </Label>
-      <PasswordField fx:id="txtFieldPassword" layoutX="236.0" layoutY="192.0" visible="false" />
       <TextField fx:id="txtFieldUsername" layoutX="235.0" layoutY="154.0" visible="false" />
+      <PasswordField fx:id="txtFieldPassword" layoutX="236.0" layoutY="192.0" visible="false" />
       <Button fx:id="btnLogin" defaultButton="true" layoutX="240.0" layoutY="270.0" mnemonicParsing="false" onAction="#login" prefHeight="40.0" prefWidth="120.0" text="%welcomescreen.loginBtn" visible="false">
          <font>
             <Font size="20.0" />
