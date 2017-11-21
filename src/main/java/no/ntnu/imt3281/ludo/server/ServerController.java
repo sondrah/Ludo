@@ -24,8 +24,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
-import no.ntnu.imt3281.ludo.server.ChatServer.Client;
-
 /**
  * Master-server who controls DB, chats & games  
  * 
