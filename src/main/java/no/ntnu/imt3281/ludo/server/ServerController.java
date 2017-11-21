@@ -1,6 +1,7 @@
 package no.ntnu.imt3281.ludo.server;
 
 
+import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -17,6 +18,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
@@ -26,7 +29,7 @@ import no.ntnu.imt3281.ludo.server.ChatServer.Client;
  * Master-server who controls DB, chats & games  
  * 
  */
-public class ServerController {
+public class ServerController extends JFrame {
 
 	/** The 'url' to our database (local) */
 	private String url = "jdbc:derby:BadgerDB;";
@@ -59,6 +62,11 @@ public class ServerController {
 	
 	public ServerController() {		
 		
+		status = new JTextArea();
+        status.setFont(new Font("Arial", Font.PLAIN, 26));
+        status.setEditable(false);
+        add(new JScrollPane(status));
+		
 		try {
 			db = new Database(url);			// tries to connect to DB	
 		} catch(SQLException sqle) {			
@@ -88,7 +96,9 @@ public class ServerController {
             System.exit(1);
         }
 		
-		
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setSize(600, 400);
+        setVisible(true);
 	}
 	
 	private void startLoginMonitor() {
