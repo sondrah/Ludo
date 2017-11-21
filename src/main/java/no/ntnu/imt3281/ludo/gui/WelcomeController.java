@@ -172,11 +172,16 @@ public class WelcomeController {
 				String res = br.readLine();
 				res = res.split(",")[2];
 				
-				if(Integer.parseInt(res) != 0) {
+				int id = Integer.parseInt(res);
+				if(id != 0) {
 					try {
 						FXMLLoader loader = new FXMLLoader(getClass().getResource("Ludo.fxml"));
 				    	loader.setResources(I18N.getRsb());
-
+				    	
+				    	LudoController controller = loader.getController();	
+				    	controller.setConnection(socket);
+				    	controller.setUserId(id);
+				    	
 			            root = loader.load();
 			            
 			            Stage stage = new Stage();

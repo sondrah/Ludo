@@ -1,6 +1,11 @@
 package no.ntnu.imt3281.ludo.gui;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
 
 import javax.swing.JOptionPane;
 
@@ -73,8 +78,25 @@ public class LudoController {
 
     private int gameId = 0;
     
-    private int userId;
+    private int clientId;
+    private Socket socket;
+    private BufferedReader input;
+    private BufferedWriter output;
 
+    
+    public void setConnection(Socket socket) {
+    	try {
+			this.socket = socket;
+			input = new BufferedReader(new InputStreamReader(
+			        socket.getInputStream()));
+			output = new BufferedWriter(new OutputStreamWriter(
+			        socket.getOutputStream()));
+    	} catch(IOException ioe) {
+    		System.err.println("fikk ikke connection, i ludocontroller");
+    		ioe.printStackTrace();
+    		
+    	}
+    }
     
     @FXML
     public void connect(ActionEvent e) {
@@ -82,7 +104,7 @@ public class LudoController {
     }
     
     public void setUserId(int id) {
-    	this.userId = id;
+    	this.clientId = id;
     }
     
     /**
@@ -158,7 +180,27 @@ public class LudoController {
     
     @FXML
     public void saySomething(ActionEvent e) {
-    	// TODO: server/client
+    	String txt = toSay.getText();
+    	if(!txt.equals("")) {
+    		try {								// midlertidlig løsning
+				output.write("CHAT,1,"+ clientId +"," +txt);
+				output.newLine();
+				output.flush();
+				
+				String res = input.readLine();	// vente på melding?
+				String[] msg = res.split(",");
+				String type = msg[0];
+				String chatId = msg[1];	
+				String receivedClientId = msg[2];	
+				String message = msg[3];
+				
+				masterChat.setText(message);
+				
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+    	}
     }
     
     @FXML
