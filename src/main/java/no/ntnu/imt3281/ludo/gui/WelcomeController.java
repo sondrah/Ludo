@@ -175,12 +175,13 @@ public class WelcomeController {
 				if(res.toUpperCase() == "TRUE") {
 					try {
 			            root = FXMLLoader.load(getClass().getResource("Ludo.fxml"));
+			            
 			            Stage stage = new Stage();
 			            stage.setTitle("Ludo");
 			            stage.setScene(new Scene(root, 1050, 800));
 			            stage.show();
 			            
-			            // hiding the login window (effecevly: closing it)
+			            // hiding the login window (effectively: closing it)
 			            ((Node)(event.getSource())).getScene().getWindow().hide();
 			        }
 			        catch (IOException e) {
@@ -196,22 +197,23 @@ public class WelcomeController {
 				ioe.printStackTrace();
 				lblError.setVisible(true);
 				lblError.setText(I18N.tr("errors.connectionError"));
-			}
-		}
+			} 
+			
+			try {
+	            root = FXMLLoader.load(getClass().getResource("Ludo.fxml"), I18N.getRsb());
+	            Stage stage = new Stage();
+	            stage.setTitle("Ludo");
+	            stage.setScene(new Scene(root, 1050, 800));
+	            stage.show();
+	            
+	            // hiding the login window (effecevly: closing it)
+	            ((Node)(event.getSource())).getScene().getWindow().hide();
+	        }
+	        catch (IOException e) {
+	            e.printStackTrace();
 		
-		try {
-            root = FXMLLoader.load(getClass().getResource("Ludo.fxml"), I18N.getRsb());
-            Stage stage = new Stage();
-            stage.setTitle("Ludo");
-            stage.setScene(new Scene(root, 1050, 800));
-            stage.show();
-            
-            // hiding the login window (effecevly: closing it)
-            ((Node)(event.getSource())).getScene().getWindow().hide();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+	        }
+		}
 	}
 	
 	/**
@@ -226,6 +228,7 @@ public class WelcomeController {
 		usr = txtFieldUsername.getText();
 		pwd = txtFieldPassword.getText();
 		pwd2 = txtFieldPassword2.getText();
+		Parent root;
 	
 		if(usr.length() <= 0 || usr.length() > 20 || pwd.length() <= 0) {
 			lblError.setVisible(true);
@@ -236,11 +239,44 @@ public class WelcomeController {
 			lblError.setText(I18N.tr("errors.equalPassword"));
 		}
 		else {
-			lblError.setVisible(false);	// TODO sjekk mot server, lagre på database 
-			lblInfo.setVisible(true);
-			lblInfo.setText(I18N.tr("register.success"));
-			txtFieldUsername.setText("");
-			btnRegister.setVisible(false);
+			try {
+				Socket socket = new Socket("localhost", 12345);
+				BufferedWriter bw = new BufferedWriter(
+						new OutputStreamWriter(socket.getOutputStream()));
+				
+				String hashedPwd = MD5Encrypt.cryptWithMD5(pwd);
+				
+				// sends register-request: LOGIN,0,usr,pwd
+				// REMEMBER! LOGIN is a message type which is 0 for register
+				bw.write("LOGIN,0," + usr + "," + hashedPwd);
+				 
+				bw.close();
+				
+				BufferedReader br = new BufferedReader(
+						new InputStreamReader(socket.getInputStream()));
+				
+				
+				// gets the true/false of: LOGIN(Register),0,true/false
+				String res = br.readLine();
+				res = res.split(",")[2];
+				
+				if(Integer.getInteger(res) != 0) {
+					lblError.setVisible(false);	 
+					lblInfo.setVisible(true);
+					lblInfo.setText(I18N.tr("register.success"));
+					txtFieldUsername.setText("");
+					btnRegister.setVisible(false);
+					} 
+				else {
+					lblError.setVisible(true);
+					lblError.setText(I18N.tr("errors.notValidUserOrPassword"));
+				}
+			}
+			catch(IOException ioe) {
+				ioe.printStackTrace();
+				lblError.setVisible(true);
+				lblError.setText(I18N.tr("errors.connectionError"));
+			} 
 		}
 		txtFieldPassword.setText("");
 		txtFieldPassword2.setText("");

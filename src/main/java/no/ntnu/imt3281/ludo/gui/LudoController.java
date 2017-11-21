@@ -70,6 +70,8 @@ public class LudoController {
     private TitledPane joinOrChallenge;
     
     private int gameId = 0;
+    
+    private int userId;
 
     
     @FXML
@@ -77,6 +79,9 @@ public class LudoController {
     	// TODO:
     }
     
+    public void setUserId(int id) {
+    	this.userId = id;
+    }
     
     /** 
      * Closes the application
