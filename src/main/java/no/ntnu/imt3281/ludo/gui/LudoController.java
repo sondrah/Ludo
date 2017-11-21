@@ -63,7 +63,7 @@ public class LudoController {
     @FXML
     private Label errorMessage;
     @FXML
-    private Label userName;
+    private static Label userName;
     @FXML
     private TextField toSay;
     @FXML
@@ -74,7 +74,11 @@ public class LudoController {
     private int gameId = 0;
     
     private int userId;
-
+    
+    @FXML
+    public static void setUserName() {
+    	userName.setText(WelcomeController.getUsername());
+    }
     
     @FXML
     public void connect(ActionEvent e) {

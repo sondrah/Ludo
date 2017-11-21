@@ -57,13 +57,18 @@ public class WelcomeController {
 	@FXML
 	private Label lblError;
 	@FXML
-	private TextField txtFieldUsername ;
+	private TextField txtFieldUsername;
 	@FXML
 	private PasswordField txtFieldPassword;
 	@FXML
 	private PasswordField txtFieldPassword2;
 	
+	private static String usrname;
 	
+	
+	public static String getUsername() {
+		return usrname;
+	}
 	/**
 	 * determines the visual elements for the login screen
 	 * @param event button click caused by the login button of the home screen
@@ -146,6 +151,9 @@ public class WelcomeController {
 		
 		String usr = txtFieldUsername.getText();
 		String pwd = txtFieldPassword.getText();
+        System.err.println(usr);
+        
+        System.err.println(usr);
 
 		if(usr.length() <= 0 || usr.length() > 20 || pwd.length() <= 0) {
 			lblError.setVisible(true);
@@ -183,7 +191,7 @@ public class WelcomeController {
 			            stage.setTitle("Ludo");
 			            stage.setScene(new Scene(root, 1050, 800));
 			            stage.show();
-			            
+			       
 			            // hiding the login window (effectively: closing it)
 			            ((Node)(event.getSource())).getScene().getWindow().hide();
 			        }
