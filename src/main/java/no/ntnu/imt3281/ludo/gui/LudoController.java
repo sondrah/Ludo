@@ -85,6 +85,34 @@ public class LudoController {
     	this.userId = id;
     }
     
+    /**
+     * ca 4000 studenter, i gjøvik 30 000 tusen
+     * bra studentmiljø 
+     * This method handles the communication from the server. Note that this
+     * method never returns, messages from the server is read in a loop that
+     * never ends. All other user interaction is handled in the GUI thread.
+     * 
+     * Login and logout messages is used to add/remove users to/from the list of
+     * participants while all other messages are displayed.
+     */
+    public void processConnection() {
+        while (true) {
+            try {
+                String tmp = input.readLine();
+                if (tmp.startsWith("LOGIN:")) { // User is logging in
+                    addUser(tmp.substring(6));
+                } else if (tmp.startsWith("LOGOUT:")) { // User is logging out
+                    removeUser(tmp.substring(7));
+                } else { // All other messages
+                    displayMessage(tmp + "\n");
+                }
+            } catch (IOException ioe) {
+                JOptionPane.showMessageDialog(this, "Error receiving data: "
+                        + ioe);
+            }
+        }
+    }
+    
     /** 
      * Closes the application
      * @param e button click caused by the close menu item
