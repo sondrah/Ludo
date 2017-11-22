@@ -6,13 +6,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Iterator;
-
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -37,48 +38,28 @@ import no.ntnu.imt3281.i18n.I18N;
  */
 public class LudoController {
     
-    @FXML
-    private MenuBar menuBar;
-    @FXML
-    private Menu file;
-    @FXML
-    private MenuItem connect;
-    @FXML
-    private MenuItem close;
-    @FXML
-    private Menu game;
-    @FXML
-    private MenuItem challenge;
-    @FXML
-    private MenuItem random;
-    @FXML
-    private Menu chat;
-    @FXML
-    private MenuItem join;
-    @FXML
-    private MenuItem listRooms;
-    @FXML
-    private Menu help;
-    @FXML
-    private MenuItem about;
-    @FXML
-    private TextArea masterChat;
-    @FXML
-    private Button say;
-    @FXML
-    private Button cancel;
-    @FXML
-    private Button send; 
-    @FXML
-    private Label errorMessage;
-    @FXML
-    private Label userName;
-    @FXML
-    private TextField toSay;
-    @FXML
-    private TabPane tabbedPane;
-    @FXML
-    private TitledPane joinOrChallenge;
+    @FXML private MenuBar menuBar;
+    @FXML private Menu file;
+    @FXML private MenuItem connect;
+    @FXML private MenuItem close;
+    @FXML private Menu game;
+    @FXML private MenuItem challenge;
+    @FXML private MenuItem random;
+    @FXML private Menu chat;
+    @FXML private MenuItem join;
+    @FXML private MenuItem listRooms;
+    @FXML private Menu help;
+    @FXML private MenuItem about;
+    @FXML private TextArea masterChat;
+    @FXML private Button say;
+    @FXML private Button cancel;
+    @FXML private Button send; 
+    @FXML private Label errorMessage;
+    @FXML private Label userName;
+    @FXML private TextField toSay;
+    @FXML private TextArea chatArea;
+    @FXML private TabPane tabbedPane;
+    @FXML private TitledPane joinOrChallenge;
 
     private int gameId = 0;
     
@@ -86,7 +67,6 @@ public class LudoController {
     
     
     public void setUserName(String usr) {
-    	if(userName == null) System.err.println("YENSE");
     	userName.setText(usr);
     }
 
@@ -94,6 +74,7 @@ public class LudoController {
     private Socket socket;
     private BufferedReader input;
     private BufferedWriter output;
+    HashMap<Integer, Integer> map = new HashMap<>();
     private DefaultListModel<String> participantsModel;
 
     
@@ -139,7 +120,7 @@ public class LudoController {
                 String retMessage = input.readLine();	
 				String[] returnMessage = retMessage.split(",");
 				String type = returnMessage[0];
-				String actionId = returnMessage[1];	
+				int actionId = Integer.parseInt(returnMessage[1]);	
 				String receivedClientId = returnMessage[2];	
 				String message = returnMessage[3];
 				
@@ -167,12 +148,11 @@ public class LudoController {
      * @param text
      *            the text to be added
      */
-    private void routeChatMessage(String message, String retChatId) {
-    	int returnedChatId = Integer.parseInt(retChatId);
+    private void routeChatMessage(String message, int chatId) {
     	int curChatId = 1; // TODO hardcode
     	int curTabId = 1; 
     	// her Sondre Itere gjennom mapping 	
-    	if (returnedChatId == curChatId)
+    	if (chatId == curChatId)
     		curTabId = curTabId;
     		
     				// Henter ut riktig Anchor Pane for riktig chatterom
@@ -209,26 +189,32 @@ public class LudoController {
     	// TODO: kunne velge disse
     	// TODO: sende request
     	// TODO: motta svar?
-    	joinOrChallenge.setVisible(true);
-    	errorMessage.setVisible(false);
-    	joinOrChallenge.setText(I18N.tr("ludo.challengePlayer"));
     }
     
     
     @FXML
     public void joinChat(ActionEvent e) {
     	// TODO: Ta inn chatnavn, la person joine om finnes
-    	joinOrChallenge.setVisible(true);
-    	errorMessage.setVisible(false);
-    	joinOrChallenge.setText(I18N.tr("ludo.joinChat"));
     }
     
     
-    @FXML
-    public void listRooms(ActionEvent e) {
-    	// TODO: make a list of all available chats
+    public void addNewTabToChatMapping(int chatId) {	
+    	FXMLLoader loader = new FXMLLoader(getClass().getResource("ChatBoard.fxml"));
+    	loader.setResources(I18N.getRsb());
+
+    	try {
+    		AnchorPane chatBoard = loader.load();
+        	Tab tab = new Tab("Chat" + chatId);
+    		tab.setContent(chatBoard);
+        	tabbedPane.getTabs().add(tab);
+    	} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
     	
-    	// ScrollPane(chat.show())
+    	ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs
+    	
+    	map.put(chatId, tabs.size());
     }
     
     
@@ -248,7 +234,7 @@ public class LudoController {
 				output.write("CHAT,1,"+ clientId +"," +txt);
 				output.newLine();
 				output.flush();
-				
+
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -259,7 +245,6 @@ public class LudoController {
     @FXML
     public void cancel(ActionEvent e) {
     	// TODO: Lukke current vindu man står i (gå tilbake)
-    	joinOrChallenge.setVisible(false);
     }
     
     @FXML
@@ -296,6 +281,4 @@ public class LudoController {
 		}
     	
     }
-    
-    
 }

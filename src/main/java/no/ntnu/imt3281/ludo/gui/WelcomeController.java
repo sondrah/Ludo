@@ -34,36 +34,21 @@ import no.ntnu.imt3281.ludo.client.MD5Encrypt;
  * current menu is.
  */
 public class WelcomeController {
-	@FXML
-	private Pane paneHome;
-	@FXML
-	private Button btnHomeLogin;
-	@FXML
-	private Button btnHomeRegister;
-	@FXML
-	private Button btnLogin;
-	@FXML
-	private Button btnRegister;
-	@FXML
-	private Button btnHome;
-	@FXML
-	private Label lblHeader;
-	@FXML
-	private Label lblInfo;
-	@FXML
-	private Label lblPassword;
-	@FXML
-	private Label lblPassword2;
-	@FXML
-	private Label lblUsername;
-	@FXML
-	private Label lblError;
-	@FXML
-	private TextField txtFieldUsername;
-	@FXML
-	private PasswordField txtFieldPassword;
-	@FXML
-	private PasswordField txtFieldPassword2;
+	@FXML private Pane paneHome;
+	@FXML private Button btnHomeLogin;
+	@FXML private Button btnHomeRegister;
+	@FXML private Button btnLogin;
+	@FXML private Button btnRegister;
+	@FXML private Button btnHome;
+	@FXML private Label lblHeader;
+	@FXML private Label lblInfo;
+	@FXML private Label lblPassword;
+	@FXML private Label lblPassword2;
+	@FXML private Label lblUsername;
+	@FXML private Label lblError;
+	@FXML private TextField txtFieldUsername;
+	@FXML private PasswordField txtFieldPassword;
+	@FXML private PasswordField txtFieldPassword2;
 	
 	private static String usrname;
 	
