@@ -269,6 +269,13 @@ public class ServerController extends JFrame {
 		    	                			// TODO lag funk som gjør ALT med game
 		    	                		} 
 			                        }
+			                        else if (type.equals("LISTPLAYERS")) {
+		                        		StringBuilder sp = new StringBuilder();
+		                        		for(Client c: clients) {
+		                        			sp.append(db.getUserName(c.getId())+",");
+		                        		}
+		                        		messages.put("LISTPLAYERS,0,"+idNr+","+sp.toString());
+			                         }
 	                        	} 	// If msg excits end
 	    	     
 	                        } catch (IOException ioe) {	// Unable to communicate with the client, remove it
@@ -311,7 +318,6 @@ private void startMessageSender() {
 	     	                        } catch (IOException ioe) {	// Unable to communicate with the client, remove it
 	     	                        	// i.remove();
 	     	                        	// messages.add("LOGOUT:"+c.name);
-	     	                        	
 	     	                        }
                     		}
                     		
@@ -323,10 +329,23 @@ private void startMessageSender() {
                     		while(i.hasNext()) {
                     			game = i.next();
                     		}
-                    		
                     	}
-                    	else {
-                    		System.out.println("Nå har server melinga gått til *******");
+                    	
+                    	else if(type.equals("LISTPLAYERS")) {
+                    		Iterator<Client> i = clients.iterator();
+                    		boolean foundClient = false;
+                    		// lag funksjon som finner riktig client!! 
+							while(i.hasNext() && !foundClient ) {
+                    			Client tempCli = i.next();
+                    			if (clientId == tempCli.getId())
+                    				foundClient = true;				// Fant client, trenger ikke lete mer
+	                    			 try {
+	                    				 tempCli.sendText(txt);
+	     	                        } catch (IOException ioe) {	// Unable to communicate with the client, remove it
+	     	                        	// i.remove();
+	     	                        	// messages.add("LOGOUT:"+c.name);
+	     	                        }
+                    		}
                     	}
 
                     } // synchronized
