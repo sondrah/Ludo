@@ -331,10 +331,11 @@ public class GameBoardController extends Ludo {
 	 */
 	@FXML
 	void throwDice(ActionEvent e) {
+		System.out.println("Du har trykket på dice din æss");
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
 			// send a DiceEvent to proc the server to throw a dice
-			oos.writeObject(new GameEvent(gameID, new DiceEvent(this, activePlayer, 0)));
+			// oos.writeObject(new GameEvent(gameID, new DiceEvent(this, activePlayer, 0)));
 			
 			// TODO: We should be in blockingmode here
 			// TODO: get the events in some listner
@@ -342,11 +343,12 @@ public class GameBoardController extends Ludo {
 			Object obj = ois.readObject();
 			
 			// we only want to handle GameEvents here
-			if(obj instanceof GameEvent) {
-				GameEvent ge = (GameEvent) obj;
+			// if(obj ) { // instanceof GameEvent
+				// GameEvent ge = (GameEvent) obj;
 				
 				// we want to ensure we don't do changes
 				// that isn't for our game
+			/*
 				if(ge.getGameID() == gameID) {
 					
 					// we only want to handle DiceEvents here
@@ -365,6 +367,7 @@ public class GameBoardController extends Ludo {
 					} // if diceEvent
 				} // if gameid
 			} // if gameEvent
+			*/
 		}
 		catch(IOException ioe) {
 			// TODO: socket not found?
@@ -404,50 +407,50 @@ public class GameBoardController extends Ludo {
 	 */
 	@FXML
 	void clickOnPiece(MouseEvent event) {
-	
-	int tile = 0;
-	Object obj = event.getSource();
-			
-	for (int pi = 0; pi < PIECES; pi++) {
-		if(obj.equals(playerPieces[activePlayer][pi])) {
-			tile = corners.findTile(event.getSceneX(), event.getSceneY());
-			moveFrom.setX(corners.point[tile].getX());
-			moveFrom.setY(corners.point[tile].getY());
-			
-			moveTo.setX(corners.point[tile + dice].getX());
-			moveTo.setY(corners.point[tile + dice].getY());
-		}
-	}
 		
-	/*	
-		// Skjer bare hvis spiller skal flytte
-		if(shouldMove) {	
-	
-			movePlayerPieceFrom = movePieceFrom(event);
-			
-			if(movePlayerPieceFrom > -1) {	// Dersom bruker trykket på aktiv spiller sin brikke
-				// TODO sjekke brikke eller lignende canMove(movePlayerPieceFrom)
+		int tile = 0;
+		Object obj = event.getSource();
 				
-				if(canMove()) {	// Dersom brikken kan flytte
-					if(movePlayerPieceFrom ==0) {		// Dersom fra start, flytt til 1
-						moveTo.setX(corners.point[userGridToLudoBoardGrid(CurrentPlayer, 1)].getX());
-						moveTo.setY(corners.point[userGridToLudoBoardGrid(CurrentPlayer, 1)].getY());
-					}
-					else {					// TODO skulle vært til? 
-						// flytter brikken til point
-							// Finner riktig ved å hente ut rikitg pos (svart verdi) .get er ukjent hvorfor
-						moveTo.setX(corners.point[userGridToLudoBoardGrid(CurrentPlayer, movePlayerPieceFrom)].getX());
-						moveTo.setY(corners.point[userGridToLudoBoardGrid(CurrentPlayer, movePlayerPieceFrom)].getY());
-					}
-				}
-				else {	// Error?? skal ikke skje?? burde vært ikke gjør noe
-					moveFrom.setX(-100);
-					moveFrom.setY(-100);
-				}
+		for (int pi = 0; pi < PIECES; pi++) {
+			if(obj.equals(playerPieces[activePlayer][pi])) {
+				tile = corners.findTile(event.getSceneX(), event.getSceneY());
+				moveFrom.setX(corners.point[tile].getX());
+				moveFrom.setY(corners.point[tile].getY());
+				
+				moveTo.setX(corners.point[tile + dice].getX());
+				moveTo.setY(corners.point[tile + dice].getY());
 			}
+		}
 			
-		}*/
-	}
+		/*	
+			// Skjer bare hvis spiller skal flytte
+			if(shouldMove) {	
+		
+				movePlayerPieceFrom = movePieceFrom(event);
+				
+				if(movePlayerPieceFrom > -1) {	// Dersom bruker trykket på aktiv spiller sin brikke
+					// TODO sjekke brikke eller lignende canMove(movePlayerPieceFrom)
+					
+					if(canMove()) {	// Dersom brikken kan flytte
+						if(movePlayerPieceFrom ==0) {		// Dersom fra start, flytt til 1
+							moveTo.setX(corners.point[userGridToLudoBoardGrid(CurrentPlayer, 1)].getX());
+							moveTo.setY(corners.point[userGridToLudoBoardGrid(CurrentPlayer, 1)].getY());
+						}
+						else {					// TODO skulle vært til? 
+							// flytter brikken til point
+								// Finner riktig ved å hente ut rikitg pos (svart verdi) .get er ukjent hvorfor
+							moveTo.setX(corners.point[userGridToLudoBoardGrid(CurrentPlayer, movePlayerPieceFrom)].getX());
+							moveTo.setY(corners.point[userGridToLudoBoardGrid(CurrentPlayer, movePlayerPieceFrom)].getY());
+						}
+					}
+					else {	// Error?? skal ikke skje?? burde vært ikke gjør noe
+						moveFrom.setX(-100);
+						moveFrom.setY(-100);
+					}
+				}
+				
+			}*/
+		}
 	
 	
 	/**
@@ -487,7 +490,7 @@ public class GameBoardController extends Ludo {
 				try {
 					// send the info to the server
 					ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
-					oos.writeObject(new GameEvent(gameID, new PieceEvent(this, activePlayer, piece, from, from + dice)));
+					// oos.writeObject(new GameEvent(gameID, new PieceEvent(this, activePlayer, piece, from, from + dice)));
 					//connection.send(new MovePiece(gameId, activePlayer, from, from + dice));
 					
 					//playerPieces[activePlayer][i].setX();

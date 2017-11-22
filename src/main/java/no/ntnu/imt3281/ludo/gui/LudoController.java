@@ -379,6 +379,7 @@ public class LudoController {
     	
     	
     		try {								// Client sier jeg vil spille 
+    			System.out.println("Trykket på knapp rand game, skal sende nå");
     			output.write("GAME,0,"+ clientId +",Random Game trykket på");
 				output.newLine();
 				output.flush();

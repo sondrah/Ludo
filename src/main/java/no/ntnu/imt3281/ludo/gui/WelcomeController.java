@@ -239,12 +239,10 @@ public class WelcomeController {
 				
 				// sends register-request: LOGIN,0,usr,pwd
 				// REMEMBER! LOGIN is a message type which is 0 for register
+				System.out.println("inne i registrer");
 				bw.write("LOGIN,0," + usr + "," + hashedPwd);
 				bw.newLine();
 				bw.flush();
-				// bw.close();
-				
-				
 				
 				// gets the true/false of: LOGIN(Register),0,true/false
 				String res = br.readLine();

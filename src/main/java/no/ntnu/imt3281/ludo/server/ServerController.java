@@ -39,8 +39,8 @@ public class ServerController extends JFrame {
 	private String url = "jdbc:derby:BadgerDB;";
 	/** Unique ID for each game */
 	private int gameID = 0;
-	/** How many playsers are waiting for randoom game*/
-	private int waitingPlayers = 0;
+	/** Witch playsers are waiting for randoom game*/
+	private ArrayList<Client> waitingClients = new ArrayList<Client>(4);
 	/** Socket that all communication goes through */
 	private ServerSocket serverSocket;
 	/** ArrayList wit all logged in clients */
@@ -95,7 +95,7 @@ public class ServerController extends JFrame {
             startLoginMonitor();		// Handle login requests in a separate thread
             startMessageSender();		// Send same message to all clients, handled in a separate thread
             startMessageListener();		// Check clients for new messages
-            startGameListener();		// Check games for changes
+            
             executorService.shutdown();
         } catch (IOException ioe) {
         	System.err.println("No ServerSocket"); 
@@ -193,64 +193,6 @@ public class ServerController extends JFrame {
         });
     }
 	
-	private void startGameListener() {	
-		// Listener = gå igjennom alle clientene for å finne ut OM det er en meldingen som er sendt
-        executorService.execute(() -> {			// Thread 
-            while (!shutdown) {
-                try {
-                	synchronized (games) {	// Only one thread at a time might use the clients object 
-                		
-	                    Iterator<Game> i = games.iterator();	// Iterate throug all clients
-	                    // TODO Stream clients of si for each, bruker da en paralell thread??
-	                    while (i.hasNext()) {			
-	                        Game curGame = i.next();			// ??SA - hopper over første?
-	                        try {
-	                        	System.out.println("Game listener, ant games: "+games.size());
-	                        	String msgGame = curGame.read();		// Leser inn meldingen 
-	                        	if (msgGame != null) {
-		                        	String[] parts = msgGame.split(",");   	// Splitter den opp på , komma
-		                    
-		                        	int fromGameID = curGame.getId();
-		                        	String type = parts[0];
-		    	                    int idNr = Integer.parseInt(parts[1]);		//IDnr til rom eller game
-		    	                    int fromClientID = Integer.parseInt(parts[2]);
-		    	                    String message = parts[3];
-		    	                    											// eks CHAT,3,0,msg
-		    	                    											// 	   type idRom/game, info??trengs?, melding
-		    	                	if (type.equals("GAME")) {
-			                        	if(idNr ==0) {							// New Game
-			                        		if (nrOfPlayerWaitingRandomGame(1) > 1) {	// Legger en til i ventelista, dersom da flere enn 1 start
-			                        			// TODO wait for more playser 5 sek 
-			                        			// If not, start anyway
-				                        		
-				    	                		int currentGameID  = gameID ++; 		// Tildeler game id 
-				    	                		int newChatId = newChat("ChatForGame"+currentGameID);
-				    	                		Game newGame = new Game(currentGameID, newChatId);		// Oppretter ny chat i server
-				    	                		games.add(newGame);						// Legger denne til i serverens chat liste 
-				    	                		messages.put("GAME,"+currentGameID+","+fromClientID+",0 HAR STARTET"+message);
-				    	                		messages.put("CHAT,1,"+fromClientID+", Game id:"+currentGameID+" > " +message);
-				    	                								// Sender tilbake riktig chat nr til client som oprettet den
-			                        		}
-			                        	}
-		    	                		else {			// Allerede eksisterende chat 
-		    	                			//Iterator<Chat> chatNri = chats.iterator();		// Iterer gjennom alle chatte rom
-		    	                			// TODO lag funk som gjør ALT med game
-		    	                		} 
-			                        }
-	                        	} 	// If msg excits end
-	    	     
-	                        } catch (IOException ioe) {	// Unable to communicate with the client, remove it
-	                        	// clientNri.remove();
-	                          
-	                        }
-	                    }
-                	}
-                } catch (InterruptedException ie) {
-                	ie.printStackTrace();
-                } 
-           }
-        });
-    }
 	private void startMessageListener() {	
 		// Listener = gå igjennom alle clientene for å finne ut OM det er en meldingen som er sendt
         executorService.execute(() -> {			// Thread 
@@ -280,7 +222,10 @@ public class ServerController extends JFrame {
 		    	                	if (type.equals("CHAT")) {					// Hvis meldingen er av typen CHAT
 		    	                		String userName = db.getUserName(fromClientID);		    	                		
 		    	                		if(idNr ==0) {							// New Chat
-		    	                			int newChatId = newChat(message);
+		    	                			Chat newChat = newChat(message);
+		    	                			int newChatId = newChat.getId();
+		    	                			newChat.addParticipant(curClient);
+		    	                			// TODO addParticipant seg selv ved oprettelse av ny chat 
 		    	                			messages.put("CHAT,"+newChatId+","+fromClientID+",0"+message);	
 		    	                		} else {			 
 		    	                			Iterator<Chat> chatNri = chats.iterator();		// Iterer gjennom alle chatte rom
@@ -310,39 +255,65 @@ public class ServerController extends JFrame {
 		    	                		}
 			                        }
 		    	                	else if (type.equals("GAME")) {
+		    	                		System.out.println("Melding i server, msg GAME nå sjekker");
 			                        	if(idNr ==0) {							// New Game
-			                        		if (nrOfPlayerWaitingRandomGame(1) > 1) {	// Legger en til i ventelista, dersom da flere enn 1 start
+			                        		if (nrOfPlayerWaitingRandomGame(curClient) < 1) {	// Legger en til i ventelista, dersom da flere enn 1 start
 			                        			// TODO wait for more playser 5 sek 
 			                        			// If not, start anyway
-				                        		
+			                        			System.out.println("Ikke nok spillere enda, venter på flere spillere");
+			                        		}else {
 				    	                		int currentGameID  = gameID++; 			// Tildeler game id 
-				    	                		int newChatId = newChat("ChatForGame"+currentGameID);
+			                        		
+				    	                		Chat newChat = newChat("ChatForGame"+currentGameID);
+				    	                		int newChatId = newChat.getId();
+				    	                		
 				    	                		Game newGame = new Game(currentGameID, newChatId);		// Oppretter ny chat i server
 				    	                		games.add(newGame);						// Legger denne til i serverens chat liste 
-				    	                		messages.put("GAME,"+currentGameID+","+fromClientID+",0 HAR STARTET"+message);
-				    	                		messages.put("CHAT,1,"+fromClientID+", Game id:"+currentGameID+" > " +message);
-				    	                								// Sender tilbake riktig chat nr til client som oprettet den
-			                        		}
-			                        	}
-		    	                		else {			// Allerede eksisterende chat 
+				    	                		Iterator<Client> newP = waitingClients.iterator();	// Iterate throug all clients
+				    		                    while (i.hasNext()) {			
+				    		                        Client newPlayer = newP.next();	
+				    		                        newChat.addParticipant(newPlayer);
+				    		                        newGame.addParticipant(newPlayer);
+				    		                        messages.put("GAME,"+currentGameID+","+fromClientID+",0 HAR STARTET"+message);
+				    		                        // TODO SONDRE, her er nytt chatt til game vindu - må testes 
+					    	                		messages.put("CHAT,"+newChatId+","+fromClientID+", Game id:"+currentGameID+" > " +message);
+					    	                		// TODO linje (til master chat" under fjernes når nytt chatterom er oppe å går
+					    	                		messages.put("CHAT,1,"+fromClientID+", Game id:"+currentGameID+" > " +message);
+					    	                								// Sender tilbake riktig chat nr til client som oprettet den
+				                        		
+				    		                    }
+				    	                	}
+				                        }
+				                        else if(idNr !=0 ){
+			    	                		Iterator<Game> gameNri = games.iterator();
+			                        		boolean foundGame = false;
+			                        		// lag funksjon som finner riktig game!! 
+			    							while(gameNri.hasNext() && !foundGame ) {
+			                        			Game tempGame = gameNri.next();
+			                        			if (idNr == tempGame.getId())
+			                        				foundGame = true;				// Fant client, trenger ikke lete mer
+				                        	}
+				                        }
+			                        }
+	    	                		else if (type.equals("LISTPLAYERS")) {
+	                        		StringBuilder sp = new StringBuilder();
+	                        		for(Client c: clients) {
+	                        			sp.append(db.getUserName(c.getId())+",");
+	                        		}
+	                        		messages.put("LISTPLAYERS,0,"+idNr+","+sp.toString());
+			                         }else {			// Allerede eksisterende chat 
 		    	                			//Iterator<Chat> chatNri = chats.iterator();		// Iterer gjennom alle chatte rom
 		    	                			// TODO lag funk som gjør ALT med game
 		    	                		} 
-			                        }
-			                        else if (type.equals("LISTPLAYERS")) {
-		                        		StringBuilder sp = new StringBuilder();
-		                        		for(Client c: clients) {
-		                        			sp.append(db.getUserName(c.getId())+",");
-		                        		}
-		                        		messages.put("LISTPLAYERS,0,"+idNr+","+sp.toString());
-			                         }
+			                        
+			                        
 	                        	} 	// If msg excits end
 	    	     
 	                        } catch (IOException ioe) {	// Unable to communicate with the client, remove it
 	                        	// clientNri.remove();
 	                        }
 	                    }		// while slutt
-                	}
+                	} 	// sync ferdig
                 } catch (InterruptedException ie) {
                 	ie.printStackTrace();
                 } 
@@ -364,42 +335,32 @@ private void startMessageSender() {
                     int actionId = Integer.parseInt(parts[2]);	// cast to integer ID client   
                     String message = parts[3];
                     synchronized (clients) {		// Only one thread at a time might use the clients object
-                    	
-                    	if(type.equals("LOGIN") || type.equals("CHAT")) {
-                    		Iterator<Client> i = clients.iterator();
-                    		boolean foundClient = false;
-                    		// lag funksjon som finner riktig client!! 
-							while(i.hasNext() && !foundClient ) {
-                    			Client tempCli = i.next();
-                    			if (actionId == tempCli.getId())
-                    				foundClient = true;				// Fant client, trenger ikke lete mer
+                    	Iterator<Client> i = clients.iterator();
+                		boolean foundClient = false;
+                		// lag funksjon som finner riktig client!! 
+						while(i.hasNext() && !foundClient ) {
+                			Client tempCli = i.next();
+                			if (actionId == tempCli.getId()) {
+                				foundClient = true;				// Fant client, trenger ikke lete mer
+                				if(type.equals("LOGIN") || type.equals("CHAT")) {	
+		                    	try {
+		                    				 tempCli.sendText(type+","+id+","+actionId+","+message);
+		     	                        } catch (IOException ioe) {	// Unable to communicate with the client, remove it
+		     	                        	// i.remove();
+		     	                        	// messages.add("LOGOUT:"+c.name);
+		     	                        }
+	                    		}
+		                    	else if(type.equals("GAME")) {
 	                    			 try {
-	                    				 
-	                    				 tempCli.sendText(type+","+id+","+actionId+","+message);
-	     	                        } catch (IOException ioe) {	// Unable to communicate with the client, remove it
-	     	                        	// i.remove();
-	     	                        	// messages.add("LOGOUT:"+c.name);
-	     	                        }
-                    		}
-                    		
+		                    				 tempCli.sendText(type+","+id+","+actionId+","+message);
+		     	                        } catch (IOException ioe) {	// Unable to communicate with the client, remove it
+		     	                        	// i.remove();
+		     	                        	// messages.add("LOGOUT:"+c.name);
+		     	                        }
+	                    		}
+                			}
                     	}
-                    	else if(type.equals("GAME")) {
-                    		Iterator<Game> i = games.iterator();
-                    		boolean foundGame = false;
-                    		// lag funksjon som finner riktig game!! 
-							while(i.hasNext() && !foundGame ) {
-                    			Game tempGame = i.next();
-                    			if (actionId == tempGame.getId())
-                    				foundGame = true;				// Fant client, trenger ikke lete mer
-	                    			 try {
-	                    				 tempGame.sendTextGame(type+","+id+","+actionId+","+message);
-	     	                        } catch (IOException ioe) {	// Unable to communicate with the client, remove it
-	     	                        	// i.remove();
-	     	                        	// messages.add("LOGOUT:"+c.name);
-	     	                        }
-                    		}
-                    	}
-                    	
+                    	/*
                     	else if(type.equals("LISTPLAYERS")) {
                     		Iterator<Client> i = clients.iterator();
                     		boolean foundClient = false;
@@ -416,7 +377,7 @@ private void startMessageSender() {
 	     	                        }
                     		}
                     	}
-
+		*/
                     } // synchronized
                
                 } catch (InterruptedException ie) {
@@ -431,15 +392,16 @@ private void startMessageSender() {
 	 * @param chatName
 	 * @return chat id or 0 if not success 
 	 */
-	private int newChat(String chatName) {
+	private Chat newChat(String chatName) {
+		Chat newChat = null;
 		db.addChat(chatName);				// Legger chatten til i db
 		int newChatId = db.getChatID(chatName); // Henter ut Chat id
 		if (newChatId != -1) {		// Hvis chat fantes i db
-			Chat newChat = new Chat(newChatId);		// Oppretter ny chat i server
+			newChat = new Chat(newChatId);		// Oppretter ny chat i server
 			chats.add(newChat);						// Legger denne til i serverens chat liste
 		}
-		else newChatId = 0;
-		return newChatId;
+		else newChat = null;
+		return newChat;
 	}
 	
 	/**
@@ -447,10 +409,13 @@ private void startMessageSender() {
 	 * If one more waiting send 1
 	 * @return waitingPlayers
 	 */
-	private int nrOfPlayerWaitingRandomGame(int oneMoreORcheck) {
-		waitingPlayers = waitingPlayers + oneMoreORcheck;
-	
-		return waitingPlayers;
+	private int nrOfPlayerWaitingRandomGame(Client newClient) {
+		try{
+			waitingClients.add(newClient);
+		} catch (IllegalArgumentException moreThanFourPlayers) {
+			// TODO: handle exception start new game!
+		}
+		return waitingClients.size();
 	}
 	
 	
@@ -620,9 +585,6 @@ private void startMessageSender() {
     class Game extends Ludo{
     	private int ID;
     	private int relatedChatId;
-    	private Socket connectionGame;
-        private BufferedReader inputGame;
-        private BufferedWriter outputGame;
     	private Vector<Client> participants;
     	
     	/**
@@ -635,25 +597,7 @@ private void startMessageSender() {
     		this.relatedChatId = chatID;
     		
     	}
-    	/**
-         * --Borrowed code from okolloen--
-         * Construct a new Client object based on the given socket object.
-         * A buffered reader and a buffered writer will be created based on the
-         * input stream and output stream of the given socket object. Then
-         * the nickname of the user using the connecting client will be read.
-         * If no LOGIN:username message can be read from the client
-         * an IOException is thrown. 
-         * 
-         * @param connection the socket object from the server sockets accept call.
-         * @throws IOException if any errors occurs during the initial IO operations
-         */
-        public Game(Socket connection) throws IOException {
-            this.connectionGame = connection;
-            inputGame = new BufferedReader(new InputStreamReader(
-                    connection.getInputStream()));
-            outputGame = new BufferedWriter(new OutputStreamWriter(
-                    connection.getOutputStream()));
-        }
+    	
     	       
         /**
          * Sets ID 
@@ -669,46 +613,7 @@ private void startMessageSender() {
          */
         public int getId() {
         	return ID; 
-        }
-        /**
-         * Closes the buffered reader, the buffered writer and the socket
-         * connection.
-         * @throws IOException if an error occurs
-         */
-        public void close() throws IOException {
-        	inputGame.close();
-            outputGame.close();
-            connectionGame.close();
-        }
-
-        /**
-         * Send the given message to the client. Ensures that all messages
-         * have a trailing newline and are flushed.
-         * 
-         * @param text the message to send
-         * @throws IOException if an error occurs when sending the message 
-         */
-        public void sendTextGame(String text) throws IOException {
-            outputGame.write(text);
-            outputGame.newLine();
-            outputGame.flush();
-        }
-
-        /**
-         * Non blocking read from the client, if no data is available then null 
-         * will be returned. Checks to see if a line can be read from the client
-         * and if so reads and returns that line (message). If no message is 
-         * available null is returned.
-         * 
-         * @return a String with message if available, otherwise null
-         * @throws IOException if an error occurs during reading
-         */
-        public String read() throws IOException {
-            if (inputGame.ready())
-                return inputGame.readLine();
-            return null;
-        }
-        
+        }     
     	
     	public int getThisGamerelatedChatId() {
     		return relatedChatId; 	
