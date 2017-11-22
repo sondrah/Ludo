@@ -174,6 +174,7 @@ public class WelcomeController {
 
 				    	root = loader.load();
 				    	LudoController controller = loader.getController();
+
 				    	loader.setController(controller);
 				    
 			            Stage stage = new Stage();
