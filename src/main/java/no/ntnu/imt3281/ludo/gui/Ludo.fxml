@@ -59,7 +59,7 @@
                                     <TextArea fx:id="chatArea" editable="false" prefHeight="422.0" prefWidth="298.0" />
                                     <HBox prefHeight="34.0" prefWidth="298.0">
                                        <children>
-                                          <TextField prefHeight="26.0" prefWidth="468.0" />
+                                          <TextField fx:id="toSay" prefHeight="26.0" prefWidth="468.0" />
                                           <Button mnemonicParsing="false" onAction="#saySomething" prefHeight="26.0" prefWidth="134.0" text="%ludogameboard.saybutton" />
                                        </children>
                                     </HBox>

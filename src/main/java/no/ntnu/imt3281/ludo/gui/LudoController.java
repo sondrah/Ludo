@@ -8,6 +8,8 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
+
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -85,6 +87,7 @@ public class LudoController {
 			        socket.getInputStream()));
 			output = new BufferedWriter(new OutputStreamWriter(
 			        socket.getOutputStream()));
+			
     	} catch(IOException ioe) {
     		System.err.println("fikk ikke connection, i ludocontroller");
     		ioe.printStackTrace();
@@ -111,12 +114,14 @@ public class LudoController {
      * 
      * Login and logout messages is used to add/remove users to/from the list of
      * participants while all other messages are displayed.
+     * @throws InterruptedException 
      */
 
-    public void processConnection() {
+    public void processConnection()  {
         while (true) {  // Sjekker hele tiden etter innkommende meldinger 
+        	
             try {
-                
+            	TimeUnit.MILLISECONDS.sleep(10);
                 String retMessage = input.readLine();	
 				String[] returnMessage = retMessage.split(",");
 				String type = returnMessage[0];
@@ -138,7 +143,12 @@ public class LudoController {
             } catch (IOException ioe) {
             	System.err.println("Error receiving data: ");
                        
-            }
+            } catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+            	System.err.println("Error innnn receiving data: ");
+				e.printStackTrace();
+			}            
+           
         }		// While true end
     }
     
@@ -150,7 +160,7 @@ public class LudoController {
      */
     private void routeChatMessage(String message, int chatId) {
     	int curChatId = 1; // TODO hardcode
-    	int curTabId = 1; 
+    	int curTabId = 0; 
     	// her Sondre Itere gjennom mapping 	
     	if (chatId == curChatId)
     		curTabId = curTabId;
@@ -182,6 +192,8 @@ public class LudoController {
     public void close(ActionEvent e) {
     	Platform.exit();
     }
+    
+    
     
     @FXML
     public void challenge(ActionEvent e) {
@@ -217,6 +229,10 @@ public class LudoController {
     	map.put(chatId, tabs.size());
     }
     
+    @FXML
+    public void listRooms(ActionEvent e) {
+    	//JOptionPane.showConfirmDialog(null, "Got milk?");
+    }
     
     @FXML
     public void about(ActionEvent e) {

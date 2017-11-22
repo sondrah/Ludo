@@ -179,6 +179,7 @@ public class WelcomeController {
 				    	if(controller == null) System.err.println("SAD");
 				    	
 				    	controller.setConnection(socket);
+				    	controller.processConnection();
 				    	controller.setUserId(id);
 				    	
 				    	System.err.println(usr);
