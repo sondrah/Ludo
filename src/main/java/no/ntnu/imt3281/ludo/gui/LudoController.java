@@ -33,48 +33,28 @@ import no.ntnu.imt3281.i18n.I18N;
  */
 public class LudoController {
     
-    @FXML
-    private MenuBar menuBar;
-    @FXML
-    private Menu file;
-    @FXML
-    private MenuItem connect;
-    @FXML
-    private MenuItem close;
-    @FXML
-    private Menu game;
-    @FXML
-    private MenuItem challenge;
-    @FXML
-    private MenuItem random;
-    @FXML
-    private Menu chat;
-    @FXML
-    private MenuItem join;
-    @FXML
-    private MenuItem listRooms;
-    @FXML
-    private Menu help;
-    @FXML
-    private MenuItem about;
-    @FXML
-    private TextArea masterChat;
-    @FXML
-    private Button say;
-    @FXML
-    private Button cancel;
-    @FXML
-    private Button send; 
-    @FXML
-    private Label errorMessage;
-    @FXML
-    private Label userName;
-    @FXML
-    private TextField toSay;
-    @FXML
-    private TabPane tabbedPane;
-    @FXML
-    private TitledPane joinOrChallenge;
+    @FXML private MenuBar menuBar;
+    @FXML private Menu file;
+    @FXML private MenuItem connect;
+    @FXML private MenuItem close;
+    @FXML private Menu game;
+    @FXML private MenuItem challenge;
+    @FXML private MenuItem random;
+    @FXML private Menu chat;
+    @FXML private MenuItem join;
+    @FXML private MenuItem listRooms;
+    @FXML private Menu help;
+    @FXML private MenuItem about;
+    @FXML private TextArea masterChat;
+    @FXML private Button say;
+    @FXML private Button cancel;
+    @FXML private Button send; 
+    @FXML private Label errorMessage;
+    @FXML private Label userName;
+    @FXML private TextField toSay;
+    @FXML private TextArea chatArea;
+    @FXML private TabPane tabbedPane;
+    @FXML private TitledPane joinOrChallenge;
 
     private int gameId = 0;
     
@@ -82,7 +62,6 @@ public class LudoController {
     
     
     public void setUserName(String usr) {
-    	if(userName == null) System.err.println("YENSE");
     	userName.setText(usr);
     }
 
@@ -158,18 +137,12 @@ public class LudoController {
     	// TODO: kunne velge disse
     	// TODO: sende request
     	// TODO: motta svar?
-    	joinOrChallenge.setVisible(true);
-    	errorMessage.setVisible(false);
-    	joinOrChallenge.setText(I18N.tr("ludo.challengePlayer"));
     }
     
     
     @FXML
     public void joinChat(ActionEvent e) {
     	// TODO: Ta inn chatnavn, la person joine om finnes
-    	joinOrChallenge.setVisible(true);
-    	errorMessage.setVisible(false);
-    	joinOrChallenge.setText(I18N.tr("ludo.joinChat"));
     }
     
     
@@ -219,7 +192,6 @@ public class LudoController {
     @FXML
     public void cancel(ActionEvent e) {
     	// TODO: Lukke current vindu man står i (gå tilbake)
-    	joinOrChallenge.setVisible(false);
     }
     
     @FXML
@@ -256,6 +228,4 @@ public class LudoController {
 		}
     	
     }
-    
-    
 }
