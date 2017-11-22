@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
+import javax.crypto.CipherInputStream;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -32,38 +34,28 @@ import no.ntnu.imt3281.ludo.client.MD5Encrypt;
  * current menu is.
  */
 public class WelcomeController {
-	@FXML
-	private Pane paneHome;
-	@FXML
-	private Button btnHomeLogin;
-	@FXML
-	private Button btnHomeRegister;
-	@FXML
-	private Button btnLogin;
-	@FXML
-	private Button btnRegister;
-	@FXML
-	private Button btnHome;
-	@FXML
-	private Label lblHeader;
-	@FXML
-	private Label lblInfo;
-	@FXML
-	private Label lblPassword;
-	@FXML
-	private Label lblPassword2;
-	@FXML
-	private Label lblUsername;
-	@FXML
-	private Label lblError;
-	@FXML
-	private TextField txtFieldUsername ;
-	@FXML
-	private PasswordField txtFieldPassword;
-	@FXML
-	private PasswordField txtFieldPassword2;
+	@FXML private Pane paneHome;
+	@FXML private Button btnHomeLogin;
+	@FXML private Button btnHomeRegister;
+	@FXML private Button btnLogin;
+	@FXML private Button btnRegister;
+	@FXML private Button btnHome;
+	@FXML private Label lblHeader;
+	@FXML private Label lblInfo;
+	@FXML private Label lblPassword;
+	@FXML private Label lblPassword2;
+	@FXML private Label lblUsername;
+	@FXML private Label lblError;
+	@FXML private TextField txtFieldUsername;
+	@FXML private PasswordField txtFieldPassword;
+	@FXML private PasswordField txtFieldPassword2;
+	
+	private static String usrname;
 	
 	
+	public static String getUsername() {
+		return usrname;
+	}
 	/**
 	 * determines the visual elements for the login screen
 	 * @param event button click caused by the login button of the home screen
@@ -170,20 +162,36 @@ public class WelcomeController {
 				
 				// gets the true/false of: LOGIN,1,true/false
 				String res = br.readLine();
+				System.out.println(res);
 				res = res.split(",")[2];
 				
-				if(Integer.parseInt(res) != 0) {
+				int id = Integer.parseInt(res);
+				if(id != 0) {
 					try {
 						FXMLLoader loader = new FXMLLoader(getClass().getResource("Ludo.fxml"));
 				    	loader.setResources(I18N.getRsb());
-
-			            root = loader.load();
+				    	
+				    	
+				    	//loader.setController(new LudoController());
+				    	
+				    	root = loader.load();
+				    	// LudoController controller = loader.getController();
+				    	LudoController controller = new LudoController(socket, id);
+				    	loader.setController(controller);
+				    	if(controller == null) {
+				    		System.err.println("Controller SAD, logg inn fungerer ikke");
+				    	}
+				    	controller.setUserName(usr);
+				    	
+			           
 			            
 			            Stage stage = new Stage();
 			            stage.setTitle("Ludo");
 			            stage.setScene(new Scene(root, 1050, 800));
-			            stage.show();
+			            controller.setRoot(stage);
 			            
+			            stage.show();
+			       
 			            // hiding the login window (effectively: closing it)
 			            ((Node)(event.getSource())).getScene().getWindow().hide();
 			        }
