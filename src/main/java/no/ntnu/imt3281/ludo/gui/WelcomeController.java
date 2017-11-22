@@ -9,6 +9,7 @@ import java.net.Socket;
 
 import javax.crypto.CipherInputStream;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -148,7 +149,8 @@ public class WelcomeController {
 				Socket socket = new Socket("localhost", 12345);
 				BufferedWriter bw = new BufferedWriter(
 						new OutputStreamWriter(socket.getOutputStream()));
-				
+				BufferedReader br = new BufferedReader(
+						new InputStreamReader(socket.getInputStream()));
 				String hashedPwd = MD5Encrypt.cryptWithMD5(pwd);
 				
 				// sends login-request: LOGIN,1,usr,pwd
@@ -156,13 +158,10 @@ public class WelcomeController {
 				bw.newLine();
 				bw.flush();
 				
-				BufferedReader br = new BufferedReader(
-						new InputStreamReader(socket.getInputStream()));
-				
-				
 				// gets the true/false of: LOGIN,1,true/false
 				String res = br.readLine();
 				System.out.println(res);
+				System.out.println(usr);
 				res = res.split(",")[2];
 				
 				int id = Integer.parseInt(res);
@@ -170,26 +169,28 @@ public class WelcomeController {
 					try {
 						FXMLLoader loader = new FXMLLoader(getClass().getResource("Ludo.fxml"));
 				    	loader.setResources(I18N.getRsb());
-				    	
-				    	
+
 				    	//loader.setController(new LudoController());
-				    	
+
 				    	root = loader.load();
 				    	LudoController controller = loader.getController();
-				    	
-				    	controller.setConnection(socket);
-				    	controller.processConnection();
-				    	controller.setUserId(id);
-				    	
-				    	System.err.println(usr);
-				    	controller.setUserName(usr);
-				    	
-			           
-			            
+
+				    	loader.setController(controller);
+				    
 			            Stage stage = new Stage();
 			            stage.setTitle("Ludo");
 			            stage.setScene(new Scene(root, 1050, 800));
 			            stage.show();
+			            
+			            System.out.println(usr);
+				    	controller.setUpController(socket, id, stage);
+				    	controller.setUserName(usr);
+			            
+				    	
+				    	if(controller == null) {
+				    		System.err.println("Controller SAD, logg inn fungerer ikke");
+				    	}
+				    	     
 			       
 			            // hiding the login window (effectively: closing it)
 			            ((Node)(event.getSource())).getScene().getWindow().hide();

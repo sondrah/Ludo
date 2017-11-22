@@ -3,11 +3,14 @@ package no.ntnu.imt3281.ludo.gui;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.Iterator;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.DefaultListModel;
@@ -20,6 +23,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -33,6 +37,10 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import no.ntnu.imt3281.i18n.I18N;
 
 /**
@@ -65,22 +73,29 @@ public class LudoController {
     @FXML private TabPane tabbedPane;
     @FXML private TitledPane joinOrChallenge;
 
+    private Stage root;
     private int gameId = 0;
-    
-    private int userId;
-    
-    
-    public void setUserName(String usr) {
-    	userName.setText(usr);
-    }
-
     private int clientId;
     private Socket socket;
     private BufferedReader input;
     private BufferedWriter output;
     HashMap<Integer, Integer> map = new HashMap<>();
     private DefaultListModel<String> participantsModel;
+    private ExecutorService executorService;
+    private boolean shutdown = false;
+    private int userId;
+    
+    // public LudoController() {} // tom constructor for load fxml
+    public void setUpController(Socket socket, int id, Stage stageroot) {
+		setRoot(stageroot);
+    	setConnection(socket);
+    	setUserId(id);
+    	executorService = Executors.newCachedThreadPool();
+        processConnection();		// Handle login requests in a separate thread
+        executorService.shutdown();
 
+    }
+   
     
     public void setConnection(Socket socket) {
     	try {
@@ -97,19 +112,23 @@ public class LudoController {
     	}
     }
 
-    
+    public void setUserName(String usrN) {
+    	userName.setText(usrN);
+    }
+
     @FXML
     public void connect(ActionEvent e) {
     	// TODO:
     }
-    
+    /**
+     * Set uder id in constructor
+     * @param id
+     */
     public void setUserId(int id) {
     	this.clientId = id;
     }
     
     /**
-     * ca 4000 studenter, i gjøvik 30 000 tusen
-     * bra studentmiljø 
      * This method handles the communication from the server. Note that this
      * method never returns, messages from the server is read in a loop that
      * never ends. All other user interaction is handled in the GUI thread.
@@ -120,69 +139,72 @@ public class LudoController {
      */
 
     public void processConnection()  {
-        while (true) {  // Sjekker hele tiden etter innkommende meldinger 
-        	
-            try {
-            	TimeUnit.MILLISECONDS.sleep(10);
-                String retMessage = input.readLine();	
-				String[] returnMessage = retMessage.split(",");
-				String type = returnMessage[0];
-				int actionId = Integer.parseInt(returnMessage[1]);	
-				String receivedClientId = returnMessage[2];	
-				String message = returnMessage[3];
-				
-				
-                if (type.equals("CHAT")) { 				// Message er av typen CHAT
-                	if (message.startsWith("0")) {
-                		addNewTabToChatMapping(actionId); 
-                	}
-                	routeChatMessage(message, actionId);
-                	
-                // } else if (type.equals("LOGOUT")) { // User is logging out removeUser(tmp.substring(7));
-                } else { // All other messages
-                    
-                }
-            } catch (IOException ioe) {
-            	System.err.println("Error receiving data: ");
-                       
-            } catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-            	System.err.println("Error innnn receiving data: ");
-				e.printStackTrace();
-			}            
-           
-        }		// While true end
+    	executorService.execute(() -> {
+            while (!shutdown) {
+		        while (true) {  // Sjekker hele tiden etter innkommende meldinger 
+		        	
+		            try {
+		                if (input.ready()) {					// TimeUnit.MILLISECONDS.sleep(10);
+			                
+			                String retMessage = input.readLine();	
+							String[] returnMessage = retMessage.split(",");
+							String type = returnMessage[0];
+							int actionId = Integer.parseInt(returnMessage[1]);	
+							String receivedClientId = returnMessage[2];	
+							String message = returnMessage[3];
+							System.out.println("Say process Connection: " +message);
+							
+			                if (type.equals("CHAT")) { 				// Message er av typen CHAT
+			                	if (message.startsWith("0")) {
+			                		addNewTabToChatMapping(actionId); 
+			                	}
+			                	routeChatMessage(message, actionId);
+			                	
+			                // } else if (type.equals("LOGOUT")) { // User is logging out removeUser(tmp.substring(7));
+			                } else { // All other messages
+			                    
+			                }
+		                }
+		            } catch (IOException ioe) {
+		            	System.err.println("Error receiving data: ");
+		            }
+		        }		// While true end
+            }
+    	});
     }
     
     /**
      * Used to add messages to the message area in a thread safe manner
      * 
-     * @param text
-     *            the text to be added
+     * @param text the text to be added
      */
     private void routeChatMessage(String message, int chatId) {
-    	int curChatId = 1; // TODO hardcode
-    	int curTabId = 0; 
-    	// her Sondre Itere gjennom mapping 	
-    	if (chatId == curChatId)
-    		curTabId = curTabId;
+    	Integer tabId = map.get(chatId);
+   	
+    	if(tabId != null) {	// korrekt check?
     		
     				// Henter ut riktig Anchor Pane for riktig chatterom
-    	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(curTabId).getContent();
-    				// Finner alle elementene i dette chattevinduet 
-    	Iterator<Node> it = tabRoot.getChildren().iterator();
-    				// Itererer gjennom elementene 
-    	while(it.hasNext()) {
-    		Node n = it.next();
-    		String nodeID = n.getId();
-    											// Dersom elementet er chatArea 
-    		if(nodeID.equals("chatArea")) {
-    			TextArea text = (TextArea) n;	// Hent ut dette tekstområdet
-    			text.appendText(message);		// Legg til meldingen 
-    		}
+	    	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(tabId).getContent();
+	    				// Finner alle elementene i dette chattevinduet 
+	    	TextArea textA = (TextArea)tabRoot.lookup("#chatArea");
+	    	
+	    	System.out.println("Say in route Chat M: " +message);
+	    	textA.appendText(message);		// Legg til meldingen 
+	    	/*
+	    	Iterator<Node> it = tabRoot.getChildren().iterator();
+	    				// Itererer gjennom elementene 
+	    	while(it.hasNext()) {
+	    		Node n = it.next();
+	    		String nodeID = n.getId();
+	    											// Dersom elementet er chatArea 
+	    		if(nodeID.equals("chatArea")) {
+	    			TextArea text = (TextArea) n;	// Hent ut dette tekstområdet
+	    			text.appendText(message);		// Legg til meldingen 
+	    		}
+	    	}
+	    	*/
+		   // mulig løsning til overSwingUtilities.invokeLater(() -> text.append(message));
     	}
-	   // mulig løsning til overSwingUtilities.invokeLater(() -> text.append(message));
- 
     } 
 
     
@@ -203,6 +225,25 @@ public class LudoController {
     	// TODO: kunne velge disse
     	// TODO: sende request
     	// TODO: motta svar?
+    	
+    	Stage dialog = new Stage();
+    	dialog.initModality(Modality.NONE);
+        dialog.initOwner(root);
+        
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("YMSE.fxml"));
+    	loader.setResources(I18N.getRsb());
+        
+    	try {
+    		AnchorPane pane = loader.load();
+    		
+    		Scene dialogScene = new Scene(pane, 300, 200);
+    		
+    		dialog.setScene(dialogScene);
+    		dialog.show();
+    	}
+    	catch (IOException ioe) {
+    		ioe.printStackTrace();
+    	}
     }
     
     
@@ -247,9 +288,9 @@ public class LudoController {
     @FXML
     public void saySomething(ActionEvent e) {
     	String txt = toSay.getText();
-    	if(!txt.equals("")) {
+    	if(!txt.equals("") && txt !=null) {
     		try {								// midlertidlig løsning
-				output.write("CHAT,1,"+ clientId +"," +txt);
+    			output.write("CHAT,1,"+ clientId +"," +txt);
 				output.newLine();
 				output.flush();
 
@@ -305,5 +346,12 @@ public class LudoController {
 			e1.printStackTrace();
 		}
      }
+
+	
+    
+    
+    public void setRoot(Stage stage) {
+    	this.root = stage;
+    }
     
 }
