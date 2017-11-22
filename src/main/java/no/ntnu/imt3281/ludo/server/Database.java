@@ -205,7 +205,7 @@ public class Database {
 	
 	
 	/**
-	 * @deprecated Because of weird id increments
+	 * 
 	 * @param id the id of the user
 	 * @return An array with (index: content): <br>
 	 * <ul>
@@ -214,39 +214,28 @@ public class Database {
 	 *   <li>2: The users password</li>
 	 * </ul>
 	 */
-	@Deprecated
-	public String[] getUser(int id) {
-		String[] userdata = new String[USERCOLUMNS];
+	
+	public String getUserName(int id) {
+		String userName = null;
 		
 		try {
 			Statement stmt = con.createStatement();
 		
 			System.err.println("getUser1");
-			ResultSet resultSet = stmt.executeQuery("SELECT * FROM usertable");
+			ResultSet resultSet = stmt.executeQuery("SELECT ID, USERNAME FROM usertable");
 			
 			while(resultSet.next()) {
-				if(id == Integer.parseInt(resultSet.getString("id"))) {
-					for(int i = 0; i < USERCOLUMNS; i++) {
-						userdata[i] = resultSet.getString(i + 1);
-					}
-				} else {
-					userdata = null;
+				if(id == resultSet.getInt("id")) {
+					userName = resultSet.getString("USERNAME");
 				}
 			}
-		
-			/*
-			while(resultSet.next()) {
-				userdata[0] = resultSet.getString(0);
-				String nick = resultSet.getString("nick");
-				System.err.println("Nick: " + nick);
-			}*/
 		}
 		catch (SQLException sqle) {
 			sqle.printStackTrace();
-			userdata = null;
+			
 		}
 		
-		return userdata;
+		return userName;
 	}
 	
 	
