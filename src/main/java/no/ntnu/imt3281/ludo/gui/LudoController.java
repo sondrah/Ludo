@@ -143,10 +143,10 @@ public class LudoController {
 				String receivedClientId = returnMessage[2];	
 				String message = returnMessage[3];
 				
-				// masterChat.setText(message);
-                if (type.equals("CHAT")) { // User is logging in
+				
+                if (type.equals("CHAT")) { 				// Message er av typen CHAT
                 	if (message.startsWith("0")) {
-                		addNewTabtoChatMapping(actionId);
+                		addNewTabToChatMapping(actionId); 
                 	}
                 	routeChatMessage(message, actionId);
                 	
@@ -175,22 +175,21 @@ public class LudoController {
     	if (returnedChatId == curChatId)
     		curTabId = curTabId;
     		
-    		// Henter ut riktig Anchor Pane for riktig klient?? 
+    				// Henter ut riktig Anchor Pane for riktig chatterom
     	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(curTabId).getContent();
+    				// Finner alle elementene i dette chattevinduet 
     	Iterator<Node> it = tabRoot.getChildren().iterator();
-    			
+    				// Itererer gjennom elementene 
     	while(it.hasNext()) {
     		Node n = it.next();
     		String nodeID = n.getId();
-    		
+    											// Dersom elementet er chatArea 
     		if(nodeID.equals("chatArea")) {
-    			TextArea text = (TextArea) n;
-    			text.appendText(message);
+    			TextArea text = (TextArea) n;	// Hent ut dette tekstområdet
+    			text.appendText(message);		// Legg til meldingen 
     		}
     	}
-
-	    	
-	    		SwingUtilities.invokeLater(() -> text.append(message));
+	   // mulig løsning til overSwingUtilities.invokeLater(() -> text.append(message));
  
     } 
 
@@ -249,17 +248,6 @@ public class LudoController {
 				output.write("CHAT,1,"+ clientId +"," +txt);
 				output.newLine();
 				output.flush();
-				
-				// skal ikke message listener gjøre dette?
-				
-				String res = input.readLine();	// vente på melding?
-				String[] msg = res.split(",");
-				String type = msg[0];
-				String chatId = msg[1];	
-				String receivedClientId = msg[2];	
-				String message = msg[3];
-				
-				masterChat.setText(message);
 				
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
