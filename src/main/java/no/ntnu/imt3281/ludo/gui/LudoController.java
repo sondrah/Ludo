@@ -88,6 +88,15 @@ public class LudoController {
     private int userId;
     
     // public LudoController() {} // tom constructor for load fxml
+    
+    /**
+     * TODO
+     * Sets up connection with socket,
+     * thread to listen to incoming messages.
+     * @param socket 
+     * @param id
+     * @param stageroot
+     */
     public void setUpController(Socket socket, int id, Stage stageroot) {
 		setRoot(stageroot);
     	setConnection(socket);
@@ -95,7 +104,6 @@ public class LudoController {
     	executorService = Executors.newCachedThreadPool();
         processConnection();		// Handle login requests in a separate thread
         executorService.shutdown();
-
     }
    
     /**
@@ -117,6 +125,10 @@ public class LudoController {
     	}
     }
 
+    /**
+     * Sets username.
+     * @param usrN username to be set 
+     */
     public void setUserName(String usrN) {
     	userName.setText(usrN);
     }
@@ -142,7 +154,6 @@ public class LudoController {
      * participants while all other messages are displayed.
      * @throws InterruptedException 
      */
-
     public void processConnection()  {
     	executorService.execute(() -> {
             while (!shutdown) {
