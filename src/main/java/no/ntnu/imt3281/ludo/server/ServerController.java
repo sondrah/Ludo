@@ -2,6 +2,7 @@ package no.ntnu.imt3281.ludo.server;
 
 
 import java.awt.Font;
+import java.awt.Label;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;

@@ -59,8 +59,13 @@
                                     <TextArea fx:id="chatArea" editable="false" prefHeight="422.0" prefWidth="298.0" />
                                     <HBox prefHeight="34.0" prefWidth="298.0">
                                        <children>
+<<<<<<< HEAD
+                                          <TextField prefHeight="26.0" prefWidth="468.0" />
+                                          <Button mnemonicParsing="false" onAction="#saySomething" onKeyPressed="#saySomething" prefHeight="26.0" prefWidth="134.0" text="%ludogameboard.saybutton" />
+=======
                                           <TextField fx:id="toSay" prefHeight="26.0" prefWidth="468.0" />
                                           <Button mnemonicParsing="false" onAction="#saySomething" prefHeight="26.0" prefWidth="134.0" text="%ludogameboard.saybutton" />
+>>>>>>> a4aa990736162246b6306a331957009160c7e590
                                        </children>
                                     </HBox>
                                  </children>
