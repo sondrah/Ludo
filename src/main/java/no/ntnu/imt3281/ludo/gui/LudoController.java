@@ -17,7 +17,10 @@ import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.apache.derby.impl.sql.catalog.SYSUSERSRowFactory;
+
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -26,6 +29,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -37,11 +41,13 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import no.ntnu.imt3281.i18n.I18N;
+import no.ntnu.imt3281.ludo.server.ServerController;
 
 /**
  * Controlls all actions on the homepage
@@ -86,6 +92,7 @@ public class LudoController {
     private ExecutorService executorService;
     private boolean shutdown = false;
     private int userId;
+    private int listTab = 0;
     
     // public LudoController() {} // tom constructor for load fxml
     
@@ -174,10 +181,20 @@ public class LudoController {
 			                if (type.equals("CHAT")) { 				// Message er av typen CHAT
 			                	if (message.startsWith("0")) {
 			                		addNewTabToChatMapping(actionId); 
-			                	}
+			                	}			                	
 			                	routeChatMessage(message, actionId);
 			                	
-			                // } else if (type.equals("LOGOUT")) { // User is logging out removeUser(tmp.substring(7));
+			                 } else if (type.equals("LISTPLAYERS")) {
+			                	 String[] returntemp = retMessage.split(",", 3);
+			                	 String[] names = returntemp[2].split(",");
+			                	 
+			                	 System.err.println(names[0]);
+			                	 
+			                	 AnchorPane pane = (AnchorPane) tabbedPane.getTabs().get(listTab).getContent();
+			                	 ListView<String> list = (ListView<String>) pane.lookup("#listPlayers");
+			                	 
+			                	 list.setItems(FXCollections.observableArrayList(names));
+			                	 
 			                } else { // All other messages
 			                    
 			                }
@@ -250,16 +267,21 @@ public class LudoController {
     	loader.setResources(I18N.getRsb());
         
     	try {
-    		AnchorPane pane = loader.load();
+    		VBox pane = loader.load();
+    		String rq = "LISTPLAYERS," + clientId + ", , ";
+    		output.write(rq); 
+    		output.newLine();
+    		output.flush();
     		
     		String d = (I18N.tr("ludo.challengePlayer"));
     		JoinOrChallengeController contr = loader.getController();
     		contr.setDesc(d);
     		
-    		Scene dialogScene = new Scene(pane, 410, 420);
+    		Tab tab = new Tab("Player list");
+    		tab.setContent(pane);
+    		tabbedPane.getTabs().add(tab);
     		
-    		dialog.setScene(dialogScene);
-    		dialog.show();
+    		listTab = tabbedPane.getTabs().size() - 1;
     	}
     	catch (IOException ioe) {
     		ioe.printStackTrace();
@@ -347,19 +369,6 @@ public class LudoController {
     		saySomething(new ActionEvent());
     }
     
-   /* Mulig vi ikke trenger disse
-    * @FXML
-    public void cancel(ActionEvent e) {
-    	// TODO: Lukke current vindu man står i (gå tilbake)
-    }
-    
-    @FXML
-    public void sendToServer(ActionEvent e) {
-    	// TODO: Må ta en string som skal sjekkes opp mot server.
-    	// 		 Gir bruker svar/sender videre basert på resultat
-    } */
-    
-    
     /**
      * Handles the action of one player that tries to enter a
      * new random game with said button
@@ -388,8 +397,6 @@ public class LudoController {
      }
 
 	
-    
-    
     public void setRoot(Stage stage) {
     	this.root = stage;
     }
