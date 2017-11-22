@@ -73,30 +73,45 @@ public class LudoController {
     @FXML private TabPane tabbedPane;
     @FXML private TitledPane joinOrChallenge;
 
+    /** Maps chatId to tab */
+    HashMap<Integer, Integer> map = new HashMap<>();
     private Stage root;
     private int gameId = 0;
     private int clientId;
     private Socket socket;
     private BufferedReader input;
     private BufferedWriter output;
-    HashMap<Integer, Integer> map = new HashMap<>();
+    
     private DefaultListModel<String> participantsModel;
     private ExecutorService executorService;
     private boolean shutdown = false;
     private int userId;
     
     // public LudoController() {} // tom constructor for load fxml
+    
+    /**
+     * TODO
+     * Sets up connection with socket,
+     * thread to listen to incoming messages.
+     * @param socket 
+     * @param id
+     * @param stageroot
+     */
     public void setUpController(Socket socket, int id, Stage stageroot) {
 		setRoot(stageroot);
     	setConnection(socket);
     	setUserId(id);
+    	map.put(1, 0);
+    	//addNewTabToChatMapping(1); // Legger til MasterChat (id 1)
     	executorService = Executors.newCachedThreadPool();
         processConnection();		// Handle login requests in a separate thread
         executorService.shutdown();
-
     }
    
-    
+    /**
+     * Sets up socket connection to server. 
+     * @param socket socket to connect with
+     */
     public void setConnection(Socket socket) {
     	try {
 			this.socket = socket;
@@ -112,6 +127,10 @@ public class LudoController {
     	}
     }
 
+    /**
+     * Sets username.
+     * @param usrN username to be set 
+     */
     public void setUserName(String usrN) {
     	userName.setText(usrN);
     }
@@ -137,7 +156,6 @@ public class LudoController {
      * participants while all other messages are displayed.
      * @throws InterruptedException 
      */
-
     public void processConnection()  {
     	executorService.execute(() -> {
             while (!shutdown) {
@@ -152,7 +170,6 @@ public class LudoController {
 							int actionId = Integer.parseInt(returnMessage[1]);	
 							String receivedClientId = returnMessage[2];	
 							String message = returnMessage[3];
-							System.out.println("Say process Connection: " +message);
 							
 			                if (type.equals("CHAT")) { 				// Message er av typen CHAT
 			                	if (message.startsWith("0")) {
@@ -189,7 +206,7 @@ public class LudoController {
 	    	TextArea textA = (TextArea)tabRoot.lookup("#chatArea");
 	    	
 	    	System.out.println("Say in route Chat M: " +message);
-	    	textA.appendText(message);		// Legg til meldingen 
+	    	textA.appendText(message+ "\n");		// Legg til meldingen 
 	    	/*
 	    	Iterator<Node> it = tabRoot.getChildren().iterator();
 	    				// Itererer gjennom elementene 
