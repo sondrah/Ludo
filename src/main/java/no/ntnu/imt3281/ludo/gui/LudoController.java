@@ -37,6 +37,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -86,11 +87,9 @@ public class LudoController {
     private boolean shutdown = false;
     private int userId;
     
-
-    public LudoController() {} // tom constructor for load fxml
-    
-    
-    public LudoController(Socket socket, int id) {
+    // public LudoController() {} // tom constructor for load fxml
+    public void setUpController(Socket socket, int id, Stage stageroot) {
+		setRoot(stageroot);
     	setConnection(socket);
     	setUserId(id);
     	executorService = Executors.newCachedThreadPool();
@@ -158,7 +157,7 @@ public class LudoController {
 							int actionId = Integer.parseInt(returnMessage[1]);	
 							String receivedClientId = returnMessage[2];	
 							String message = returnMessage[3];
-							
+							System.out.println("Say process Connection: " +message);
 							
 			                if (type.equals("CHAT")) { 				// Message er av typen CHAT
 			                	if (message.startsWith("0")) {
@@ -193,6 +192,8 @@ public class LudoController {
 	    	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(tabId).getContent();
 	    				// Finner alle elementene i dette chattevinduet 
 	    	TextArea textA = (TextArea)tabRoot.lookup("#chatArea");
+	    	
+	    	System.out.println("Say in route Chat M: " +message);
 	    	textA.appendText(message);		// Legg til meldingen 
 	    	/*
 	    	Iterator<Node> it = tabRoot.getChildren().iterator();
@@ -292,9 +293,9 @@ public class LudoController {
     @FXML
     public void saySomething(ActionEvent e) {
     	String txt = toSay.getText();
-    	if(!txt.equals("")) {
+    	if(!txt.equals("") && txt !=null) {
     		try {								// midlertidlig løsning
-				output.write("CHAT,1,"+ clientId +"," +txt);
+    			output.write("CHAT,1,"+ clientId +"," +txt);
 				output.newLine();
 				output.flush();
 
@@ -350,6 +351,8 @@ public class LudoController {
 			e1.printStackTrace();
 		}
      }
+
+	
     
     
     public void setRoot(Stage stage) {

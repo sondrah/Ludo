@@ -169,21 +169,27 @@ public class WelcomeController {
 					try {
 						FXMLLoader loader = new FXMLLoader(getClass().getResource("Ludo.fxml"));
 				    	loader.setResources(I18N.getRsb());
-				    	
+
+				    	//loader.setController(new LudoController());
+
 				    	root = loader.load();
-				    	
 				    	LudoController controller = loader.getController();
-				    	System.out.println(usr);
+				    	loader.setController(controller);
 				    
-				    	if(controller == null) {
-				    		System.err.println("Controller SAD, logg inn fungerer ikke");
-				    	}
-			            
 			            Stage stage = new Stage();
 			            stage.setTitle("Ludo");
 			            stage.setScene(new Scene(root, 1050, 800));
-			            
 			            stage.show();
+			            
+			            System.out.println(usr);
+				    	controller.setUpController(socket, id, stage);
+				    	controller.setUserName(usr);
+			            
+				    	
+				    	if(controller == null) {
+				    		System.err.println("Controller SAD, logg inn fungerer ikke");
+				    	}
+				    	     
 			       
 			            // hiding the login window (effectively: closing it)
 			            ((Node)(event.getSource())).getScene().getWindow().hide();
