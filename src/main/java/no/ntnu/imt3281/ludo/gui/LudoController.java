@@ -6,10 +6,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -90,6 +92,7 @@ public class LudoController {
     private Socket socket;
     private BufferedReader input;
     private BufferedWriter output;
+    HashMap<Integer, Integer> map = new HashMap<>();
 
     
     public void setConnection(Socket socket) {
@@ -173,11 +176,23 @@ public class LudoController {
     }
     
     
-    @FXML
-    public void listRooms(ActionEvent e) {
-    	// TODO: make a list of all available chats
+    public void addNewTabtoChatMapping(int chatId) {	
+    	FXMLLoader loader = new FXMLLoader(getClass().getResource("ChatBoard.fxml"));
+    	loader.setResources(I18N.getRsb());
+
+    	try {
+    		AnchorPane chatBoard = loader.load();
+        	Tab tab = new Tab("Chat" + chatId);
+    		tab.setContent(chatBoard);
+        	tabbedPane.getTabs().add(tab);
+    	} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
     	
-    	// ScrollPane(chat.show())
+    	ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs
+    	
+    	map.put(chatId, tabs.size());
     }
     
     
@@ -197,18 +212,7 @@ public class LudoController {
 				output.write("CHAT,1,"+ clientId +"," +txt);
 				output.newLine();
 				output.flush();
-				
-				// skal ikke message listener gjøre dette?
-				
-				String res = input.readLine();	// vente på melding?
-				String[] msg = res.split(",");
-				String type = msg[0];
-				String chatId = msg[1];	
-				String receivedClientId = msg[2];	
-				String message = msg[3];
-				
-				masterChat.setText(message);
-				
+					
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
