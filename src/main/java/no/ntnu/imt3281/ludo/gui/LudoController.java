@@ -168,38 +168,33 @@ public class LudoController {
     /**
      * Used to add messages to the message area in a thread safe manner
      * 
-     * @param text
-     *            the text to be added
+     * @param text the text to be added
      */
     private void routeChatMessage(String message, int chatId) {
-    	int curChatId = 1; // TODO hardcode
-    	int curTabId = 0; 
-    	
-    	
-    	// her Sondre Itere gjennom mapping 	
-    	if (chatId == curChatId)
-    		curTabId = curTabId;
+    	Integer tabId = map.get(chatId);
+   	
+    	if(tabId != null) {	// korrekt check?
     		
     				// Henter ut riktig Anchor Pane for riktig chatterom
-    	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(curTabId).getContent();
-    				// Finner alle elementene i dette chattevinduet 
-    	TextArea textA = (TextArea)tabRoot.lookup("#chatArea");
-    	textA.appendText(message);		// Legg til meldingen 
-    	/*
-    	Iterator<Node> it = tabRoot.getChildren().iterator();
-    				// Itererer gjennom elementene 
-    	while(it.hasNext()) {
-    		Node n = it.next();
-    		String nodeID = n.getId();
-    											// Dersom elementet er chatArea 
-    		if(nodeID.equals("chatArea")) {
-    			TextArea text = (TextArea) n;	// Hent ut dette tekstområdet
-    			text.appendText(message);		// Legg til meldingen 
-    		}
+	    	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(tabId).getContent();
+	    				// Finner alle elementene i dette chattevinduet 
+	    	TextArea textA = (TextArea)tabRoot.lookup("#chatArea");
+	    	textA.appendText(message);		// Legg til meldingen 
+	    	/*
+	    	Iterator<Node> it = tabRoot.getChildren().iterator();
+	    				// Itererer gjennom elementene 
+	    	while(it.hasNext()) {
+	    		Node n = it.next();
+	    		String nodeID = n.getId();
+	    											// Dersom elementet er chatArea 
+	    		if(nodeID.equals("chatArea")) {
+	    			TextArea text = (TextArea) n;	// Hent ut dette tekstområdet
+	    			text.appendText(message);		// Legg til meldingen 
+	    		}
+	    	}
+	    	*/
+		   // mulig løsning til overSwingUtilities.invokeLater(() -> text.append(message));
     	}
-    	*/
-	   // mulig løsning til overSwingUtilities.invokeLater(() -> text.append(message));
- 
     } 
 
     
