@@ -161,7 +161,6 @@ public class WelcomeController {
 				// gets the true/false of: LOGIN,1,true/false
 				String res = br.readLine();
 				System.out.println(res);
-				System.out.println(usr);
 				res = res.split(",")[2];
 				
 				int id = Integer.parseInt(res);
@@ -182,7 +181,6 @@ public class WelcomeController {
 			            stage.setScene(new Scene(root, 1050, 800));
 			            stage.show();
 			            
-			            System.out.println(usr);
 				    	controller.setUpController(socket, id, stage);
 				    	controller.setUserName(usr);
 			            

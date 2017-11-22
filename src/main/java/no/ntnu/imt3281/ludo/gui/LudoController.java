@@ -12,11 +12,9 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -165,10 +163,14 @@ public class LudoController {
 			                		addNewTabToChatMapping(actionId); 
 			                	}
 			                	routeChatMessage(message, actionId);
+			                } 
+			                else if (type.equals("GAME")) {
+			                	// Mappe game id til fane
+			                		                	
 			                	
 			                // } else if (type.equals("LOGOUT")) { // User is logging out removeUser(tmp.substring(7));
 			                } else { // All other messages
-			                    
+			                    System.out.println("Noe feil har skjedd i prosess ");
 			                }
 		                }
 		            } catch (IOException ioe) {
@@ -332,9 +334,22 @@ public class LudoController {
      * @param e the buttonclick action
      */
     @FXML
-    public void joinRandomGame(ActionEvent e) {  	
+    public void joinRandomGame(ActionEvent e) {  
+    	
     	FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
     	loader.setResources(I18N.getRsb());
+    	
+    	
+    		try {								// midlertidlig løsning
+    			output.write("GAME,0,"+ clientId +",Random Game trykket på");
+				output.newLine();
+				output.flush();
+
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+    	
 
 		GameBoardController controller = loader.getController();
 		// Use controller to set up communication for this game.
