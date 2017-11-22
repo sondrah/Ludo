@@ -3,12 +3,12 @@ package no.ntnu.imt3281.ludo.gui;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.Iterator;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +23,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -37,6 +38,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import no.ntnu.imt3281.i18n.I18N;
 
 /**
@@ -69,6 +73,7 @@ public class LudoController {
     @FXML private TabPane tabbedPane;
     @FXML private TitledPane joinOrChallenge;
 
+    private Stage root;
     private int gameId = 0;
     private int clientId;
     private Socket socket;
@@ -81,8 +86,8 @@ public class LudoController {
     private int userId;
     
     // public LudoController() {} // tom constructor for load fxml
-    public void setUpController(Socket socket, int id, Stage root) {
-		// setRoot(root);
+    public void setUpController(Socket socket, int id, Stage stageroot) {
+		setRoot(stageroot);
     	setConnection(socket);
     	setUserId(id);
     	executorService = Executors.newCachedThreadPool();
@@ -147,7 +152,7 @@ public class LudoController {
 							int actionId = Integer.parseInt(returnMessage[1]);	
 							String receivedClientId = returnMessage[2];	
 							String message = returnMessage[3];
-							
+							System.out.println("Say process Connection: " +message);
 							
 			                if (type.equals("CHAT")) { 				// Message er av typen CHAT
 			                	if (message.startsWith("0")) {
@@ -171,38 +176,35 @@ public class LudoController {
     /**
      * Used to add messages to the message area in a thread safe manner
      * 
-     * @param text
-     *            the text to be added
+     * @param text the text to be added
      */
     private void routeChatMessage(String message, int chatId) {
-    	int curChatId = 1; // TODO hardcode
-    	int curTabId = 0; 
-    	
-    	
-    	// her Sondre Itere gjennom mapping 	
-    	if (chatId == curChatId)
-    		curTabId = curTabId;
+    	Integer tabId = map.get(chatId);
+   	
+    	if(tabId != null) {	// korrekt check?
     		
     				// Henter ut riktig Anchor Pane for riktig chatterom
-    	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(curTabId).getContent();
-    				// Finner alle elementene i dette chattevinduet 
-    	TextArea textA = (TextArea)tabRoot.lookup("#chatArea");
-    	textA.appendText(message);		// Legg til meldingen 
-    	/*
-    	Iterator<Node> it = tabRoot.getChildren().iterator();
-    				// Itererer gjennom elementene 
-    	while(it.hasNext()) {
-    		Node n = it.next();
-    		String nodeID = n.getId();
-    											// Dersom elementet er chatArea 
-    		if(nodeID.equals("chatArea")) {
-    			TextArea text = (TextArea) n;	// Hent ut dette tekstområdet
-    			text.appendText(message);		// Legg til meldingen 
-    		}
+	    	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(tabId).getContent();
+	    				// Finner alle elementene i dette chattevinduet 
+	    	TextArea textA = (TextArea)tabRoot.lookup("#chatArea");
+	    	
+	    	System.out.println("Say in route Chat M: " +message);
+	    	textA.appendText(message);		// Legg til meldingen 
+	    	/*
+	    	Iterator<Node> it = tabRoot.getChildren().iterator();
+	    				// Itererer gjennom elementene 
+	    	while(it.hasNext()) {
+	    		Node n = it.next();
+	    		String nodeID = n.getId();
+	    											// Dersom elementet er chatArea 
+	    		if(nodeID.equals("chatArea")) {
+	    			TextArea text = (TextArea) n;	// Hent ut dette tekstområdet
+	    			text.appendText(message);		// Legg til meldingen 
+	    		}
+	    	}
+	    	*/
+		   // mulig løsning til overSwingUtilities.invokeLater(() -> text.append(message));
     	}
-    	*/
-	   // mulig løsning til overSwingUtilities.invokeLater(() -> text.append(message));
- 
     } 
 
     
@@ -223,6 +225,25 @@ public class LudoController {
     	// TODO: kunne velge disse
     	// TODO: sende request
     	// TODO: motta svar?
+    	
+    	Stage dialog = new Stage();
+    	dialog.initModality(Modality.NONE);
+        dialog.initOwner(root);
+        
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("YMSE.fxml"));
+    	loader.setResources(I18N.getRsb());
+        
+    	try {
+    		AnchorPane pane = loader.load();
+    		
+    		Scene dialogScene = new Scene(pane, 300, 200);
+    		
+    		dialog.setScene(dialogScene);
+    		dialog.show();
+    	}
+    	catch (IOException ioe) {
+    		ioe.printStackTrace();
+    	}
     }
     
     
@@ -269,8 +290,7 @@ public class LudoController {
     	String txt = toSay.getText();
     	if(!txt.equals("") && txt !=null) {
     		try {								// midlertidlig løsning
-    			System.out.println("Say: " +clientId + txt);
-				output.write("CHAT,1,"+ clientId +"," +txt);
+    			output.write("CHAT,1,"+ clientId +"," +txt);
 				output.newLine();
 				output.flush();
 
@@ -328,5 +348,10 @@ public class LudoController {
      }
 
 	
+    
+    
+    public void setRoot(Stage stage) {
+    	this.root = stage;
+    }
     
 }

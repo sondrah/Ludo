@@ -9,6 +9,7 @@ import java.net.Socket;
 
 import javax.crypto.CipherInputStream;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -168,17 +169,18 @@ public class WelcomeController {
 					try {
 						FXMLLoader loader = new FXMLLoader(getClass().getResource("Ludo.fxml"));
 				    	loader.setResources(I18N.getRsb());
-				    	
+
 				    	//loader.setController(new LudoController());
 
 				    	root = loader.load();
 				    	LudoController controller = loader.getController();
 				    	loader.setController(controller);
-				    	
+				    
 			            Stage stage = new Stage();
 			            stage.setTitle("Ludo");
 			            stage.setScene(new Scene(root, 1050, 800));
 			            stage.show();
+			            
 			            System.out.println(usr);
 				    	controller.setUpController(socket, id, stage);
 				    	controller.setUserName(usr);
