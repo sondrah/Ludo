@@ -358,7 +358,7 @@ public class LudoController {
     	loader.setResources(I18N.getRsb());
     	
     	
-    		try {								// midlertidlig løsning
+    		try {								// Client sier jeg vil spille 
     			output.write("GAME,0,"+ clientId +",Random Game trykket på");
 				output.newLine();
 				output.flush();
