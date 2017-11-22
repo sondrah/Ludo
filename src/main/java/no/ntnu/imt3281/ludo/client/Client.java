@@ -24,14 +24,17 @@ import javafx.event.ActionEvent;
  */
 public class Client extends Application{
 	
+	public Client() {
+		I18N.getResource("no.ntnu.imt3281.i18n.i18n");
+	}
+	
 	/**
 	 * Constructs a new client
 	 */
-	public Client() {
+	public Client(String[] args) {
 		//Stage primaryStage = new Stage();
 		//start(primaryStage);
-		
-		I18N.getResource("no.ntnu.imt3281.i18n.i18n");
+		launch(args);
 	}
 	
 	/**
@@ -39,8 +42,7 @@ public class Client extends Application{
 	 * @param args command line arguments
 	 */
 	public static void main(String[] args) {
-		Client c = new Client();
-		launch(args);
+		Client c = new Client(args);
 	}
 	
 	// Launches the initial window of the application (Welcome screen)
