@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
+import javax.crypto.CipherInputStream;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -57,13 +59,18 @@ public class WelcomeController {
 	@FXML
 	private Label lblError;
 	@FXML
-	private TextField txtFieldUsername ;
+	private TextField txtFieldUsername;
 	@FXML
 	private PasswordField txtFieldPassword;
 	@FXML
 	private PasswordField txtFieldPassword2;
 	
+	private static String usrname;
 	
+	
+	public static String getUsername() {
+		return usrname;
+	}
 	/**
 	 * determines the visual elements for the login screen
 	 * @param event button click caused by the login button of the home screen
@@ -178,17 +185,26 @@ public class WelcomeController {
 						FXMLLoader loader = new FXMLLoader(getClass().getResource("Ludo.fxml"));
 				    	loader.setResources(I18N.getRsb());
 				    	
-				    	LudoController controller = loader.getController();	
+				    	
+				    	//loader.setController(new LudoController());
+				    	
+				    	root = loader.load();
+				    	LudoController controller = loader.getController();
+				    	if(controller == null) System.err.println("SAD");
+				    	
 				    	controller.setConnection(socket);
 				    	controller.setUserId(id);
 				    	
-			            root = loader.load();
+				    	System.err.println(usr);
+				    	controller.setUserName(usr);
+				    	
+			           
 			            
 			            Stage stage = new Stage();
 			            stage.setTitle("Ludo");
 			            stage.setScene(new Scene(root, 1050, 800));
 			            stage.show();
-			            
+			       
 			            // hiding the login window (effectively: closing it)
 			            ((Node)(event.getSource())).getScene().getWindow().hide();
 			        }

@@ -82,6 +82,14 @@ public class LudoController {
 
     private int gameId = 0;
     
+    private int userId;
+    
+    
+    public void setUserName(String usr) {
+    	if(userName == null) System.err.println("YENSE");
+    	userName.setText(usr);
+    }
+
     private int clientId;
     private Socket socket;
     private BufferedReader input;
@@ -123,6 +131,7 @@ public class LudoController {
      * Login and logout messages is used to add/remove users to/from the list of
      * participants while all other messages are displayed.
      */
+
     public void processConnection() {
         while (true) {  // Sjekker hele tiden etter innkommende meldinger 
             try {
@@ -136,7 +145,9 @@ public class LudoController {
 				
 				// masterChat.setText(message);
                 if (type.equals("CHAT")) { // User is logging in
-                	if ( )
+                	if (message.startsWith("0")) {
+                		addNewTabtoChatMapping(actionId);
+                	}
                 	routeChatMessage(message, actionId);
                 	
                 // } else if (type.equals("LOGOUT")) { // User is logging out removeUser(tmp.substring(7));
@@ -144,8 +155,8 @@ public class LudoController {
                     
                 }
             } catch (IOException ioe) {
-                JOptionPane.showMessageDialog(this, "Error receiving data: "
-                        + ioe);
+            	System.err.println("Error receiving data: ");
+                       
             }
         }		// While true end
     }
@@ -180,7 +191,9 @@ public class LudoController {
 
 	    	
 	    		SwingUtilities.invokeLater(() -> text.append(message));
-    }
+ 
+    } 
+
     
     /** 
      * Closes the application
@@ -224,7 +237,10 @@ public class LudoController {
     public void about(ActionEvent e) {
     	JOptionPane.showConfirmDialog(null, "Got milk?");
     }
-    
+    /**
+     * Writes a clients message to a chat-room
+     * @param e
+     */
     @FXML
     public void saySomething(ActionEvent e) {
     	String txt = toSay.getText();
@@ -233,6 +249,8 @@ public class LudoController {
 				output.write("CHAT,1,"+ clientId +"," +txt);
 				output.newLine();
 				output.flush();
+				
+				// skal ikke message listener gjøre dette?
 				
 				String res = input.readLine();	// vente på melding?
 				String[] msg = res.split(",");
