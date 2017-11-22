@@ -183,11 +183,6 @@ public class WelcomeController {
 			            
 				    	controller.setUpController(socket, id, stage);
 				    	controller.setUserName(usr);
-			            
-				    	
-				    	if(controller == null) {
-				    		System.err.println("Controller SAD, logg inn fungerer ikke");
-				    	}
 				    	     
 			       
 			            // hiding the login window (effectively: closing it)

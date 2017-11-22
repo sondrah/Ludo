@@ -30,7 +30,7 @@
                 <Menu mnemonicParsing="false" text="%ludo.game">
                   <items>
                     <MenuItem fx:id="random" mnemonicParsing="false" onAction="#joinRandomGame" text="Random game" />
-                        <MenuItem mnemonicParsing="false" onAction="#challenge" text="Challenge players" />
+                        <MenuItem mnemonicParsing="false" onAction="#challengePlayer" text="Challenge players" />
                   </items>
                 </Menu>
                   <Menu mnemonicParsing="false" text="%ludo.chat">

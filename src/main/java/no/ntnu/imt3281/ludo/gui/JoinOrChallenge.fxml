@@ -10,21 +10,21 @@
 <?import javafx.scene.text.Font?>
 
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="394.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="393.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <ScrollPane prefHeight="194.0" prefWidth="330.0">
          <content>
-            <ListView prefHeight="200.0" prefWidth="384.0" />
+            <ListView prefHeight="200.0" prefWidth="377.0" />
          </content>
       </ScrollPane>
       <Pane prefHeight="205.0" prefWidth="394.0">
          <children>
-            <Button fx:id="cancelBtn" layoutX="72.0" layoutY="88.0" mnemonicParsing="false" text="%ludo.cancel">
+            <Button fx:id="cancelBtn" layoutX="72.0" layoutY="88.0" mnemonicParsing="false" onAction="#cancelWindow" text="%ludo.cancel">
                <font>
                   <Font size="14.0" />
                </font>
             </Button>
-            <Button fx:id="confirmBtn" layoutX="217.0" layoutY="88.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="101.0" text="%ludo.confirm">
+            <Button fx:id="confirmBtn" layoutX="217.0" layoutY="88.0" mnemonicParsing="false" onAction="#confirmText" prefHeight="30.0" prefWidth="101.0" text="%ludo.confirm">
                <font>
                   <Font size="14.0" />
                </font>
