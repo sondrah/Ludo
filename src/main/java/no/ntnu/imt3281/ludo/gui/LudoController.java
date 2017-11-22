@@ -167,12 +167,21 @@ public class LudoController {
 							int actionId = Integer.parseInt(returnMessage[1]);	
 							String receivedClientId = returnMessage[2];	
 							String message = returnMessage[3];
+							String inviteName = null;
+							
+							if(returnMessage.length == 5) {
+								inviteName = returnMessage[4];
+							}
 							
 			                if (type.equals("CHAT")) { 				// Message er av typen CHAT
 			                	if (message.startsWith("0")) {
 			                		addNewTabToChatMapping(actionId); 
 			                	}
-			                	routeChatMessage(message, actionId);
+			                	else if(inviteName != null) {		// joins client with name 'inviteName' to chat 'actionId'							
+			                		routeChatMessage("Joined chat: "+inviteName, actionId);	
+			                	} else {							
+			                		routeChatMessage(message, actionId);	// message in chat-room
+			                	}	
 			                } 
 			                else if (type.equals("GAME")) {
 			                	// Mappe game id til fane
