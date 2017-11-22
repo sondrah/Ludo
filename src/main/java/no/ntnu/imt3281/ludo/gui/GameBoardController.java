@@ -2,8 +2,6 @@ package no.ntnu.imt3281.ludo.gui;
 
 import no.ntnu.imt3281.ludo.logic.*;
 import no.ntnu.imt3281.ludo.server.GameInfo;
-import no.ntnu.imt3281.ludo.server.GameEvent;
-
 import java.awt.Event;
 import java.awt.Point;
 import java.awt.event.ActionEvent;

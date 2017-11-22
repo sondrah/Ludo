@@ -162,6 +162,7 @@ public class WelcomeController {
 				
 				// gets the true/false of: LOGIN,1,true/false
 				String res = br.readLine();
+				System.out.println(res);
 				res = res.split(",")[2];
 				
 				int id = Integer.parseInt(res);
@@ -178,6 +179,7 @@ public class WelcomeController {
 				    	if(controller == null) System.err.println("SAD");
 				    	
 				    	controller.setConnection(socket);
+				    	controller.processConnection();
 				    	controller.setUserId(id);
 				    	
 				    	System.err.println(usr);

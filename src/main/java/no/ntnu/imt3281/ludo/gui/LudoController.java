@@ -6,13 +6,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -75,6 +78,7 @@ public class LudoController {
     private Socket socket;
     private BufferedReader input;
     private BufferedWriter output;
+    HashMap<Integer, Integer> map = new HashMap<>();
     private DefaultListModel<String> participantsModel;
 
     
@@ -85,6 +89,7 @@ public class LudoController {
 			        socket.getInputStream()));
 			output = new BufferedWriter(new OutputStreamWriter(
 			        socket.getOutputStream()));
+			
     	} catch(IOException ioe) {
     		System.err.println("fikk ikke connection, i ludocontroller");
     		ioe.printStackTrace();
@@ -111,23 +116,25 @@ public class LudoController {
      * 
      * Login and logout messages is used to add/remove users to/from the list of
      * participants while all other messages are displayed.
+     * @throws InterruptedException 
      */
 
-    public void processConnection() {
+    public void processConnection()  {
         while (true) {  // Sjekker hele tiden etter innkommende meldinger 
+        	
             try {
-                
+            	TimeUnit.MILLISECONDS.sleep(10);
                 String retMessage = input.readLine();	
 				String[] returnMessage = retMessage.split(",");
 				String type = returnMessage[0];
-				String actionId = returnMessage[1];	
+				int actionId = Integer.parseInt(returnMessage[1]);	
 				String receivedClientId = returnMessage[2];	
 				String message = returnMessage[3];
 				
-				// masterChat.setText(message);
-                if (type.equals("CHAT")) { // User is logging in
+				
+                if (type.equals("CHAT")) { 				// Message er av typen CHAT
                 	if (message.startsWith("0")) {
-                		addNewTabtoChatMapping(actionId);
+                		addNewTabToChatMapping(actionId); 
                 	}
                 	routeChatMessage(message, actionId);
                 	
@@ -138,7 +145,12 @@ public class LudoController {
             } catch (IOException ioe) {
             	System.err.println("Error receiving data: ");
                        
-            }
+            } catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+            	System.err.println("Error innnn receiving data: ");
+				e.printStackTrace();
+			}            
+           
         }		// While true end
     }
     
@@ -148,30 +160,28 @@ public class LudoController {
      * @param text
      *            the text to be added
      */
-    private void routeChatMessage(String message, String retChatId) {
-    	int returnedChatId = Integer.parseInt(retChatId);
+    private void routeChatMessage(String message, int chatId) {
     	int curChatId = 1; // TODO hardcode
-    	int curTabId = 1; 
+    	int curTabId = 0; 
     	// her Sondre Itere gjennom mapping 	
-    	if (returnedChatId == curChatId)
+    	if (chatId == curChatId)
     		curTabId = curTabId;
     		
-    		// Henter ut riktig Anchor Pane for riktig klient?? 
+    				// Henter ut riktig Anchor Pane for riktig chatterom
     	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(curTabId).getContent();
+    				// Finner alle elementene i dette chattevinduet 
     	Iterator<Node> it = tabRoot.getChildren().iterator();
-    			
+    				// Itererer gjennom elementene 
     	while(it.hasNext()) {
     		Node n = it.next();
     		String nodeID = n.getId();
-    		
+    											// Dersom elementet er chatArea 
     		if(nodeID.equals("chatArea")) {
-    			TextArea text = (TextArea) n;
-    			text.appendText(message);
+    			TextArea text = (TextArea) n;	// Hent ut dette tekstområdet
+    			text.appendText(message);		// Legg til meldingen 
     		}
     	}
-
-	    	
-	    		SwingUtilities.invokeLater(() -> text.append(message));
+	   // mulig løsning til overSwingUtilities.invokeLater(() -> text.append(message));
  
     } 
 
@@ -184,6 +194,8 @@ public class LudoController {
     public void close(ActionEvent e) {
     	Platform.exit();
     }
+    
+    
     
     @FXML
     public void challenge(ActionEvent e) {
@@ -200,13 +212,29 @@ public class LudoController {
     }
     
     
-    @FXML
-    public void listRooms(ActionEvent e) {
-    	// TODO: make a list of all available chats
+    public void addNewTabToChatMapping(int chatId) {	
+    	FXMLLoader loader = new FXMLLoader(getClass().getResource("ChatBoard.fxml"));
+    	loader.setResources(I18N.getRsb());
+
+    	try {
+    		AnchorPane chatBoard = loader.load();
+        	Tab tab = new Tab("Chat" + chatId);
+    		tab.setContent(chatBoard);
+        	tabbedPane.getTabs().add(tab);
+    	} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
     	
-    	// ScrollPane(chat.show())
+    	ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs
+    	
+    	map.put(chatId, tabs.size());
     }
     
+    @FXML
+    public void listRooms(ActionEvent e) {
+    	//JOptionPane.showConfirmDialog(null, "Got milk?");
+    }
     
     @FXML
     public void about(ActionEvent e) {
@@ -224,18 +252,7 @@ public class LudoController {
 				output.write("CHAT,1,"+ clientId +"," +txt);
 				output.newLine();
 				output.flush();
-				
-				// skal ikke message listener gjøre dette?
-				
-				String res = input.readLine();	// vente på melding?
-				String[] msg = res.split(",");
-				String type = msg[0];
-				String chatId = msg[1];	
-				String receivedClientId = msg[2];	
-				String message = msg[3];
-				
-				masterChat.setText(message);
-				
+
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
