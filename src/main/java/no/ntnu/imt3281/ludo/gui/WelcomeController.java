@@ -176,7 +176,6 @@ public class WelcomeController {
 				    	
 				    	root = loader.load();
 				    	LudoController controller = loader.getController();
-				    	if(controller == null) System.err.println("SAD");
 				    	
 				    	controller.setConnection(socket);
 				    	controller.processConnection();

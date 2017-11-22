@@ -19,8 +19,8 @@ import no.ntnu.imt3281.ludo.gui.WelcomeController;
 import javafx.event.ActionEvent;
 
 /**
- * 
- *
+ * Launches the application and creates a welcome screen window.
+ * Displays this to the user.
  */
 public class Client extends Application{
 	
