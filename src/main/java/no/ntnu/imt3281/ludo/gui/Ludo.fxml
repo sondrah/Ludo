@@ -60,7 +60,7 @@
                                     <HBox prefHeight="34.0" prefWidth="298.0">
                                        <children>
                                           <TextField prefHeight="26.0" prefWidth="468.0" />
-                                          <Button mnemonicParsing="false" onAction="#saySomething" prefHeight="26.0" prefWidth="134.0" text="%ludogameboard.saybutton" />
+                                          <Button mnemonicParsing="false" onAction="#saySomething" onKeyPressed="#saySomething" prefHeight="26.0" prefWidth="134.0" text="%ludogameboard.saybutton" />
                                        </children>
                                     </HBox>
                                  </children>

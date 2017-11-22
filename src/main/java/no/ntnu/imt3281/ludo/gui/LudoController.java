@@ -27,6 +27,8 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import no.ntnu.imt3281.i18n.I18N;
 
@@ -242,6 +244,13 @@ public class LudoController {
     }
     
     @FXML
+    public void saySomethingKey(KeyEvent e) {
+    	if(e.getCode() == KeyCode.ENTER)
+    		saySomething(new ActionEvent());
+    }
+    
+   /* Mulig vi ikke trenger disse
+    * @FXML
     public void cancel(ActionEvent e) {
     	// TODO: Lukke current vindu man står i (gå tilbake)
     }
@@ -250,7 +259,7 @@ public class LudoController {
     public void sendToServer(ActionEvent e) {
     	// TODO: Må ta en string som skal sjekkes opp mot server.
     	// 		 Gir bruker svar/sender videre basert på resultat
-    }
+    } */
     
     
     /**
@@ -278,6 +287,6 @@ public class LudoController {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-    	
-    }
+     }
+    
 }
