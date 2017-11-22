@@ -6,15 +6,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+<<<<<<< HEAD
 import java.util.HashMap;
+=======
+import java.util.Iterator;
+>>>>>>> 44bd1fd4346af8a4bee02822fb5a2233973c46f4
 
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -35,48 +42,28 @@ import no.ntnu.imt3281.i18n.I18N;
  */
 public class LudoController {
     
-    @FXML
-    private MenuBar menuBar;
-    @FXML
-    private Menu file;
-    @FXML
-    private MenuItem connect;
-    @FXML
-    private MenuItem close;
-    @FXML
-    private Menu game;
-    @FXML
-    private MenuItem challenge;
-    @FXML
-    private MenuItem random;
-    @FXML
-    private Menu chat;
-    @FXML
-    private MenuItem join;
-    @FXML
-    private MenuItem listRooms;
-    @FXML
-    private Menu help;
-    @FXML
-    private MenuItem about;
-    @FXML
-    private TextArea masterChat;
-    @FXML
-    private Button say;
-    @FXML
-    private Button cancel;
-    @FXML
-    private Button send; 
-    @FXML
-    private Label errorMessage;
-    @FXML
-    private Label userName;
-    @FXML
-    private TextField toSay;
-    @FXML
-    private TabPane tabbedPane;
-    @FXML
-    private TitledPane joinOrChallenge;
+    @FXML private MenuBar menuBar;
+    @FXML private Menu file;
+    @FXML private MenuItem connect;
+    @FXML private MenuItem close;
+    @FXML private Menu game;
+    @FXML private MenuItem challenge;
+    @FXML private MenuItem random;
+    @FXML private Menu chat;
+    @FXML private MenuItem join;
+    @FXML private MenuItem listRooms;
+    @FXML private Menu help;
+    @FXML private MenuItem about;
+    @FXML private TextArea masterChat;
+    @FXML private Button say;
+    @FXML private Button cancel;
+    @FXML private Button send; 
+    @FXML private Label errorMessage;
+    @FXML private Label userName;
+    @FXML private TextField toSay;
+    @FXML private TextArea chatArea;
+    @FXML private TabPane tabbedPane;
+    @FXML private TitledPane joinOrChallenge;
 
     private int gameId = 0;
     
@@ -84,7 +71,6 @@ public class LudoController {
     
     
     public void setUserName(String usr) {
-    	if(userName == null) System.err.println("YENSE");
     	userName.setText(usr);
     }
 
@@ -93,6 +79,7 @@ public class LudoController {
     private BufferedReader input;
     private BufferedWriter output;
     HashMap<Integer, Integer> map = new HashMap<>();
+    private DefaultListModel<String> participantsModel;
 
     
     public void setConnection(Socket socket) {
@@ -108,6 +95,7 @@ public class LudoController {
     		
     	}
     }
+
     
     @FXML
     public void connect(ActionEvent e) {
@@ -128,23 +116,68 @@ public class LudoController {
      * Login and logout messages is used to add/remove users to/from the list of
      * participants while all other messages are displayed.
      */
- /*   public void processConnection() {
-        while (true) {
+
+    public void processConnection() {
+        while (true) {  // Sjekker hele tiden etter innkommende meldinger 
             try {
-                String tmp = input.readLine();
-                if (tmp.startsWith("LOGIN:")) { // User is logging in
-                    addUser(tmp.substring(6));
-                } else if (tmp.startsWith("LOGOUT:")) { // User is logging out
-                    removeUser(tmp.substring(7));
+                
+                String retMessage = input.readLine();	
+				String[] returnMessage = retMessage.split(",");
+				String type = returnMessage[0];
+				int actionId = Integer.parseInt(returnMessage[1]);	
+				String receivedClientId = returnMessage[2];	
+				String message = returnMessage[3];
+				
+				// masterChat.setText(message);
+                if (type.equals("CHAT")) { // User is logging in
+                	if (message.startsWith("0")) {
+                		addNewTabtoChatMapping(actionId);
+                	}
+                	routeChatMessage(message, actionId);
+                	
+                // } else if (type.equals("LOGOUT")) { // User is logging out removeUser(tmp.substring(7));
                 } else { // All other messages
-                    displayMessage(tmp + "\n");
+                    
                 }
             } catch (IOException ioe) {
-            	JOptionPane.showMessageDialog(this, "Error receiving data: "
-                        + ioe);
+            	System.err.println("Error receiving data: ");
+                       
             }
-        }
-    } */
+        }		// While true end
+    }
+    
+    /**
+     * Used to add messages to the message area in a thread safe manner
+     * 
+     * @param text
+     *            the text to be added
+     */
+    private void routeChatMessage(String message, int chatId) {
+    	int curChatId = 1; // TODO hardcode
+    	int curTabId = 1; 
+    	// her Sondre Itere gjennom mapping 	
+    	if (chatId == curChatId)
+    		curTabId = curTabId;
+    		
+    		// Henter ut riktig Anchor Pane for riktig klient?? 
+    	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(curTabId).getContent();
+    	Iterator<Node> it = tabRoot.getChildren().iterator();
+    			
+    	while(it.hasNext()) {
+    		Node n = it.next();
+    		String nodeID = n.getId();
+    		
+    		if(nodeID.equals("chatArea")) {
+    			TextArea text = (TextArea) n;
+    			text.appendText(message);
+    		}
+    	}
+
+	    	
+	    		SwingUtilities.invokeLater(() -> text.append(message));
+ 
+    } 
+
     
     /** 
      * Closes the application
@@ -161,18 +194,12 @@ public class LudoController {
     	// TODO: kunne velge disse
     	// TODO: sende request
     	// TODO: motta svar?
-    	joinOrChallenge.setVisible(true);
-    	errorMessage.setVisible(false);
-    	joinOrChallenge.setText(I18N.tr("ludo.challengePlayer"));
     }
     
     
     @FXML
     public void joinChat(ActionEvent e) {
     	// TODO: Ta inn chatnavn, la person joine om finnes
-    	joinOrChallenge.setVisible(true);
-    	errorMessage.setVisible(false);
-    	joinOrChallenge.setText(I18N.tr("ludo.joinChat"));
     }
     
     
@@ -223,7 +250,6 @@ public class LudoController {
     @FXML
     public void cancel(ActionEvent e) {
     	// TODO: Lukke current vindu man står i (gå tilbake)
-    	joinOrChallenge.setVisible(false);
     }
     
     @FXML
@@ -260,6 +286,4 @@ public class LudoController {
 		}
     	
     }
-    
-    
 }
