@@ -36,6 +36,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 import no.ntnu.imt3281.i18n.I18N;
 
 /**
@@ -79,8 +80,9 @@ public class LudoController {
     private boolean shutdown = false;
     private int userId;
     
-    public LudoController() {} // tom constructor for load fxml
-    public LudoController(Socket socket, int id) {
+    // public LudoController() {} // tom constructor for load fxml
+    public void setUpController(Socket socket, int id, Stage root) {
+		// setRoot(root);
     	setConnection(socket);
     	setUserId(id);
     	executorService = Executors.newCachedThreadPool();
@@ -265,8 +267,9 @@ public class LudoController {
     @FXML
     public void saySomething(ActionEvent e) {
     	String txt = toSay.getText();
-    	if(!txt.equals("")) {
+    	if(!txt.equals("") && txt !=null) {
     		try {								// midlertidlig løsning
+    			System.out.println("Say: " +clientId + txt);
 				output.write("CHAT,1,"+ clientId +"," +txt);
 				output.newLine();
 				output.flush();
@@ -323,5 +326,7 @@ public class LudoController {
 			e1.printStackTrace();
 		}
      }
+
+	
     
 }
