@@ -3,12 +3,12 @@ package no.ntnu.imt3281.ludo.gui;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.Iterator;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +23,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -36,6 +37,9 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import no.ntnu.imt3281.i18n.I18N;
 
 /**
@@ -68,6 +72,7 @@ public class LudoController {
     @FXML private TabPane tabbedPane;
     @FXML private TitledPane joinOrChallenge;
 
+    private Stage root;
     private int gameId = 0;
     private int clientId;
     private Socket socket;
@@ -78,6 +83,10 @@ public class LudoController {
     private ExecutorService executorService;
     private boolean shutdown = false;
     private int userId;
+    
+
+    public LudoController() {} // tom constructor for load fxml
+    
     
     public LudoController(Socket socket, int id) {
     	setConnection(socket);
@@ -104,8 +113,8 @@ public class LudoController {
     	}
     }
 
-    public void setUserName(String usr) {
-    	userName.setText(usr);
+    public void setUserName(String usrN) {
+    	userName.setText(usrN);
     }
 
     @FXML
@@ -215,6 +224,25 @@ public class LudoController {
     	// TODO: kunne velge disse
     	// TODO: sende request
     	// TODO: motta svar?
+    	
+    	Stage dialog = new Stage();
+    	dialog.initModality(Modality.NONE);
+        dialog.initOwner(root);
+        
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("YMSE.fxml"));
+    	loader.setResources(I18N.getRsb());
+        
+    	try {
+    		AnchorPane pane = loader.load();
+    		
+    		Scene dialogScene = new Scene(pane, 300, 200);
+    		
+    		dialog.setScene(dialogScene);
+    		dialog.show();
+    	}
+    	catch (IOException ioe) {
+    		ioe.printStackTrace();
+    	}
     }
     
     
@@ -317,5 +345,10 @@ public class LudoController {
 			e1.printStackTrace();
 		}
      }
+    
+    
+    public void setRoot(Stage stage) {
+    	this.root = stage;
+    }
     
 }
