@@ -221,7 +221,7 @@ public class Database {
 		try {
 			Statement stmt = con.createStatement();
 		
-			System.err.println("getUser1");
+			//System.err.println("getUser1");
 			ResultSet resultSet = stmt.executeQuery("SELECT ID, USERNAME FROM usertable");
 			
 			while(resultSet.next()) {
