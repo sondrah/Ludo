@@ -148,7 +148,8 @@ public class WelcomeController {
 				Socket socket = new Socket("localhost", 12345);
 				BufferedWriter bw = new BufferedWriter(
 						new OutputStreamWriter(socket.getOutputStream()));
-				
+				BufferedReader br = new BufferedReader(
+						new InputStreamReader(socket.getInputStream()));
 				String hashedPwd = MD5Encrypt.cryptWithMD5(pwd);
 				
 				// sends login-request: LOGIN,1,usr,pwd
@@ -156,13 +157,10 @@ public class WelcomeController {
 				bw.newLine();
 				bw.flush();
 				
-				BufferedReader br = new BufferedReader(
-						new InputStreamReader(socket.getInputStream()));
-				
-				
 				// gets the true/false of: LOGIN,1,true/false
 				String res = br.readLine();
 				System.out.println(res);
+				System.out.println(usr);
 				res = res.split(",")[2];
 				
 				int id = Integer.parseInt(res);
@@ -171,19 +169,17 @@ public class WelcomeController {
 						FXMLLoader loader = new FXMLLoader(getClass().getResource("Ludo.fxml"));
 				    	loader.setResources(I18N.getRsb());
 				    	
-				    	
 				    	//loader.setController(new LudoController());
-				    	
 				    	root = loader.load();
 				    	// LudoController controller = loader.getController();
+				    	System.out.println(usr);
 				    	LudoController controller = new LudoController(socket, id);
 				    	loader.setController(controller);
 				    	if(controller == null) {
 				    		System.err.println("Controller SAD, logg inn fungerer ikke");
 				    	}
-				    	controller.setUserName(usr);
-				    	
-			           
+				    	           
+			            // controller.setUserName(usr);
 			            
 			            Stage stage = new Stage();
 			            stage.setTitle("Ludo");
