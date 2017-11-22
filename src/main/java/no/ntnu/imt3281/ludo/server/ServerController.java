@@ -208,12 +208,15 @@ public class ServerController extends JFrame {
 		    	                    int idNr = Integer.parseInt(parts[1]);		//IDnr til rom eller game
 		    	                    String info= parts[2];
 		    	                    String message = parts[3];
+		    	                    
 		    	                    											// eks CHAT,3,0,msg
 		    	                    											// 	   type idRom/game, info??trengs?, melding
 		    	                	if (type.equals("CHAT")) {					// Hvis meldingen er av typen CHAT
 		    	                		// 1. finn riktig chat 
 		    	                		// 2. finn riktige  deltagere
 		    	                		// 3. send info til disse 
+		    	                		String userName = db.getUserName(fromClientID);
+		    	                		
 		    	                		if(idNr ==0) {							// New Chat
 		    	                			db.addChat(message);				// Legger chatten til i db
 		    	                			int newChatId = db.getChatID(message); // Henter ut Chat id
@@ -235,7 +238,7 @@ public class ServerController extends JFrame {
 								                        Client curCli = clientNri.next();	
 							                        	//try {							// Prøv å send en melding
 							                        									// Format: CHAT idTilChat, FraClientID, Melding
-							                        		messages.put("CHAT,"+curChat.getId()+","+fromClientID+","+message);	
+							                        		messages.put("CHAT,"+curChat.getId()+","+fromClientID+","+userName+" > " +message);	
 							                        	//} catch (InterruptedException ie) {
 							                        		// TODO fiks exception handling
 							                        	//}
