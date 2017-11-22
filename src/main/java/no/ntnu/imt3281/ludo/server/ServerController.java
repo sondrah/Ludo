@@ -148,7 +148,7 @@ public class ServerController extends JFrame {
 		                			clients.add(newClient);
 		                			chats.get(0).addParticipant(newClient);	// Legger Klient til i masterChat 
 		                			// newClient.sendText("LOGIN,1,TRUE");		// sends report back to client:s
-		                			messages.put("LOGIN,1,"+idClient+",Du er logget inn");
+		                			messages.put("LOGIN,1,"+idClient+","+userName+ " (Du) er logget inn");
 		                			// Token 
 		                			/*
 		                			 * Brukernavn 

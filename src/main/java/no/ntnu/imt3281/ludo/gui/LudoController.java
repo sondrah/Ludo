@@ -84,10 +84,9 @@ public class LudoController {
     private boolean shutdown = false;
     private int userId;
     
+
+    public LudoController() {} // tom constructor for load fxml
     
-    public LudoController() {
-    	
-    }
     
     public LudoController(Socket socket, int id) {
     	setConnection(socket);
@@ -114,8 +113,8 @@ public class LudoController {
     	}
     }
 
-    public void setUserName(String usr) {
-    	userName.setText(usr);
+    public void setUserName(String usrN) {
+    	userName.setText(usrN);
     }
 
     @FXML
