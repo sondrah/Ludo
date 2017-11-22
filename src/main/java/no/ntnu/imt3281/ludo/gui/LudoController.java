@@ -6,13 +6,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.Iterator;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -69,6 +73,7 @@ public class LudoController {
     private Socket socket;
     private BufferedReader input;
     private BufferedWriter output;
+    private DefaultListModel<String> participantsModel;
 
     
     public void setConnection(Socket socket) {
@@ -84,6 +89,7 @@ public class LudoController {
     		
     	}
     }
+
     
     @FXML
     public void connect(ActionEvent e) {
@@ -104,23 +110,69 @@ public class LudoController {
      * Login and logout messages is used to add/remove users to/from the list of
      * participants while all other messages are displayed.
      */
- /*   public void processConnection() {
-        while (true) {
+
+    public void processConnection() {
+        while (true) {  // Sjekker hele tiden etter innkommende meldinger 
             try {
-                String tmp = input.readLine();
-                if (tmp.startsWith("LOGIN:")) { // User is logging in
-                    addUser(tmp.substring(6));
-                } else if (tmp.startsWith("LOGOUT:")) { // User is logging out
-                    removeUser(tmp.substring(7));
+                
+                String retMessage = input.readLine();	
+				String[] returnMessage = retMessage.split(",");
+				String type = returnMessage[0];
+				String actionId = returnMessage[1];	
+				String receivedClientId = returnMessage[2];	
+				String message = returnMessage[3];
+				
+				// masterChat.setText(message);
+                if (type.equals("CHAT")) { // User is logging in
+                	if (message.startsWith("0")) {
+                		addNewTabtoChatMapping(actionId);
+                	}
+                	routeChatMessage(message, actionId);
+                	
+                // } else if (type.equals("LOGOUT")) { // User is logging out removeUser(tmp.substring(7));
                 } else { // All other messages
-                    displayMessage(tmp + "\n");
+                    
                 }
             } catch (IOException ioe) {
-            	JOptionPane.showMessageDialog(this, "Error receiving data: "
-                        + ioe);
+            	System.err.println("Error receiving data: ");
+                       
             }
-        }
-    } */
+        }		// While true end
+    }
+    
+    /**
+     * Used to add messages to the message area in a thread safe manner
+     * 
+     * @param text
+     *            the text to be added
+     */
+    private void routeChatMessage(String message, String retChatId) {
+    	int returnedChatId = Integer.parseInt(retChatId);
+    	int curChatId = 1; // TODO hardcode
+    	int curTabId = 1; 
+    	// her Sondre Itere gjennom mapping 	
+    	if (returnedChatId == curChatId)
+    		curTabId = curTabId;
+    		
+    		// Henter ut riktig Anchor Pane for riktig klient?? 
+    	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(curTabId).getContent();
+    	Iterator<Node> it = tabRoot.getChildren().iterator();
+    			
+    	while(it.hasNext()) {
+    		Node n = it.next();
+    		String nodeID = n.getId();
+    		
+    		if(nodeID.equals("chatArea")) {
+    			TextArea text = (TextArea) n;
+    			text.appendText(message);
+    		}
+    	}
+
+	    	
+	    		SwingUtilities.invokeLater(() -> text.append(message));
+ 
+    } 
+
     
     /** 
      * Closes the application
