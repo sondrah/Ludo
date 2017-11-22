@@ -184,17 +184,14 @@ public class LudoController {
 			                if (type.equals("CHAT")) { 				// Message er av typen CHAT
 			                	if (message.startsWith("0")) {
 			                		addNewTabToChatMapping(actionId); 
-<<<<<<< HEAD
 			                	}
 			                	else if(inviteName != null) {		// joins client with name 'inviteName' to chat 'actionId'							
 			                		routeChatMessage("Joined chat: "+inviteName, actionId);	
 			                	} else {							
 			                		routeChatMessage(message, actionId);	// message in chat-room
-			                	}	
-=======
-			                	}			                	
+			                	}				                	
 			                	routeChatMessage(message, actionId);
->>>>>>> 2f1409812f238542d16b3ab0db7518d2757cf7f5
+
 			                } 
 			                else if (type.equals("GAME")) {
 			                	// Mappe game id til fane
