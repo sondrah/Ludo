@@ -147,7 +147,15 @@ public class ServerController extends JFrame {
 		                			chats.get(0).addParticipant(newClient);	// Legger Klient til i masterChat 
 		                			// newClient.sendText("LOGIN,1,TRUE");		// sends report back to client:s
 		                			messages.put("LOGIN,1,"+idClient+",Du er logget inn");
-		                			                		
+		                			// Token 
+		                			/*
+		                			 * Brukernavn 
+		                			 * token, server 
+		                			 * Lagres fil på med preferences 
+		                			 * Kobler seg til på nytt = ny token 
+		                			 * tid 
+		                			 * session 
+		                			 */
 			                		Iterator<Client> i = clients.iterator();
 				                    while (i.hasNext()) {					// Send message to all clients that a new person has joined
 				                        Client c1 = i.next(); 
@@ -204,25 +212,35 @@ public class ServerController extends JFrame {
 		    	                		// 1. finn riktig chat 
 		    	                		// 2. finn riktige  deltagere
 		    	                		// 3. send info til disse 
-		    	                		Iterator<Chat> chatNri = chats.iterator();		// Iterer gjennom alle chatte rom
-					                    while (chatNri.hasNext()) {					// hvis flere
-					                        Chat curChat = chatNri.next();			// Hvilken sjekkes nå
-					                        if (idNr==curChat.getId()) {   			// Dersom riktig chatterom  
-					                        										// Iterere gjennom aktuelle klienter i riktig chat
-					                        	Iterator<Client> clientNri = curChat.participants.iterator();
-					                        	// Det samme ?? Iterator<Client> clientNri = curChat.getParticipants().iterator();
-					                        	while (clientNri.hasNext()) {			// For hver client i aktuelt chatte rom
-							                        Client curCli = clientNri.next();	
-						                        	//try {							// Prøv å send en melding
-						                        									// Format: CHAT idTilChat, FraClientID, Melding
-						                        		messages.put("CHAT,"+curChat.getId()+","+fromClientID+","+message);	
-						                        	//} catch (InterruptedException ie) {
-						                        		// TODO fiks exception handling
-						                        	//}
-					                        	}
-					                        }
-					                    }	// While chat slutt, sjekket alle
-			                        	
+		    	                		if(idNr ==0) {							// New Chat
+		    	                			db.addChat(message);				// Legger chatten til i db
+		    	                			int newChatId = db.getChatID(message); // Henter ut Chat id
+		    	                			Chat newChat = new Chat(newChatId);		// Oppretter ny chat i server
+		    	                			chats.add(newChat);						// Legger denne til i serverens chat liste 
+		    	                			messages.put("CHAT,"+newChatId+","+fromClientID+",0"+message);	
+		    	                								// Sender tilbake riktig chat nr til client som oprettet den
+		    	                		}
+		    	                		else {			// Allerede eksisterende chat 
+		    	                			Iterator<Chat> chatNri = chats.iterator();		// Iterer gjennom alle chatte rom
+		    	                		
+		    	                			while (chatNri.hasNext()) {					// hvis flere
+						                        Chat curChat = chatNri.next();			// Hvilken sjekkes nå
+						                        if (idNr==curChat.getId()) {   			// Dersom riktig chatterom  
+						                        										// Iterere gjennom aktuelle klienter i riktig chat
+						                        	Iterator<Client> clientNri = curChat.participants.iterator();
+						                        	
+						                        	while (clientNri.hasNext()) {			// For hver client i aktuelt chatte rom
+								                        Client curCli = clientNri.next();	
+							                        	//try {							// Prøv å send en melding
+							                        									// Format: CHAT idTilChat, FraClientID, Melding
+							                        		messages.put("CHAT,"+curChat.getId()+","+fromClientID+","+message);	
+							                        	//} catch (InterruptedException ie) {
+							                        		// TODO fiks exception handling
+							                        	//}
+						                        	}
+						                        }
+		    	                			}	// While chat slutt, sjekket alle
+		    	                		}
 			                        }
 			                        else if (type.equals("GAME")) {
 			                        	// finn riktig chat 
