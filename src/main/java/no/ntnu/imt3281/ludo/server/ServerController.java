@@ -104,7 +104,7 @@ public class ServerController extends JFrame {
 	private void startLoginMonitor() {
         executorService.execute(() -> {
             while (!shutdown) {
-                try { // LOGIN,0,use
+                try { 						// LOGIN,0,use
                     Socket s = serverSocket.accept();
                     Client newClient = new Client(s);
                     synchronized (clients) {

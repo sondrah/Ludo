@@ -175,14 +175,12 @@ public class WelcomeController {
 				    	//loader.setController(new LudoController());
 				    	
 				    	root = loader.load();
-				    	LudoController controller = loader.getController();
-				    	if(controller == null) System.err.println("SAD");
-				    	
-				    	controller.setConnection(socket);
-				    	controller.processConnection();
-				    	controller.setUserId(id);
-				    	
-				    	System.err.println(usr);
+				    	// LudoController controller = loader.getController();
+				    	LudoController controller = new LudoController(socket, id);
+				    	loader.setController(controller);
+				    	if(controller == null) {
+				    		System.err.println("Controller SAD, logg inn fungerer ikke");
+				    	}
 				    	controller.setUserName(usr);
 				    	
 			           
