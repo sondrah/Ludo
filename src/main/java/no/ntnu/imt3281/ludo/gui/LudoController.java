@@ -121,7 +121,7 @@ public class LudoController {
     	// TODO:
     }
     /**
-     * Set uder id in constructor
+     * Set user id in constructor
      * @param id
      */
     public void setUserId(int id) {
@@ -220,23 +220,26 @@ public class LudoController {
     
     
     @FXML
-    public void challenge(ActionEvent e) {
+    public void challengePlayer(ActionEvent e) {
     	// TODO: vis liste av alle active spillere
     	// TODO: kunne velge disse
     	// TODO: sende request
     	// TODO: motta svar?
     	
     	Stage dialog = new Stage();
-    	dialog.initModality(Modality.NONE);
         dialog.initOwner(root);
         
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("YMSE.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("JoinOrChallenge.fxml"));
     	loader.setResources(I18N.getRsb());
         
     	try {
     		AnchorPane pane = loader.load();
     		
-    		Scene dialogScene = new Scene(pane, 300, 200);
+    		String d = (I18N.tr("ludo.challengePlayer"));
+    		JoinOrChallengeController contr = loader.getController();
+    		contr.setDesc(d);
+    		
+    		Scene dialogScene = new Scene(pane, 410, 420);
     		
     		dialog.setScene(dialogScene);
     		dialog.show();
@@ -249,7 +252,27 @@ public class LudoController {
     
     @FXML
     public void joinChat(ActionEvent e) {
-    	// TODO: Ta inn chatnavn, la person joine om finnes
+    	Stage dialog = new Stage();
+        dialog.initOwner(root);
+        
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("JoinOrChallenge.fxml"));
+    	loader.setResources(I18N.getRsb());
+        
+    	try {
+    		AnchorPane pane = loader.load();
+    		
+    		String d = (I18N.tr("ludo.joinChat"));
+    		JoinOrChallengeController contr = loader.getController();
+    		contr.setDesc(d);
+    		
+    		Scene dialogScene = new Scene(pane, 410, 215);
+    		
+    		dialog.setScene(dialogScene);
+    		dialog.show();
+    	}
+    	catch (IOException ioe) {
+    		ioe.printStackTrace();
+    	}
     }
     
     
