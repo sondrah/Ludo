@@ -73,13 +73,15 @@ public class LudoController {
     @FXML private TabPane tabbedPane;
     @FXML private TitledPane joinOrChallenge;
 
+    /** Maps chatId to tab */
+    HashMap<Integer, Integer> map = new HashMap<>();
     private Stage root;
     private int gameId = 0;
     private int clientId;
     private Socket socket;
     private BufferedReader input;
     private BufferedWriter output;
-    HashMap<Integer, Integer> map = new HashMap<>();
+    
     private DefaultListModel<String> participantsModel;
     private ExecutorService executorService;
     private boolean shutdown = false;
@@ -98,7 +100,10 @@ public class LudoController {
 
     }
    
-    
+    /**
+     * Sets up socket connection to server. 
+     * @param socket socket to connect with
+     */
     public void setConnection(Socket socket) {
     	try {
 			this.socket = socket;
@@ -123,7 +128,7 @@ public class LudoController {
     	// TODO:
     }
     /**
-     * Set uder id in constructor
+     * Set user id in constructor
      * @param id
      */
     public void setUserId(int id) {
