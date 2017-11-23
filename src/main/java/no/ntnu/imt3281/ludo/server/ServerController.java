@@ -86,7 +86,14 @@ public class ServerController extends JFrame {
 			}
 		}
 		
-		Chat masterChat = new Chat(1);	// Sets up master-chat-room
+		// masterchat id
+		int mc = 1;
+		if(db.getChatID("MasterChat") == -1) {
+			db.addChat("MasterChat");
+			mc = db.getChatID("MasterChat");
+		}
+		
+		Chat masterChat = new Chat(mc);	// Sets up master-chat-room
 		chats.add(masterChat);
 		
 		try {
@@ -111,7 +118,7 @@ public class ServerController extends JFrame {
 	private void startLoginMonitor() {
         executorService.execute(() -> {
             while (!shutdown) {
-                try { 						// LOGIN,0,use
+                try {
                     Socket s = serverSocket.accept();
                     Client newClient = new Client(s);
                     synchronized (clients) {
@@ -124,7 +131,7 @@ public class ServerController extends JFrame {
                     	// REGISTER,username,password
                 		// LOGIN,username,token
                 		
-                		// REGISTER,TRUE,userid
+                		// REGISTER,TRUE
                 		// REGISTER,FALSE
                 		// LOGIN,TRUE,id,token
                 		// LOGIN,FALSE
@@ -139,82 +146,33 @@ public class ServerController extends JFrame {
 	                    if(action.equals("REGISTER")) {
 	                    	String message = "";
 	                    	if(db.addUser(username, password)) {
-	                    		message = "REGISTER,TRUE," + db.getUserID(username);
+	                    		message = "REGISTER,TRUE";
 	                    	} else {
 	                    		message = "REGISTER,FALSE";
 	                    	}
 	                    	
-	                    	newClient.sendText(msg);
+	                    	newClient.sendText(message);
 	                    }
-                    	
-	                	if(type.equals("LOGIN")) {
-	                		if(operation.equals("0")) {		// Registrer new user 
-	                			if(db.addUser(username, password)) {				// sends report back to client: 
-	                				int newId = db.getUserID(username);		// henter ID i db
-	                														// Går ikke pga ligger ikke i clients liste messages.put(
-	                				try {
-	                					newClient.sendText("LOGIN,0,"+newId+",Du er registret og kan nå logge inn");	// !! I18N
-		                        	} catch (IOException ioelocal) {
-		                        		// !! fiks exception handling
-		                        	}
-	                			} else { 
-	                				try {
-	                					newClient.sendText("LOGIN,0,0,Gikk ikke");	// Sender melding utenom buffer messages
-	                				} catch (IOException ioelocal) {
-		                        		// !! fiks exception handling
-		                        	}
-	                			}
-	                		}
-		                	else if(operation.equals("1")) {		// Log in
-		                		int idClient = db.checkLogin(username, password);
-		                		if(idClient != -1) {
-		                			newClient.setId(idClient);
-		                			clients.add(newClient);
-		                			chats.get(0).addParticipantToChat(newClient);	// Legger Klient til i masterChat 
-		                			// newClient.sendText("LOGIN,1,TRUE");		// sends report back to client:s
-		                			messages.put("LOGIN,1,"+idClient+","+username+ " (Du) er logget inn");
-		                			// Token 
-		                			/*
-		                			 * Brukernavn 
-		                			 * token, server 
-		                			 * Lagres fil på med preferences 
-		                			 * Kobler seg til på nytt = ny token 
-		                			 * tid 
-		                			 * session 
-		                			 */
-
-		                			messages.put("CHAT,JOIN,");
-			                		Iterator<Client> i = clients.iterator();
-				                    while (i.hasNext()) {					// Send message to all clients that a new person has joined
-				                        Client c1 = i.next(); 
-				                        int notifyClient = c1.getId();
-				                        try {
-				                        	messages.put("CHAT,1,"+notifyClient+","+username+" har blitt med i MasterChat");	
-				                        } catch (InterruptedException e) {
-				                            e.printStackTrace();
-				                        }
-				                    }								// While slutt, sagt i fra til alle
-		                		} else {
-		                			messages.put("LOGIN,0,"+idClient+",Du er IKKE logget inn");
-		                		}
-		                	}	// faktisk Logg inn ferdig
-	                	} 	// Logg inn type ferdig
-                    	
-                    }	// Sync ferdig
-                 
-                    // DB Loggføring??
-                    } catch (IOException ioe) {
-                        ioe.printStackTrace();
-                        // displayMessage("CONNECTION ERROR: " + ioe + "\n");
-                    } catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+	                    else if(action.equals("LOGIN")) {
+	                    	int idClient = db.checkLogin(username, password);
+	                    	if(idClient != -1) {
+	                    		newClient.setId(idClient);
+	                    		clients.add(newClient);
+	                    		messages.put("CHAT,JOIN, MasterChat," + idClient);
+	                    		messages.put("LOGIN,TRUE," + idClient);
+	                    	}
+	                    } // if action
+                    } // synch
+                } 
+                catch (IOException ioe) {
+					// TODO: handle exception
+				}
+                catch (InterruptedException ie) {
+                	// TODO
+                }
             }
         });
     }
-	
-<<<<<<< HEAD
 	
 	
 	private void startMessageListener1() {
@@ -279,8 +237,7 @@ public class ServerController extends JFrame {
 		});
 	}
 	
-=======
->>>>>>> 84a9ac70cc8056de821d00227120d90ba71da1d8
+
 	private void startMessageListener() {	
 		// Listener = gå igjennom alle clientene for å finne ut OM det er en meldingen som er sendt
         executorService.execute(() -> {			// Thread 
@@ -497,19 +454,23 @@ private void startMessageSender() {
     
 	/**
 	 * Make new chat 
-	 * @param chatName
+	 * @param chatname
 	 * @return chat id or 0 if not success 
 	 */
-	private Chat newChat(String chatName) {
+	private Chat newChat(String chatname) {
 		Chat newChat = null;
-		db.addChat(chatName);				// Legger chatten til i db
-		int newChatId = db.getChatID(chatName); // Henter ut Chat id
-		if (newChatId != -1) {		// Hvis chat fantes i db
-			newChat = new Chat(newChatId);		// Oppretter ny chat i server
-			chats.add(newChat);						// Legger denne til i serverens chat liste
+		
+		// tries to get the chatid
+		int chatid = db.getChatID(chatname);
+		
+		// if no chat is found, add a new one
+		if(chatid == -1) {
+			db.addChat(chatname);
+			chatid = db.getChatID(chatname);
 		}
-		else newChat = null;
-		return newChat;
+	
+		// return an instant with the new chatid
+		return new Chat(chatid);
 	}
 	
 	/**
@@ -596,6 +557,7 @@ private void startMessageSender() {
 					Chat chat = newChat(chatname);
 					chat.addParticipantToChat(client);
 					chatid = chat.getId();
+					messages.put("CHAT,CREATE," + chatid + "," + chatname + " created!");
 				}
 				
 				messages.put("CHAT,JOIN," + chatid + "," + db.getUserName(client.getId()) + " joined the chat!");
@@ -692,7 +654,7 @@ private void startMessageSender() {
 			
 			String message = null;
 			Client client = getClient(Integer.parseInt(str[3]));
-			ArrayList<String> players = new ArrayList<>();
+			StringBuilder sb = new StringBuilder();
 			
 			waitingClients.add(client);
 			
@@ -706,7 +668,7 @@ private void startMessageSender() {
 					String name = db.getUserName(c.getId());
 					chat.addParticipantToChat(c);
 					
-					players.add(name);
+					sb.append(name + ":");
 					game.addPlayer(name);
 					
 					waitingClients.trimToSize();
@@ -716,7 +678,7 @@ private void startMessageSender() {
 				games.add(game);
 				chats.add(chat);
 				
-				message = "GAME,CREATE,TRUE," + game.getId() + "," + players.toString();
+				message = "GAME,CREATE,TRUE," + game.getId() + "," + chat.getId() + "," + sb.toString();
 			}
 			else {
 				message = "GAME,CREATE,FALSE,WAIT";
@@ -764,8 +726,6 @@ private void startMessageSender() {
 		}
 	}
 	
-	
-<<<<<<< HEAD
 	private void handleListRequest(String[] str) {
 		// This should recieve all special requests
 		// and should all have str[0] = 'REQUEST'
@@ -784,7 +744,7 @@ private void startMessageSender() {
 				StringBuilder sb = new StringBuilder();
 				
 				clients.parallelStream().forEach(client -> {
-					sb.append(db.getUserName(client.getId()) + ",");
+					sb.append(db.getUserName(client.getId()) + ":");
 				});
 				
 				messages.put("REQUEST,LISTPLAYERS," + Integer.parseInt(str[2]) + "," + sb.toString());
@@ -794,7 +754,7 @@ private void startMessageSender() {
 				StringBuilder sb1 = new StringBuilder();
 				
 				clients.parallelStream().forEach(client -> {
-					sb1.append(db.getUserName(client.getId()));
+					sb1.append(db.getUserName(client.getId()) + ":");
 				});
 				
 				messages.put("REQUEST,LISTCHATS," + Integer.parseInt(str[2]) + "," + sb1.toString());
@@ -822,11 +782,7 @@ private void startMessageSender() {
 		}
 	}
 
-		
 	
-=======
-
->>>>>>> 84a9ac70cc8056de821d00227120d90ba71da1d8
 	/**
      * --Borrowed code from okolloen--
      * A new object of this class is created for all new clients.
