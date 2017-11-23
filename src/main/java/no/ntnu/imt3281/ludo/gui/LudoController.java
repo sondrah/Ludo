@@ -179,6 +179,7 @@ public class LudoController {
 							String message = returnMessage[3];
 							String inviteName = null;
 							System.out.println("4. Client listener innkommende melding" + retMessage);
+							
 							if(returnMessage.length == 5) {
 								inviteName = returnMessage[4];
 							}
