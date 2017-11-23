@@ -201,7 +201,7 @@ public class LudoController {
 			                } 
 			                else if (type.equals("GAME")) {			// Message er av typen GAME:
 			                	
-			                	if (message.startsWith("99NOTENOUGH") && actionId ==0) {		// Nyopprettet forespørsel game, UTEN suksess
+			                	if (message.startsWith("99NOTENOUGH") && actionId == 0) {		// Nyopprettet forespørsel game, UTEN suksess
 			                		// Innkommende melding 
 			                		// "GAME,0,"+curClient.getId()+",Ikke nok spillere enda("+waitingClients.size()+") , venter på flere spillere"
 			                		// TODO Snorre, innkommende melding er du må vente litt, vises " i en popup??"
