@@ -44,7 +44,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.stage.Modality;
+import javafx.stage.Modality;	
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import no.ntnu.imt3281.i18n.I18N;
@@ -473,7 +473,10 @@ public class LudoController {
 		
      }
     
-    
+    /**
+     * makeNewGameTab
+     * @param gameId
+     */
     public void makeNewGameTab(int gameId) {
 
 		// Får inn i controlleren input.readLine()
@@ -517,6 +520,38 @@ public class LudoController {
 			e1.printStackTrace();
 		}
     }
+    
+    /**
+    * makeNewChatTab
+    * @param gameId
+    */
+   public void makeNewChatTab(int chatId) {
+
+		// Får inn i controlleren input.readLine()
+    	FXMLLoader chatLoader = new FXMLLoader(getClass().getResource("PrivateChat.fxml"));
+		chatLoader.setResources(I18N.getRsb());
+		GameBoardController gameController = chatLoader.getController();
+   	// Unødvendig gameLoader.setController(gameController);
+		// Use controller to set up communication for this game.
+		// Note, a new game tab would be created due to some communication from the server
+		// This is how a layout is loaded and added to a tab pane.
+
+		try {
+			AnchorPane gameBoard = chatLoader.load();
+       	Tab tab = new Tab("Game" + gameId);
+   		tab.setContent(gameBoard);
+       	tabbedPane.getTabs().add(tab);
+       	gameBoards.add(gameController);
+   	} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+   	
+   	ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs
+
+		// TODO lage egen funk mtp "user generatet new game også
+	
+   }
 	
     public void setRoot(Stage stage) {
     	this.root = stage;
