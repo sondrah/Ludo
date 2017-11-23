@@ -18,6 +18,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
@@ -78,6 +80,12 @@ public class WelcomeController {
 		btnHome.setVisible(true);
 	}
 	
+    @FXML
+    public void goToLoginKey(KeyEvent e) {
+    	if(e.getCode() == KeyCode.ENTER)
+    		goToLogin(new ActionEvent());
+    }
+	
 	/**
 	 * determines the visual elements for the register screen
 	 * @param event button click caused by the register button of the home screen
@@ -88,6 +96,7 @@ public class WelcomeController {
 		btnHomeLogin.setVisible(false);
 		btnHomeRegister.setVisible(false);
 		lblInfo.setVisible(false);
+		lblError.setVisible(false);
 		
 		lblHeader.setText(I18N.tr("welcomescreen.register"));
 		
@@ -100,6 +109,12 @@ public class WelcomeController {
 		btnRegister.setVisible(true);
 		btnHome.setVisible(true);
 	}
+	
+    @FXML
+    public void goToRegisterKey(KeyEvent e) {
+    	if(e.getCode() == KeyCode.ENTER)
+    		goToRegister(new ActionEvent());
+    }
 	
 	/**
 	 * determines the visual elements for the home screen

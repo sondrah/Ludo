@@ -15,12 +15,12 @@ Ugyldig brukernavn! Vennligst prøv på nytt -->
 
 <Pane fx:id="paneHome" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="409.0" prefWidth="594.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.ntnu.imt3281.ludo.gui.WelcomeController">
    <children>
-      <Button fx:id="btnHomeLogin" defaultButton="true" layoutX="49.0" layoutY="294.0" mnemonicParsing="false" onAction="#goToLogin" prefHeight="65.0" prefWidth="174.0" text="%welcomescreen.loginBtn">
+      <Button fx:id="btnHomeLogin" defaultButton="true" layoutX="49.0" layoutY="294.0" mnemonicParsing="false" onAction="#goToLogin" onKeyPressed="#goToLoginKey" prefHeight="65.0" prefWidth="174.0" text="%welcomescreen.loginBtn">
          <font>
             <Font size="30.0" />
          </font>
       </Button>
-      <Button fx:id="btnHomeRegister" layoutX="374.0" layoutY="294.0" mnemonicParsing="false" onAction="#goToRegister" prefHeight="65.0" prefWidth="174.0" text="%welcomescreen.registerBtn">
+      <Button fx:id="btnHomeRegister" layoutX="374.0" layoutY="294.0" mnemonicParsing="false" onAction="#goToRegister" onKeyPressed="#goToRegisterKey" prefHeight="65.0" prefWidth="174.0" text="%welcomescreen.registerBtn">
          <font>
             <Font size="30.0" />
          </font>
