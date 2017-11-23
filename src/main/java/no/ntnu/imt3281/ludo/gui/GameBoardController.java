@@ -71,18 +71,14 @@ public class GameBoardController extends Ludo {
     /** Shows the image of the actual board */
     @FXML private ImageView board;
     
-    private BufferedReader input;
-    private BufferedWriter output;
-    private Socket socket;
-    private int clientId;
-    
 	private TilePositions corners = new TilePositions();
-	
 	/** Holds the piece images for each players */
 	private Image playerPieceImages[] = new Image[PIECES];
 	/** Keeps the tiles the pieces are placed in */
 	private Rectangle playerPieces[][]= new Rectangle[MAX_PLAYERS][PIECES];
-	
+	/**
+	 * In Game board
+	 */
 	private static final int SQUARE = 48;
 	
 	/** Reference to a rectangle we are moving from */
@@ -94,16 +90,39 @@ public class GameBoardController extends Ludo {
 	private boolean shouldMove = false; 
 	private int movePlayerPieceFrom = -1;
 	private int diceValue = -1;
-	//private int gameID;
-	//private static int SQUARE = 48;
-	private Socket connection;
-	
-	public int gameId;
-	public int chatId;
+ //    private BufferedReader input;
+    private BufferedWriter output;
+    private Socket gameSocket;
+    private int clientId;
+    private int gameId;
+    private int chatId;
     
-    public void setUserId(int id) {
-    	this.clientId = id;
+    
+    
+	/**
+	 * 
+	 * @param gameId
+	 */
+    public void setGameId(int gameId) {
+    	this.gameId = gameId;
     }
+    
+    /**
+     * Gives game-chat an Id
+     * @param chatId Id of game-chat
+     */
+    public void setChatId(int chatId) {
+    	this.chatId = chatId;
+    }
+    
+    /**
+     * Gives this game the clients Id 
+     * @param clientId Id of client
+     */
+    public void setClientId(int clientId) {
+    	this.clientId = clientId;
+    }
+    
     
     private void setRoot(Stage stageroot) {
 		// TODO Auto-generated method stub
@@ -111,9 +130,7 @@ public class GameBoardController extends Ludo {
 
 	public void setConnection(Socket socket) {
     	try {
-			this.socket = socket;
-			input = new BufferedReader(new InputStreamReader(
-			        socket.getInputStream()));
+			this.gameSocket = socket;
 			output = new BufferedWriter(new OutputStreamWriter(
 			        socket.getOutputStream()));
 			
@@ -123,19 +140,29 @@ public class GameBoardController extends Ludo {
     		
     	}
     }
-    
+	
 	/**
 	 * Start the game gui for this game
 	 */
-	public void StartGameBoard(GameInfo gameInfo){
-		// this.gameID = gameInfo.getGameID();
-		
-		// find the connection somhow
-		// connection
+	public void StartGameBoard(int gameId, int chatId, int clientId, String [] players, Socket socket){
+		this.gameId = gameId;
+    	this.chatId = chatId;
+    	this.clientId = clientId;
+    	
+    	try {				// Oprette kommunikasjon til Ludo Controller via socket
+			this.gameSocket = socket;
+			output = new BufferedWriter(new OutputStreamWriter(
+			        socket.getOutputStream()));
+			
+    	} catch(IOException ioe) {
+    		System.err.println("fikk ikke connection, i gameBoardController");
+    		ioe.printStackTrace();
+    		
+    	}
 		
 		// Hente ut spillernes navn 
-		for ( String playerName : gameInfo.getPlayerNames()) {
-			addPlayer(playerName);
+		for ( String player : players) {
+			addPlayer(player);
 		}
 		
 		// Set the playerlabels to the players in the game
@@ -369,16 +396,20 @@ public class GameBoardController extends Ludo {
 	 */
 	@FXML
 	void throwDice(ActionEvent e) {
+
 		System.out.println("Du har trykket på dice din æss");
-		try {
-			ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
+		//try {
+			//ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
+
+		// try {
+			// ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
 			// send a DiceEvent to proc the server to throw a dice
 			// oos.writeObject(new GameEvent(gameID, new DiceEvent(this, activePlayer, 0)));
 			
 			// TODO: We should be in blockingmode here
 			// TODO: get the events in some listner
-			ObjectInputStream ois = new ObjectInputStream(connection.getInputStream());
-			Object obj = ois.readObject();
+			//ObjectInputStream ois = new ObjectInputStream(connection.getInputStream());
+			// Object obj = ois.readObject();
 			
 			// we only want to handle GameEvents here
 			// if(obj ) { // instanceof GameEvent
@@ -405,7 +436,7 @@ public class GameBoardController extends Ludo {
 					} // if diceEvent
 				} // if gameid
 			} // if gameEvent
-			*/
+			
 		}
 		catch(IOException ioe) {
 			// TODO: socket not found?
@@ -413,6 +444,7 @@ public class GameBoardController extends Ludo {
 		catch(ClassNotFoundException cnfe) {
 			// TODO: invalid class
 		}
+		*/
 	}
 	
 	/*
@@ -528,7 +560,7 @@ public class GameBoardController extends Ludo {
 				
 				try {
 					// send the info to the server
-					ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
+					ObjectOutputStream oos = new ObjectOutputStream(gameSocket.getOutputStream());
 					// oos.writeObject(new GameEvent(gameID, new PieceEvent(this, activePlayer, piece, from, from + dice)));
 					//connection.send(new MovePiece(gameId, activePlayer, from, from + dice));
 					
@@ -888,30 +920,15 @@ public class GameBoardController extends Ludo {
 			}
     	}
     }
+
+	public int getGameId() {
+		return gameId;
+	}
     
     /**
      * Gives this game an Id
      * @param gameId Id of game
      */
-    public void setGameId(int gameId) {
-    	this.gameId = gameId;
-    }
-    
-    /**
-     * Gives game-chat an Id
-     * @param chatId Id of game-chat
-     */
-    public void setChatId(int chatId) {
-    	this.chatId = chatId;
-    }
-    
-    /**
-     * Gives this game the clients Id 
-     * @param clientId Id of client
-     */
-    public void setClientId(int clientId) {
-    	this.clientId = clientId;
-    }
-    
+
 
 } // GameBoardController end

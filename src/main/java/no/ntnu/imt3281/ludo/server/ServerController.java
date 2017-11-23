@@ -173,7 +173,7 @@ public class ServerController extends JFrame {
             }
         });
     }
-	
+
 	
 	private void startMessageListener1() {
 		executorService.execute(() ->{
@@ -726,6 +726,7 @@ private void startMessageSender() {
 		}
 	}
 	
+
 	private void handleListRequest(String[] str) {
 		// This should recieve all special requests
 		// and should all have str[0] = 'REQUEST'

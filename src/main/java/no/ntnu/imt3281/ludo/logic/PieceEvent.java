@@ -3,7 +3,6 @@ package no.ntnu.imt3281.ludo.logic;
 import java.util.Objects;
 
 /**
- * @author Snorre
  * This Class is meant to inform players that a piece has been moved.
  * Informs about which player has moved which of their pieces,
  * and from current position, to intended position.
