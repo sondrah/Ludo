@@ -200,7 +200,12 @@ public class LudoController {
 			                			makeNewGameTab(gameid, chatid, arr[5].split(":"));
 			                		}
 			                		else {
-			                			JOptionPane.showConfirmDialog(null, "Nytt spill starter når tre andre har joina");
+			                			Alert alert = new Alert(AlertType.INFORMATION);
+			                			alert.setTitle(I18N.tr("ludo.fyiHeader"));
+			                			alert.setHeaderText(null);
+			                			alert.setContentText(I18N.tr("ludo.fyiContent"));
+
+			                			alert.showAndWait();
 			                		}
 		                		}
 		                		else if(arr[1].equals("THROW")) {
@@ -417,9 +422,9 @@ public class LudoController {
     public void createChat(ActionEvent e) {
     	
     	TextInputDialog dialog = new TextInputDialog("");
-    	dialog.setTitle("New chat");
+    	dialog.setTitle(I18N.tr("ludo.newChat"));
     	dialog.setHeaderText("");
-    	dialog.setContentText("Enter the name of your new chat:");
+    	dialog.setContentText(I18N.tr("ludo.newChatContent"));
 
     	// Traditional way to get the response value.
     	Optional<String> result = dialog.showAndWait();
@@ -495,7 +500,7 @@ public class LudoController {
      */
     @FXML
     public void about(ActionEvent e) {
-    	JOptionPane.showConfirmDialog(null, "Got milk?");
+    	JOptionPane.showConfirmDialog(null, I18N.tr("ludo.funnymessage"));
     }
     
     /**
