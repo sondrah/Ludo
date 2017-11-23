@@ -199,7 +199,7 @@ public class LudoController {
 							
 			                if (type.equals("CHAT")) { 				// Message er av typen CHAT:
 			                	if (message.startsWith("99NEWCHAT") && actionId !=0) {		// Nyopprettet chat, med suksess
-			                		addNewTabToChatMapping(actionId); 				// Legg den til i mapping 
+			                		makeNewChatTab(actionId);			// Legg den til i mapping 
 			                	}
 			                	else if(inviteName != null) {						// informs that client with name 'inviteName' joined chat = 'actionId'
 			                		routeChatMessage("Joined chat: "+inviteName, actionId);			
@@ -403,30 +403,7 @@ public class LudoController {
     	}
     }
     
-    /**
-     * addNewTabToChatMapping
-     * @param chatId
-     */
-    public void addNewTabToChatMapping( int chatId) {					// TODO chatboard.fxml
-    	FXMLLoader loader = new FXMLLoader(getClass().getResource("ChatBoard.fxml"));
-    	loader.setResources(I18N.getRsb());
-
-    	try {
-    		AnchorPane chatBoard = loader.load();
-        	Tab tab = new Tab("Chat" + chatId);
-    		tab.setContent(chatBoard);
-        	tabbedPane.getTabs().add(tab);
-    	} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-    	
-    	ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs
-    	
-    	chatToTab.put(chatId, tabs.size()-1);						// adds chatId to mapping
-
-    }
-       
+  
     
     @FXML
     public void listRooms(ActionEvent e) {
@@ -461,15 +438,7 @@ public class LudoController {
     	}
     }
     
-    void findTabID() {
-    	Iterator<GameBoardController> currentGame = gameBoards.iterator();	// Iterate throug all clients
-        while (currentGame.hasNext()) {
-        	System.out.println("Chat: Inne i while"+ gameBoards.size());
-        	GameBoardController tempGame = currentGame.next();
-           //  if (gameBoards.find() != null) {
-        } 	
-    	
-    }
+
     @FXML
     public void saySomethingKey(KeyEvent e) {
     	if(e.getCode() == KeyCode.ENTER)
@@ -507,14 +476,9 @@ public class LudoController {
      */
     public void makeNewGameTab(int gameId) {
 
-		// Får inn i controlleren input.readLine()
     	FXMLLoader gameLoader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
 		gameLoader.setResources(I18N.getRsb());
     	GameBoardController gameController = gameLoader.getController();
-    	// Unødvendig gameLoader.setController(gameController);
-		// Use controller to set up communication for this game.
-		// Note, a new game tab would be created due to some communication from the server
-		// This is how a layout is loaded and added to a tab pane.
 
 		try {
 			AnchorPane gameBoard = gameLoader.load();
@@ -530,25 +494,9 @@ public class LudoController {
     	ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs
     	gameToTab.put(gameId, tabs.size()-1);				// adds gameId to maping
 		
-    	
-    	// TODO lage egen funk mtp "user generatet new game også
-	
+
     }
     
-    /**
-     * Sends a message to Server that this client
-     * wants to create a private chat.
-     * @param chatName name of the new chat
-     */
-    public void newPrivateChat(String chatName) {
-		try {								
-			output.write("CHAT,0,"+ clientId +"," +chatName);
-			output.newLine();
-			output.flush();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-    }
     
     /**
     * makeNewChatTab
@@ -559,7 +507,6 @@ public class LudoController {
     */
    public void makeNewChatTab(int chatId) {
 
-		// Får inn i controlleren input.readLine()
     	FXMLLoader chatLoader = new FXMLLoader(getClass().getResource("PrivateChat.fxml"));
 		chatLoader.setResources(I18N.getRsb());
 		ChatController chatController = chatLoader.getController();
