@@ -538,6 +538,21 @@ private void startMessageSender() {
 	}
 	
 	
+	private void sendChatMessage(String str) {
+		
+		String[] arr = str.split(",");
+		
+		// CHAT,SAY,chatid,userid,message
+		
+		
+		
+		switch(arr[1]) {
+		case "SAY":
+			
+		}
+	}
+	
+	
 	private void handleGameMessage(String[] str) {
 		
 		// All string arrays that come here have GAME in str[0]
@@ -546,8 +561,7 @@ private void startMessageSender() {
 		// GAME,MOVE,gameid,userid,player,from,to	-- 	" 	move a piece
 		// GAME,CREATE,userid						-- 	" 	create new game
 		
-		String action = str[1];
-		Game game = null
+		Game game = null;
 		
 		switch(str[1]) {
 		case "THROW":

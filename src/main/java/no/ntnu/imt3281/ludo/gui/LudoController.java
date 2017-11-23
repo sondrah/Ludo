@@ -457,10 +457,10 @@ public class LudoController {
 	
 		// TODO Guro, må sjekk resultat etter server før setUpNewGame
 		// TODO lage egen funk mtp "user generatet new game også
-		FXMLLoader gameLoader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
+		FXMLLoader gameLoader = new FXMLLoader(getClass().getResource("Tab.fxml"));
 		gameLoader.setResources(I18N.getRsb());
 		
-    	GameBoardController gameController = gameLoader.getController();
+    	//GameBoardController gameController = gameLoader.getController();
     	//gameLoader.setController(gameController);
 		// Use controller to set up communication for this game.
 		// Note, a new game tab would be created due to some communication from the server
