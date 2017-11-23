@@ -24,6 +24,9 @@ import javafx.event.ActionEvent;
  */
 public class Client extends Application{
 	
+	/**
+	 * Constructs a new Client
+	 */
 	public Client() {
 		I18N.getResource("no.ntnu.imt3281.i18n.i18n");
 		// TODO setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -31,7 +34,7 @@ public class Client extends Application{
 	
 	/**
 	 * 
-	 * Constructs a new client
+	 * Constructs a new client with the parameters args
 	 */
 	public Client(String[] args) {
 		//Stage primaryStage = new Stage();

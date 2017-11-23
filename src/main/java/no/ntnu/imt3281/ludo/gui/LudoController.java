@@ -31,6 +31,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -155,10 +157,6 @@ public class LudoController {
     	userName.setText(usrN);
     }
 
-    @FXML
-    public void connect(ActionEvent e) {
-    	// TODO:
-    }
     /**
      * Set user id in constructor
      * @param id
@@ -213,7 +211,12 @@ public class LudoController {
 			                		// Innkommende melding 
 			                		// "GAME,0,"+curClient.getId()+",Ikke nok spillere enda("+waitingClients.size()+") , venter på flere spillere"
 			                		// TODO Snorre, innkommende melding er du må vente litt, vises " i en popup??"
-			                		JOptionPane.showConfirmDialog(null, "Nytt spill starter når tre andre har joina");
+			                		Alert alert = new Alert(AlertType.INFORMATION);
+			                		alert.setTitle("FYI");
+			                		alert.setHeaderText("You've been placed in queue");
+			                		alert.setContentText("A new game will begin after three other players have joined the same game");
+
+			                		alert.showAndWait();
 			                	}
 			                	else if (message.startsWith("99BEGINGAME") && actionId !=0) { // Nyopprettet forespørsel game, MED suksess
 			                		makeNewGameTab(actionId);
@@ -273,6 +276,7 @@ public class LudoController {
 	    		
     	}
     } 
+    
     /**
      * routeGameMessage
      * @param actionId
@@ -309,12 +313,13 @@ public class LudoController {
     
     
     
+    /**
+     * Loads a new tab containing a Vbox with a list of current connected players, a textfield to input one of these,
+     * and a button to confirm player to challenge.
+     * @param e button click caused by the challenge player menu item
+     */
     @FXML
     public void challengePlayer(ActionEvent e) {
-    	// TODO: vis liste av alle active spillere
-    	// TODO: kunne velge disse
-    	// TODO: sende request
-    	// TODO: motta svar?
     	
     	Stage dialog = new Stage();
         dialog.initOwner(root);
@@ -323,7 +328,7 @@ public class LudoController {
     	loader.setResources(I18N.getRsb());
         
     	try {
-    		VBox pane = loader.load();
+    		VBox vbox = loader.load();
     		String rq = "LISTPLAYERS," + clientId + ", , ";
     		output.write(rq); 
     		output.newLine();
@@ -334,7 +339,7 @@ public class LudoController {
     		contr.setDesc(d);
     		
     		Tab tab = new Tab("Player list");
-    		tab.setContent(pane);
+    		tab.setContent(vbox);
     		tabbedPane.getTabs().add(tab);
     		
     		listTab = tabbedPane.getTabs().size() - 1;
@@ -344,6 +349,10 @@ public class LudoController {
     	}
     }
     
+    /**
+     * Opens a dialogue box which asks the user what they want to name their chat.
+     * @param e button click caused by the create room menu item
+     */
     @FXML
     public void createChat(ActionEvent e) {
     	
@@ -357,6 +366,7 @@ public class LudoController {
     	if (result.isPresent()){
     	    System.out.println("Chat name: " + result.get());
     	}
+    	
     	
     	/*System.err.println("inne i createChat");
     	
@@ -378,6 +388,11 @@ public class LudoController {
     	
     }
     
+    /**
+     * creates a new tab including a Vbox with a list of all available chats, a textfield to input
+     * one of these, and a button to confirm this choice.
+     * @param e button click caused by the join room menu item
+     */
     @FXML
     public void joinChat(ActionEvent e) {
     	Stage dialog = new Stage();
@@ -387,13 +402,13 @@ public class LudoController {
     	loader.setResources(I18N.getRsb());
         
     	try {
-    		VBox pane = loader.load();
+    		VBox vbox = loader.load();
     		
     		String d = (I18N.tr("ludo.joinChat"));
     		JoinOrChallengeController contr = loader.getController();
     		contr.setDesc(d);
     		
-    		Scene dialogScene = new Scene(pane, 410, 215);
+    		Scene dialogScene = new Scene(vbox, 410, 215);
     		
     		dialog.setScene(dialogScene);
     		dialog.show();
@@ -426,20 +441,19 @@ public class LudoController {
     	chatToTab.put(chatId, tabs.size()-1);						// adds chatId to mapping
 
     }
-       
     
-    @FXML
-    public void listRooms(ActionEvent e) {
-    	//JOptionPane.showConfirmDialog(null, "Got milk?");
-    }
-    
+    /**
+     * Displays a nice popup with an important question
+     * @param e button click caused by the about menu item
+     */
     @FXML
     public void about(ActionEvent e) {
     	JOptionPane.showConfirmDialog(null, "Got milk?");
     }
+    
     /**
-     * Writes a clients message to a chat-room
-     * @param e
+     * Writes a clients message to the masterchat-room in Home
+     * @param e button click caused by the say button in ludo
      */
     @FXML		// OBS brukes bare for masterchat i Ludo Home
     public void saySomething(ActionEvent e) {
@@ -461,15 +475,10 @@ public class LudoController {
     	}
     }
     
-    void findTabID() {
-    	Iterator<GameBoardController> currentGame = gameBoards.iterator();	// Iterate throug all clients
-        while (currentGame.hasNext()) {
-        	System.out.println("Chat: Inne i while"+ gameBoards.size());
-        	GameBoardController tempGame = currentGame.next();
-           //  if (gameBoards.find() != null) {
-        } 	
-    	
-    }
+    /**
+     * Writes a clients message to the masterchat-room in Home
+     * @param e enter click caused by the say button in ludo
+     */
     @FXML
     public void saySomethingKey(KeyEvent e) {
     	if(e.getCode() == KeyCode.ENTER)

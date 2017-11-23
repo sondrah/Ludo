@@ -54,6 +54,10 @@ public class WelcomeController {
 	private static String usrname;
 	
 	
+	/**
+	 * gets a username
+	 * @return username of the current Client
+	 */
 	public static String getUsername() {
 		return usrname;
 	}
