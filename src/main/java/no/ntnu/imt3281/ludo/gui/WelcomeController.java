@@ -160,38 +160,34 @@ public class WelcomeController {
 				
 				// gets the true/false of: LOGIN,1,true/false
 				String res = br.readLine();
-				System.out.println(res);
-				res = res.split(",")[2];
-				
-				int id = Integer.parseInt(res);
-				if(id != 0) {
-					try {
-						FXMLLoader loader = new FXMLLoader(getClass().getResource("Ludo.fxml"));
-				    	loader.setResources(I18N.getRsb());
-
-				    	//loader.setController(new LudoController());
-
-				    	root = loader.load();
-				    	LudoController controller = loader.getController();
-
-				    	loader.setController(controller);
-				    
-			            Stage stage = new Stage();
-			            stage.setTitle("Ludo");
-			            stage.setScene(new Scene(root, 1050, 800));
-			            stage.show();
-			            
-				    	controller.setUpController(socket, id, stage);
-				    	controller.setUserName(usr);
-				    	     
-			       
-			            // hiding the login window (effectively: closing it)
-			            ((Node)(event.getSource())).getScene().getWindow().hide();
-			        }
-			        catch (IOException e) {
-			            e.printStackTrace();
-			        }
+				if(res != null) {
+					res = res.split(",")[2];
 					
+					int id = Integer.parseInt(res);
+					if(id != 0) {
+						try {
+							FXMLLoader loader = new FXMLLoader(getClass().getResource("Ludo.fxml"));
+					    	loader.setResources(I18N.getRsb());
+	
+					    	root = loader.load();
+					    	LudoController controller = loader.getController();
+					    	loader.setController(controller);
+					    
+				            Stage stage = new Stage();
+				            stage.setTitle("Ludo");
+				            stage.setScene(new Scene(root, 1050, 800));
+				            stage.show();
+				            
+					    	controller.setUpController(socket, id, stage);
+					    	controller.setUserName(usr);
+	
+				            // hiding the login window (effectively: closing it)
+				            ((Node)(event.getSource())).getScene().getWindow().hide();
+				        }
+				        catch (IOException e) {
+				            e.printStackTrace();
+				        }
+					}	
 				} else {
 					lblError.setVisible(true);
 					lblError.setText(I18N.tr("errors.failedToLogIn"));
@@ -203,9 +199,11 @@ public class WelcomeController {
 				lblError.setText(I18N.tr("errors.connectionError"));
 			} 
 		}
+		// TODO om login ikke lyktes ikke kræsj men prøv på nytt
 	}
 	
 	/**
+	 * 
 	 * Registers a new users if inputed values are valid, and updates
 	 * this information with server and database.
 	 * Displays error message if not valid. 
@@ -229,6 +227,7 @@ public class WelcomeController {
 		}
 		else {
 			try {
+				// TODO Bjonn close registrer socket
 				Socket socket = new Socket("localhost", 12345);
 				BufferedWriter bw = new BufferedWriter(
 						new OutputStreamWriter(socket.getOutputStream()));
@@ -239,7 +238,6 @@ public class WelcomeController {
 				
 				// sends register-request: LOGIN,0,usr,pwd
 				// REMEMBER! LOGIN is a message type which is 0 for register
-				System.out.println("inne i registrer");
 				bw.write("LOGIN,0," + usr + "," + hashedPwd);
 				bw.newLine();
 				bw.flush();

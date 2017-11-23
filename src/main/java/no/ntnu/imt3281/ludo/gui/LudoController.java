@@ -79,7 +79,9 @@ public class LudoController {
     @FXML private TitledPane joinOrChallenge;
 
     /** Maps chatId to tab */
-    HashMap<Integer, Integer> map = new HashMap<>();
+    HashMap<Integer, Integer> mapChat = new HashMap<>();
+    /** Maps gameId to tab */
+    HashMap<Integer, Integer> mapGame = new HashMap<>();
     private Stage root;
     private int gameId = 0;
     private int clientId;
@@ -103,11 +105,11 @@ public class LudoController {
      * @param id
      * @param stageroot
      */
-    public void setUpController(Socket socket, int id, Stage stageroot) {
+    public void setUpController(Socket socket, int userid, Stage stageroot) {
 		setRoot(stageroot);
     	setConnection(socket);
-    	setUserId(id);
-    	map.put(1, 0);
+    	setUserId(userid);
+    	mapChat.put(1, 0);	// Master Chat ligger der fra start
     	executorService = Executors.newCachedThreadPool();
         processConnection();		// Handle login requests in a separate thread
         executorService.shutdown();
@@ -176,27 +178,38 @@ public class LudoController {
 							String receivedClientId = returnMessage[2];	
 							String message = returnMessage[3];
 							String inviteName = null;
-							
+							System.out.println("4. Client listener innkommende melding" + retMessage);
 							if(returnMessage.length == 5) {
 								inviteName = returnMessage[4];
 							}
 							
 			                if (type.equals("CHAT")) { 				// Message er av typen CHAT
-			                	if (message.startsWith("0")) {
-			                		addNewTabToChatMapping(actionId); 
+			                	if (message.startsWith("0") && actionId !=0) {		// Nyopprettet chat, med suksess
+			                		addNewTabToChatMapping(actionId); 				// Legg den til i mapping 
 			                	}
-			                	else if(inviteName != null) {		// joins client with name 'inviteName' to chat 'actionId'							
-			                		routeChatMessage("Joined chat: "+inviteName, actionId);	
-			                	} else {							
-			                		routeChatMessage(message, actionId);	// message in chat-room
-			                	}	
+			                	else if(inviteName != null) {
+			                		// TODO Sondre - HÆ? hva skal gjøres her// joins client with name 'inviteName' to chat 'actionId'							
+			                	
+			                	}
+			                	routeChatMessage(message, actionId);	// message in chat-room
+			                	
 
 			                } 
 			                else if (type.equals("GAME")) {
+			                	if (message.startsWith("0") && actionId ==0) {		// Nyopprettet forespørsel game, UTEN suksess
+			                		// Innkommende melding 
+			                		// "GAME,0,"+curClient.getId()+",Ikke nok spillere enda("+waitingClients.size()+") , venter på flere spillere"
+			                		// TODO Snorre, innkommende melding er du må vente litt, vises " i en popup??"
+			                	}
+			                	else if (message.startsWith("99") && actionId !=0) { // Nyopprettet forespørsel game, MED suksess
+			                		addNewTabToGameMapping(actionId);
 			                	// Mappe game id til fane
-			                		                	
+			                	}
+			                	// Innkommende ("GAME,"+currentGameID+","+notifyClient+",99 HAR STARTET"+message);
+			                	routeGameMessage(actionId, receivedClientId, message );
 			                	
-			                 } else if (type.equals("LISTPLAYERS")) {
+			                }
+			                else if (type.equals("LISTPLAYERS")) {
 			                	 String[] returntemp = retMessage.split(",", 3);
 			                	 String[] names = returntemp[2].split(",");
 			                	 
@@ -208,7 +221,7 @@ public class LudoController {
 			                	 list.setItems(FXCollections.observableArrayList(names));
 			                	 
 			                } else { // All other messages
-			                    System.out.println("Noe feil har skjedd i prosess ");
+			                    System.out.println("Noe feil har skjedd i prosessConnection ");
 			                }
 		                }
 		            } catch (IOException ioe) {
@@ -219,13 +232,17 @@ public class LudoController {
     	});
     }
     
-    /**
+   
+
+	
+
+	/**
      * Used to add messages to the message area in a thread safe manner
      * 
      * @param text the text to be added
      */
     private void routeChatMessage(String message, int chatId) {
-    	Integer tabId = map.get(chatId);
+    	Integer tabId = mapChat.get(chatId);
    	
     	if(tabId != null) {	
     		
@@ -234,12 +251,35 @@ public class LudoController {
 	    				// Finner alle elementene i dette chattevinduet 
 	    	TextArea textA = (TextArea)tabRoot.lookup("#chatArea");
 	    	
-	    	System.out.println("Say in route Chat M: " +message);
+	    	System.out.println("5. CHAT routeChatMes : " +message);
 	    	textA.appendText(message+ "\n");		// Legg til meldingen 
     	}
     } 
-
-    
+    /**
+     * routeGameMessage
+     * @param actionId
+     * @param receivedClientId
+     * @param message
+     */
+    private void routeGameMessage(int gameId, String receivedClientId, String message) {
+    	System.out.println("6. GAME routeGame!!");
+    	Integer tabId = mapGame.get(gameId);
+    	System.out.println("6. GAME routeGame M: " +message+ " Tab id til Game: " + tabId );
+    	if(tabId != null) {	
+    		
+    				// Henter ut riktig Anchor Pane for riktig chatterom
+    		// TODO Guro1 failer pga Outof Bounse tabId = 3
+	    	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(tabId).getContent();
+	    				// Finner alle elementene i dette chattevinduet 
+	    	TextArea textA = (TextArea)tabRoot.lookup("#gameChatArea");
+	    	// TODO Snorre id til gameboard
+	    	// Her må vi antagelig ha flere mtp chat og board
+	    	
+	    	
+	    	textA.appendText(message+ "\n");		// Legg til meldingen 
+    	}
+		
+	}
     /** 
      * Closes the application
      * @param e button click caused by the close menu item
@@ -312,7 +352,10 @@ public class LudoController {
     	}
     }
     
-    
+    /**
+     * addNewTabToChatMapping
+     * @param chatId
+     */
     public void addNewTabToChatMapping(int chatId) {					// TODO chatboard.fxml
     	FXMLLoader loader = new FXMLLoader(getClass().getResource("ChatBoard.fxml"));
     	loader.setResources(I18N.getRsb());
@@ -328,8 +371,32 @@ public class LudoController {
 		}
     	
     	ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs
-    	map.put(chatId, tabs.size());						// adds chatId to mapping
+    	mapChat.put(chatId, tabs.size());						// adds chatId to mapping
     }
+    
+    /**
+     * addNewTabToChatMapping
+     * @param actionId
+     */
+    private void addNewTabToGameMapping(int gameId) {
+    	FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
+    	loader.setResources(I18N.getRsb());
+    	// TODO Sondre, nesten copi av Chat, hva mer må endres
+    	try {
+    		AnchorPane gameBoard = loader.load();
+        	Tab tab = new Tab("Game" + gameId);
+    		tab.setContent(gameBoard);
+        	tabbedPane.getTabs().add(tab);
+    	} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+    	
+    	ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs
+    	mapGame.put(gameId, tabs.size());						// adds chatId to mapping
+    }
+
+    
     
     @FXML
     public void listRooms(ActionEvent e) {
@@ -349,6 +416,9 @@ public class LudoController {
     	String txt = toSay.getText();
     	if(!txt.equals("") && txt !=null) {
     		try {								
+    			// TODO OBS brukes saySomething bare for masterchat??
+    			// Om ikke må chat id finnes og sendes med her
+    			System.out.println("1. Client: SaySomething fra/ på client: "+txt);
     			output.write("CHAT,1,"+ clientId +"," +txt);
 				output.newLine();
 				output.flush();
@@ -374,30 +444,34 @@ public class LudoController {
     @FXML
     public void joinRandomGame(ActionEvent e) {  
     	
-    	FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
-    	loader.setResources(I18N.getRsb());
     	
-    	
-    		try {								// Client sier jeg vil spille 
-    			System.out.println("Trykket på knapp rand game, skal sende nå");
-    			output.write("GAME,0,"+ clientId +",Random Game trykket på");
-				output.newLine();
-				output.flush();
+		try {								// Client sier jeg vil spille 
+			System.out.println("1. Client Trykket på knapp rand game, skal sende nå");
+			output.write("GAME,0,"+ clientId +",Random Game trykket på");
+			output.newLine();
+			output.flush();
 
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-    	
-
-		GameBoardController controller = loader.getController();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	
+		// TODO Guro, må sjekk resultat etter server før setUpNewGame
+		// TODO lage egen funk mtp "user generatet new game også
+		FXMLLoader gameLoader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
+		gameLoader.setResources(I18N.getRsb());
+    	GameBoardController gameController = gameLoader.getController();
+    	gameLoader.setController(gameController);
 		// Use controller to set up communication for this game.
 		// Note, a new game tab would be created due to some communication from the server
 		// This is here purely to illustrate how a layout is loaded and added to a tab pane.
 		
+		// TODO Sondre, hmm "Oprette bare vindu hvis den er laget i DB, ergo ikke her? 
+    	
+    	
     	try {
-    		AnchorPane gameBoard = loader.load();
-    		gameId++;
+    		AnchorPane gameBoard = gameLoader.load();
+    		// gameId++;
         	Tab tab = new Tab("Game" + gameId);
     		tab.setContent(gameBoard);
         	tabbedPane.getTabs().add(tab);

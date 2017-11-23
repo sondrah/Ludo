@@ -26,15 +26,18 @@ public class Client extends Application{
 	
 	public Client() {
 		I18N.getResource("no.ntnu.imt3281.i18n.i18n");
+		// TODO setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
 	/**
+	 * 
 	 * Constructs a new client
 	 */
 	public Client(String[] args) {
 		//Stage primaryStage = new Stage();
 		//start(primaryStage);
 		launch(args);
+		
 	}
 	
 	/**
@@ -68,6 +71,7 @@ public class Client extends Application{
     	}
     	catch (IOException ioe){
     		ioe.printStackTrace();
+    		
     	}
 		
 	}
