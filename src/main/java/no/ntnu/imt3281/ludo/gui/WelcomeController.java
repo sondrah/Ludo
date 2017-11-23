@@ -174,7 +174,7 @@ public class WelcomeController {
 					    	loader.setController(controller);
 					    
 				            Stage stage = new Stage();
-				            stage.setTitle("Ludo");
+				            stage.setTitle("Ludo- Alea-iacta-est");
 				            stage.setScene(new Scene(root, 1050, 800));
 				            stage.show();
 				            
