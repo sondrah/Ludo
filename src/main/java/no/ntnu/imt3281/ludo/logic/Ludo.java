@@ -320,15 +320,13 @@ public class Ludo {
 	 * @return Value between 1 and 6 (inclusive)
 	 */
 	public int throwDice() {
-		// TODO: finn ut om denne må se ut som
-		// clientside throwdice
 		
 		int locDice = 0;
 		randomGenerator = new Random();
 		
 		locDice = randomGenerator.nextInt(5) + 1;
 		
-		alertThrowDice(new DiceEvent(this, activePlayer, locDice));
+		throwDice(locDice);
 		return locDice;
 	}
 	

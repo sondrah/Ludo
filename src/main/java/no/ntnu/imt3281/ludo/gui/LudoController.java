@@ -459,14 +459,12 @@ public class LudoController {
 		try {
 		// TODO Guro, må sjekk resultat etter server før setUpNewGame
 		// TODO lage egen funk mtp "user generatet new game også
+		
 			FXMLLoader gameLoader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
 			gameLoader.setResources(I18N.getRsb());
 		
     		GameBoardController gameController = gameLoader.getController();
-    		gameLoader.setController(gameController);
-		// Use controller to set up communication for this game.
-		// Note, a new game tab would be created due to some communication from the server
-		// This is here purely to illustrate how a layout is loaded and added to a tab pane.
+    		
 		
 		// TODO Sondre, hmm "Oprette bare vindu hvis den er laget i DB, ergo ikke her? 
    
