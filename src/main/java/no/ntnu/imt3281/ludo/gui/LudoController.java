@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -82,6 +83,8 @@ public class LudoController {
     HashMap<Integer, Integer> mapChat = new HashMap<>();
     /** Maps gameId to tab */
     HashMap<Integer, Integer> mapGame = new HashMap<>();
+    /** Witch players are waiting for randoom game*/
+	private ArrayList<GameBoardController> gameBoards = new ArrayList<GameBoardController>();
     private Stage root;
     private int gameId = 0;
     private int clientId;
@@ -203,7 +206,7 @@ public class LudoController {
 			                		// TODO Snorre, innkommende melding er du må vente litt, vises " i en popup??"
 			                	}
 			                	else if (message.startsWith("99") && actionId !=0) { // Nyopprettet forespørsel game, MED suksess
-			                		addNewTabToGameMapping(actionId);
+			                		makeNewGameTab(actionId);
 			                	// Mappe game id til fane
 			                	}
 			                	// Innkommende ("GAME,"+currentGameID+","+notifyClient+",99 HAR STARTET"+message);
@@ -250,10 +253,14 @@ public class LudoController {
     				// Henter ut riktig Anchor Pane for riktig chatterom
 	    	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(tabId).getContent();
 	    				// Finner alle elementene i dette chattevinduet 
-	    	TextArea textA = (TextArea)tabRoot.lookup("#chatArea");
-	    	
-	    	System.out.println("5. CHAT routeChatMes : " +message);
-	    	textA.appendText(message+ "\n");		// Legg til meldingen 
+	    	if (tabRoot != null) {
+		    	TextArea textA = (TextArea)tabRoot.lookup("#chatArea");
+		    	
+		    	System.out.println("5. CHAT routeChatMes : tabID: "+tabId+ " melding " +message);
+		    	textA.appendText(message+ "\n");		// Legg til meldingen 
+		    }
+	    	else System.out.println("5. CHAT routeChatMes ERR FANT IKKE TAB ROOT!!");
+	    		
     	}
     } 
     /**
@@ -267,7 +274,7 @@ public class LudoController {
     	Integer tabId = mapGame.get(gameId);
     	System.out.println("6. GAME routeGame M: " +message+ " Tab id til Game: " + tabId );
     	if(tabId != null) {	
-    		
+    		 
     				// Henter ut riktig Anchor Pane for riktig chatterom
     		// TODO Guro1 failer pga Outof Bounse tabId = 3
 	    	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(tabId).getContent();
@@ -357,7 +364,7 @@ public class LudoController {
      * addNewTabToChatMapping
      * @param chatId
      */
-    public void addNewTabToChatMapping(int chatId) {					// TODO chatboard.fxml
+    public void addNewTabToChatMapping( int chatId) {					// TODO chatboard.fxml
     	FXMLLoader loader = new FXMLLoader(getClass().getResource("ChatBoard.fxml"));
     	loader.setResources(I18N.getRsb());
 
@@ -374,30 +381,7 @@ public class LudoController {
     	ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs
     	mapChat.put(chatId, tabs.size());						// adds chatId to mapping
     }
-    
-    /**
-     * addNewTabToChatMapping
-     * @param actionId
-     */
-    private void addNewTabToGameMapping(int gameId) {
-    	FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
-    	loader.setResources(I18N.getRsb());
-    	// TODO Sondre, nesten copi av Chat, hva mer må endres
-    	try {
-    		AnchorPane gameBoard = loader.load();
-        	Tab tab = new Tab("Game" + gameId);
-    		tab.setContent(gameBoard);
-        	tabbedPane.getTabs().add(tab);
-    	} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-    	
-    	ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs
-    	mapGame.put(gameId, tabs.size());						// adds chatId to mapping
-    }
-
-    
+       
     
     @FXML
     public void listRooms(ActionEvent e) {
@@ -412,13 +396,13 @@ public class LudoController {
      * Writes a clients message to a chat-room
      * @param e
      */
-    @FXML
+    @FXML		// OBS brukes bare for masterchat i Ludo Home
     public void saySomething(ActionEvent e) {
     	String txt = toSay.getText();
     	if(!txt.equals("") && txt !=null) {
     		try {								
-    			// TODO OBS brukes saySomething bare for masterchat??
-    			// Om ikke må chat id finnes og sendes med her
+    			
+    			
     			System.out.println("1. Client: SaySomething fra/ på client: "+txt);
     			output.write("CHAT,1,"+ clientId +"," +txt);
 				output.newLine();
@@ -457,30 +441,39 @@ public class LudoController {
 			e1.printStackTrace();
 		}
 	
-		// TODO Guro, må sjekk resultat etter server før setUpNewGame
-		// TODO lage egen funk mtp "user generatet new game også
-		FXMLLoader gameLoader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
+		
+     }
+    
+    
+    public void makeNewGameTab(int gameId) {
+
+		// Får inn i controlleren input.readLine()
+    	FXMLLoader gameLoader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
 		gameLoader.setResources(I18N.getRsb());
     	GameBoardController gameController = gameLoader.getController();
     	gameLoader.setController(gameController);
 		// Use controller to set up communication for this game.
 		// Note, a new game tab would be created due to some communication from the server
-		// This is here purely to illustrate how a layout is loaded and added to a tab pane.
-		
-		// TODO Sondre, hmm "Oprette bare vindu hvis den er laget i DB, ergo ikke her? 
-    	
-    	
+		// This is how a layout is loaded and added to a tab pane.
+
     	try {
     		AnchorPane gameBoard = gameLoader.load();
-    		// gameId++;
         	Tab tab = new Tab("Game" + gameId);
     		tab.setContent(gameBoard);
         	tabbedPane.getTabs().add(tab);
+        	gameBoards.add(gameController);
     	} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-     }
+    	
+    	ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs
+    	// gameBoards.add("Game board")
+    	//mapGame.put(gameId, tabs.size());						// adds chatId to mapping
+		
+		// TODO lage egen funk mtp "user generatet new game også
+	
+    }
     
     /**
      * 

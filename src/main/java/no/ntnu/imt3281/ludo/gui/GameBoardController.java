@@ -871,8 +871,11 @@ public class GameBoardController extends Ludo {
     public void sendTextButton(ActionEvent e) {
     	String txt = textToSay.getText();
     	if(!txt.equals("") && txt !=null) {
-    		try {								
-    			output.write("CHAT,1,"+ clientId +"," +txt);
+    		int currentChatID = 2;
+    		int clientId = 302; 
+    		try {			
+    			System.out.println("1. ClientGAME!!: SaySomething fra client: "+txt);
+    			output.write("CHAT,"+currentChatID+","+clientId +"," +txt);
 				output.newLine();
 				output.flush();
 
