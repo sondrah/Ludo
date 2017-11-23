@@ -3,8 +3,6 @@
 import java.util.Objects;
 
 /**
- * @author Snorre
- *
  * This Class is supposed to inform players that a dice has been thrown.
  * A DiceEvent will be passed to all registered DiceListener objects.
  * Included in this Class is a reference to a ludo-game, which player
