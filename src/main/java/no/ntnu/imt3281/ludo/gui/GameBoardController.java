@@ -129,7 +129,7 @@ public class GameBoardController extends Ludo {
 	 * Start the game gui for this game
 	 */
 	public void StartGameBoard(GameInfo gameInfo){
-		this.gameID = gameInfo.getGameID();
+		// this.gameID = gameInfo.getGameID();
 		
 		// find the connection somhow
 		// connection
