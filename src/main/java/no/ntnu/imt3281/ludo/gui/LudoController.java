@@ -485,7 +485,7 @@ public class LudoController {
      * @param chatName
      * @param clientId
      */
-    public void newPrivateChat(String chatName, String clientId) {
+    public void newPrivateChat(String chatName) {
 		try {								
 			output.write("CHAT,0,"+ clientId +"," +chatName);
 			output.newLine();
