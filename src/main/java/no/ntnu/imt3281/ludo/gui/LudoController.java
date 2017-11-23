@@ -200,9 +200,11 @@ public class LudoController {
 			                } 
 			                else if (type.equals("GAME")) {			// Message er av typen GAME:
 			                	if (message.startsWith("0") && actionId ==0) {		// Nyopprettet forespørsel game, UTEN suksess
+			                		System.err.println("hallo");
 			                		// Innkommende melding 
 			                		// "GAME,0,"+curClient.getId()+",Ikke nok spillere enda("+waitingClients.size()+") , venter på flere spillere"
 			                		// TODO Snorre, innkommende melding er du må vente litt, vises " i en popup??"
+			                		JOptionPane.showConfirmDialog(null, "Nytt spill starter når tre andre har joina");
 			                	}
 			                	else if (message.startsWith("99") && actionId !=0) { // Nyopprettet forespørsel game, MED suksess
 			                		makeNewGameTab(actionId);
