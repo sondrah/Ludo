@@ -54,7 +54,7 @@ public class Client extends Application{
 	// Launches the initial window of the application (Welcome screen)
 	@Override
 	public void start(Stage primaryStage) {
-		primaryStage.setTitle("Ludo- Alea-iacta-est");
+		primaryStage.setTitle("Ludo-Alea-iacta-est");
 		
 		AnchorPane root = new AnchorPane();
 		

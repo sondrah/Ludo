@@ -209,7 +209,6 @@ public class WelcomeController {
 	}
 	
 	/**
-	 * 
 	 * Registers a new users if inputed values are valid, and updates
 	 * this information with server and database.
 	 * Displays error message if not valid. 
