@@ -386,6 +386,7 @@ public class ServerController extends JFrame {
 				client = getClient(Integer.parseInt(str[3]));
 				Chat chat = newChat(chatname);
 				chat.addParticipantToChat(client);
+				chats.add(chat);
 				
 				messages.put("CHAT,CREATE," + chat.getId() + "," + chatname + " created!");
 			}

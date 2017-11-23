@@ -625,7 +625,12 @@ public class LudoController {
 			chatController.setConnection(socket);  // TODO sjekk Bjønn ok?? 
 	       	Tab tab = new Tab("Chat" + chatId);
 	   		tab.setContent(chatWindow);
-	       	tabbedPane.getTabs().add(tab);
+	   		
+	   		Platform.runLater(() -> {
+	   			tabbedPane.getTabs().add(tab);
+    			tabbedPane.getSelectionModel().select(tab);
+	   		});
+	   		
 	       	chatWindows.add(chatController);
 	       	
 	   	} catch (IOException e1) {
