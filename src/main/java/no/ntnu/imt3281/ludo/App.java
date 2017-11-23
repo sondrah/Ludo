@@ -18,5 +18,4 @@ public class App {
 		Client c = new Client(args);
 		// Client cc = new Client(args);
 	}
-
 }

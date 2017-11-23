@@ -168,6 +168,8 @@ public class LudoController {
 			                
 		                	String response = input.readLine();
 		                	
+		                	System.out.println("3. client prosess: " + response);
+		                	
 		                	String[] arr = response.split(",");
 		                	int chatid = 0;
 		                	
@@ -200,7 +202,12 @@ public class LudoController {
 			                			makeNewGameTab(gameid, chatid, arr[5].split(":"));
 			                		}
 			                		else {
-			                			JOptionPane.showConfirmDialog(null, "Nytt spill starter når tre andre har joina");
+			                			Alert alert = new Alert(AlertType.INFORMATION);
+			                			alert.setTitle(I18N.tr("ludo.fyiHeader"));
+			                			alert.setHeaderText(null);
+			                			alert.setContentText(I18N.tr("ludo.fyiContent"));
+
+			                			alert.showAndWait();
 			                		}
 		                		}
 		                		else if(arr[1].equals("THROW")) {
@@ -417,9 +424,9 @@ public class LudoController {
     public void createChat(ActionEvent e) {
     	
     	TextInputDialog dialog = new TextInputDialog("");
-    	dialog.setTitle("New chat");
+    	dialog.setTitle(I18N.tr("ludo.newChat"));
     	dialog.setHeaderText("");
-    	dialog.setContentText("Enter the name of your new chat:");
+    	dialog.setContentText(I18N.tr("ludo.newChatContent"));
 
     	// Traditional way to get the response value.
     	Optional<String> result = dialog.showAndWait();
@@ -490,12 +497,17 @@ public class LudoController {
 	}
     
     /**
-     * Displays a nice popup with an important question
+     * Displays a nice popup window with a depressing message
      * @param e button click caused by the about menu item
      */
     @FXML
     public void about(ActionEvent e) {
-    	JOptionPane.showConfirmDialog(null, "Got milk?");
+    	Alert alert = new Alert(AlertType.INFORMATION);
+    	alert.setTitle(I18N.tr("ludo.help.Title"));
+    	alert.setHeaderText(I18N.tr("ludo.help.Header"));
+    	alert.setContentText(I18N.tr("ludo.help.Content"));
+
+    	alert.showAndWait();
     }
     
     /**
@@ -510,7 +522,8 @@ public class LudoController {
     		try {								
     			
     			System.out.println("1. Client: sendText fra/ på client: "+txt);
-    			output.write("CHAT,1,"+ clientId +"," +txt);
+    			
+    			output.write("CHAT,SAY,1," + clientId +"," +txt);
 				output.newLine();
 				output.flush();
 
@@ -542,7 +555,7 @@ public class LudoController {
     	// TODO, hvilken tab id kommer dette fra 
 		try {								// Client sier jeg vil spille 
 			System.out.println("1. Client Trykket på knapp rand game, skal sende nå");
-			output.write("GAME,0,"+ clientId +",Random Game trykket på");
+			output.write("GAME,CREATE,"+ clientId);
 			output.newLine();
 			output.flush();
 
@@ -574,7 +587,12 @@ public class LudoController {
 
         	Tab tab = new Tab("Game" + gameId);
     		tab.setContent(gameBoard);
-        	tabbedPane.getTabs().add(tab);
+    		
+    		Platform.runLater(() ->{
+    			tabbedPane.getTabs().add(tab);
+    			tabbedPane.getSelectionModel().select(tab);
+    		});
+    		
         	gameBoards.add(gameController);
     	} catch (IOException e1) {
 			// TODO Auto-generated catch block
@@ -607,7 +625,12 @@ public class LudoController {
 			chatController.setConnection(socket);  // TODO sjekk Bjønn ok?? 
 	       	Tab tab = new Tab("Chat" + chatId);
 	   		tab.setContent(chatWindow);
-	       	tabbedPane.getTabs().add(tab);
+	   		
+	   		Platform.runLater(() -> {
+	   			tabbedPane.getTabs().add(tab);
+    			tabbedPane.getSelectionModel().select(tab);
+	   		});
+	   		
 	       	chatWindows.add(chatController);
 	       	
 	   	} catch (IOException e1) {

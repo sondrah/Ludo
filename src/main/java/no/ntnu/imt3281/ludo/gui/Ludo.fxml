@@ -23,7 +23,7 @@
               <menus>
                 <Menu mnemonicParsing="false" text="%ludo.file">
                   <items>
-                        <MenuItem mnemonicParsing="false" onAction="#connect" text="Connect" />
+                    <MenuItem mnemonicParsing="false" text="Connect" />
                     <MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
                   </items>
                 </Menu>

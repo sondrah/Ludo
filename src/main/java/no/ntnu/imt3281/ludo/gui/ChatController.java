@@ -9,6 +9,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
 
+/**
+ * This class controls private chats
+ *
+ */
 public class ChatController {
 	@FXML private TextField toSay;
 	
@@ -18,11 +22,6 @@ public class ChatController {
 	private int chatId;
 	private int clientId;
 	
-	public ChatController() {
-		
-		
-	}
-	
 	  /**
      * Gives game-chat an Id
      * @param chatId Id of game-chat
@@ -31,6 +30,12 @@ public class ChatController {
     	this.chatId = chatId;
     	this.clientId = clientId;
     }
+    
+    
+    /**
+     * creates a socket connection to the server for communication
+     * @param socket the assigned socket
+     */
     public void setConnection(Socket socket) {
     	try {
 			this.chatSocket = socket;
@@ -44,6 +49,10 @@ public class ChatController {
     	}
     }
 	
+	/**
+	 * takes text from the textField and transfers it through to the server
+	 * @param e button click caused by the say button
+	 */
 	@FXML
 	public void sendText(ActionEvent e) {
 		// TODO: Ratt akkurat som ælle andre chats tæinkje e? Socket connection?
