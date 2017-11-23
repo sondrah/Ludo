@@ -5,16 +5,22 @@ import no.ntnu.imt3281.ludo.server.GameInfo;
 import java.awt.Event;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.concurrent.Executors;
 
 import javax.naming.CommunicationException;
 
 import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -63,6 +69,11 @@ public class GameBoardController extends Ludo {
     /** Shows the image of the actual board */
     @FXML private ImageView board;
     
+    private BufferedReader input;
+    private BufferedWriter output;
+    private Socket socket;
+    private int clientId;
+    
     // change this plz?
 	private TilePositions corners = new TilePositions();
 	
@@ -86,6 +97,31 @@ public class GameBoardController extends Ludo {
 	//private static int SQUARE = 48;
 	private Socket connection;
 	
+	
+    public void setUserId(int id) {
+    	this.clientId = id;
+    }
+    
+    private void setRoot(Stage stageroot) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setConnection(Socket socket) {
+    	try {
+			this.socket = socket;
+			input = new BufferedReader(new InputStreamReader(
+			        socket.getInputStream()));
+			output = new BufferedWriter(new OutputStreamWriter(
+			        socket.getOutputStream()));
+			
+    	} catch(IOException ioe) {
+    		System.err.println("fikk ikke connection, i gameBoardController");
+    		ioe.printStackTrace();
+    		
+    	}
+    }
+    
 	/**
 	 * Start the game gui for this game
 	 */
@@ -831,5 +867,20 @@ public class GameBoardController extends Ludo {
 		}
 	} // TilePositions end
 	
+    @FXML
+    public void sendTextButton(ActionEvent e) {
+    	String txt = textToSay.getText();
+    	if(!txt.equals("") && txt !=null) {
+    		try {								
+    			output.write("CHAT,1,"+ clientId +"," +txt);
+				output.newLine();
+				output.flush();
+
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+    	}
+    }
 
 } // GameBoardController end

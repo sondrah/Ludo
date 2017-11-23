@@ -80,6 +80,7 @@ public class LudoController {
 
     /** Maps chatId to tab */
     HashMap<Integer, Integer> map = new HashMap<>();
+    
     private Stage root;
     private int gameId = 0;
     private int clientId;
