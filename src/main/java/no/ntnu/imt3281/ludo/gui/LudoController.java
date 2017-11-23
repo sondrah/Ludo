@@ -495,12 +495,17 @@ public class LudoController {
 	}
     
     /**
-     * Displays a nice popup with an important question
+     * Displays a nice popup window with a depressing message
      * @param e button click caused by the about menu item
      */
     @FXML
     public void about(ActionEvent e) {
-    	JOptionPane.showConfirmDialog(null, I18N.tr("ludo.funnymessage"));
+    	Alert alert = new Alert(AlertType.INFORMATION);
+    	alert.setTitle(I18N.tr("ludo.help.Title"));
+    	alert.setHeaderText(I18N.tr("ludo.help.Header"));
+    	alert.setContentText(I18N.tr("ludo.help.Content"));
+
+    	alert.showAndWait();
     }
     
     /**
