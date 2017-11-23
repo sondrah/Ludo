@@ -36,7 +36,7 @@
                   <Menu mnemonicParsing="false" text="%ludo.chat">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#joinChat" text="Join room" />
-                        <MenuItem mnemonicParsing="false" onAction="#listRooms" text="Create room" />
+                        <MenuItem mnemonicParsing="false" text="Create room" />
                     </items>
                   </Menu>
                 <Menu mnemonicParsing="false" text="%ludo.help">
