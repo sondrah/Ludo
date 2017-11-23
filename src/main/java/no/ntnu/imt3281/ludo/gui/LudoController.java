@@ -356,26 +356,15 @@ public class LudoController {
     	Optional<String> result = dialog.showAndWait();
     	if (result.isPresent()){
     	    System.out.println("Chat name: " + result.get());
+    	    try {
+	    	    String txt = "CHAT,CREATE," + result.get() + ","+clientId;
+	    		output.write(txt); 
+	    		output.newLine();
+	    		output.flush();
+    	    } catch(IOException ioe) {
+    	    	ioe.printStackTrace();
+    	    }
     	}
-    	
-    	/*System.err.println("inne i createChat");
-    	
-    	Stage primaryStage = new Stage();
-    	start(primaryStage);
-    	System.err.println("cool?");
-		
-    	
-    	/*try {							
-			System.out.println("1. Client: createChat på client: ");
-			output.write("CHAT,CREATE,"+ clientId +",99 NEW CHAT" );
-			output.newLine();
-			output.flush();
-
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}*/
-    	
     }
     
     @FXML
