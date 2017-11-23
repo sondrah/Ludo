@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="501.0" prefWidth="419.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TextArea prefHeight="472.0" prefWidth="419.0" />
+      <HBox prefHeight="43.0" prefWidth="419.0">
+         <children>
+            <TextField prefHeight="38.0" prefWidth="339.0" />
+            <Button mnemonicParsing="false" prefHeight="37.0" prefWidth="80.0" text="%ludogameboard.saybutton" />
+         </children>
+      </HBox>
+   </children>
+</VBox>

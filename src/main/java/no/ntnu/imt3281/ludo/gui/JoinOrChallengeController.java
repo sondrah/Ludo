@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -27,7 +28,7 @@ public class JoinOrChallengeController {
 	
 	@FXML
 	public void cancelWindow(ActionEvent e) {
-		((Node)(e.getSource())).getScene().getWindow().hide();
+		
 	}
 	
 	public void confirmText(ActionEvent e) {
