@@ -184,19 +184,17 @@ public class LudoController {
 								inviteName = returnMessage[4];
 							}
 							
-			                if (type.equals("CHAT")) { 				// Message er av typen CHAT
+			                if (type.equals("CHAT")) { 				// Message er av typen CHAT:
 			                	if (message.startsWith("0") && actionId !=0) {		// Nyopprettet chat, med suksess
 			                		addNewTabToChatMapping(actionId); 				// Legg den til i mapping 
 			                	}
-			                	else if(inviteName != null) {
-			                		// TODO Sondre - HÆ? hva skal gjøres her// joins client with name 'inviteName' to chat 'actionId'							
-			                	
+			                	else if(inviteName != null) {						// informs that client with name 'inviteName' joined chat = 'actionId'
+			                		routeChatMessage("Joined chat: "+inviteName, actionId);			
+			                	} else {
+			                		routeChatMessage(message, actionId);			// message in chat-room
 			                	}
-			                	routeChatMessage(message, actionId);	// message in chat-room
-			                	
-
 			                } 
-			                else if (type.equals("GAME")) {
+			                else if (type.equals("GAME")) {			// Message er av typen GAME:
 			                	if (message.startsWith("0") && actionId ==0) {		// Nyopprettet forespørsel game, UTEN suksess
 			                		// Innkommende melding 
 			                		// "GAME,0,"+curClient.getId()+",Ikke nok spillere enda("+waitingClients.size()+") , venter på flere spillere"
@@ -488,7 +486,7 @@ public class LudoController {
      * @param chatName
      * @param clientId
      */
-    public void newPrivateChat(String chatName, String clientId) {
+    public void newPrivateChat(String chatName) {
 		try {								
 			output.write("CHAT,0,"+ clientId +"," +chatName);
 			output.newLine();
