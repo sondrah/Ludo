@@ -320,7 +320,7 @@ public class ServerController extends JFrame {
 					    		                        // TODO guro, newGame er den gyllene port til ludo.
 					    		                        // Melding som skal plukkes opp og fysisk starte board i gui
 					    		                        
-					    		                        // CHAT,gameID,mottaker,TRUE,message
+					    		                        // GAME,gameID,mottaker,TRUE,message
 					    		                        messages.put("GAME,"+currentGameID+","+notifyClient+",99 HAR STARTET"+message);
 					    		                        
 					    		                        // TODO SONDRE, her er nytt chatt til game vindu - må testes 
