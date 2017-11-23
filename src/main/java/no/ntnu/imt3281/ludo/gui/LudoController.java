@@ -168,6 +168,8 @@ public class LudoController {
 			                
 		                	String response = input.readLine();
 		                	
+		                	System.out.println("3. client prosess: " + response);
+		                	
 		                	String[] arr = response.split(",");
 		                	int chatid = 0;
 		                	
@@ -510,7 +512,8 @@ public class LudoController {
     		try {								
     			
     			System.out.println("1. Client: sendText fra/ på client: "+txt);
-    			output.write("CHAT,1,"+ clientId +"," +txt);
+    			
+    			output.write("CHAT,SAY,1," + clientId +"," +txt);
 				output.newLine();
 				output.flush();
 
@@ -542,7 +545,7 @@ public class LudoController {
     	// TODO, hvilken tab id kommer dette fra 
 		try {								// Client sier jeg vil spille 
 			System.out.println("1. Client Trykket på knapp rand game, skal sende nå");
-			output.write("GAME,0,"+ clientId +",Random Game trykket på");
+			output.write("GAME,CREATE,"+ clientId);
 			output.newLine();
 			output.flush();
 
@@ -574,7 +577,12 @@ public class LudoController {
 
         	Tab tab = new Tab("Game" + gameId);
     		tab.setContent(gameBoard);
-        	tabbedPane.getTabs().add(tab);
+    		
+    		Platform.runLater(() ->{
+    			tabbedPane.getTabs().add(tab);
+    			tabbedPane.getSelectionModel().select(tab);
+    		});
+    		
         	gameBoards.add(gameController);
     	} catch (IOException e1) {
 			// TODO Auto-generated catch block

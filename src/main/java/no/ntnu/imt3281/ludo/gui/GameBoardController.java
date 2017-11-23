@@ -172,19 +172,6 @@ public class GameBoardController extends Ludo {
 		player3Name.setText(getPlayerName(YELLOW));
 		player4Name.setText(getPlayerName(GREEN));
 		
-		// ROTAT som fy
-		// Finne ut hvilken spiller er hvilken farge
-		/*
-		if(Ludo.properties.getProperties().getProoerty("username").equals(getPlayerName(BLUE)))
-			CurrentPlayer = BLUE;
-		if(Ludo.properties.getProperties().getProoerty("username").equals(getPlayerName(YELLOW)))
-			CurrentPlayer = BLUE;
-		if(Ludo.properties.getProperties().getProoerty("username").equals(getPlayerName(GREEN)))
-			CurrentPlayer = BLUE;
-		if(CurrentPlayer == activePlayer())			// Sjekker med Ludo Logic
-			throwTheDice.setDisable(false);
-		*/
-		
 		
 		// adds a new listner that displays the current dicethrow
 		// to the users
@@ -202,8 +189,6 @@ public class GameBoardController extends Ludo {
 		
 		// TODO komprimere valgt bilde fra 300x300 til 48x48
 		// muligens gjort automatisk / sondre fiksa det
-		
-		
 		
 		// Gets the images of the different playerpieces and
 		// stores them respectably.
@@ -262,18 +247,19 @@ public class GameBoardController extends Ludo {
 				
 				// adds the rectangles to the boardPanes nodelist over
 				// updateable components 
+				
 				boardPane.getChildren().add(playerPieces[pl][pi]);
 			}
 		}
 		
 		// Set up tiles used for showing selected piece and target square
-		moveFrom.setFill(new ImagePattern(new Image(getClass().getResourceAsStream("/images/selected.png"))));
+		//moveFrom.setFill(new ImagePattern(new Image(getClass().getResourceAsStream("/images/selected.png"))));
 		moveFrom.setX(-100);
 		moveFrom.setY(-100);
 		boardPane.getChildren().add(moveFrom);
 		
 		
-		moveTo.setFill(new ImagePattern(new Image(getClass().getResourceAsStream("/images/selected.png"))));
+		//moveTo.setFill(new ImagePattern(new Image(getClass().getResourceAsStream("/images/selected.png"))));
 		moveTo.setX(-100);
 		moveTo.setY(-100);
 		boardPane.getChildren().add(moveTo);

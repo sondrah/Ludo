@@ -321,8 +321,11 @@ public class Database {
 
 			// res starts BEFORE the actual first row
 			// need to move it along
-			res.next();
-			chatid = res.getInt("id");
+		
+			
+			if(res.next()){
+				chatid = res.getInt("id");
+			}
 		}
 		catch(SQLException sqle) {
 			sqle.printStackTrace();
