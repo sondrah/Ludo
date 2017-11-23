@@ -45,7 +45,7 @@ public class ChatController {
     }
 	
 	@FXML
-	public void talkToYourFriends(ActionEvent e) {
+	public void sendText(ActionEvent e) {
 		// TODO: Ratt akkurat som ælle andre chats tæinkje e? Socket connection?
     	String txt = toSay.getText();
     	if(!txt.equals("") && txt !=null) { 
