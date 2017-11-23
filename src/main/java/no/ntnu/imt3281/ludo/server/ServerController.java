@@ -19,6 +19,11 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+import java.util.logging.FileHandler;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -36,6 +41,8 @@ import no.ntnu.imt3281.ludo.logic.Ludo;
  */
 public class ServerController extends JFrame {
 
+	//private static final Logger LOGGER = Logger.getLogger(ServerController.class.getName());
+	//Handler fileHandler  = null;
 	/** The 'url' to our database (local) */
 	private String url = "jdbc:derby:BadgerDB;";
 	/** Unique ID for each game, zeroed for each server start */
@@ -103,6 +110,9 @@ public class ServerController extends JFrame {
             startLoginMonitor();		// Handle login requests in a separate thread
             startMessageSender1();		// Send same message to all clients, handled in a separate thread
             startMessageListener1();		// Check clients for new messages
+            
+           // fileHandler = new FileHandler("~/src/no/ntnu/imt3281/ludo/grevlingLogg.log");
+            //fileHandler.setLevel(Level.ALL);
             
             executorService.shutdown();
         } catch (IOException ioe) {
@@ -357,6 +367,9 @@ public class ServerController extends JFrame {
 				sb.append(" > " + str[4]);
 				
 				System.out.println("2.1.1: " + sb.toString());
+				
+				//logging:
+				//LOGGER.finer(sb.toString());
 				
 				// since 'SAY's don't need special treament
 				// send it straight to 
