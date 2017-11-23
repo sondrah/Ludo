@@ -8,10 +8,13 @@ import java.util.Objects;
  */
 public class PlayerEvent extends java.util.EventObject {
 
-	
+	/** Indicates if a player is playing */
 	public static final int PLAYING = 0;
+	/** Indicates if a player is waiting */
 	public static final int WAITING = 1;
+	/** Indicates that a player has left*/
 	public static final int LEFTGAME = 2;
+	/** Indicates that a player has won */
 	public static final int WON = 3;
 	private int activePlayer;
 	private int state;
@@ -107,9 +110,5 @@ public class PlayerEvent extends java.util.EventObject {
 		return playerstring.toString();
 	}
 
-	public int getPlayer() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 	
 }

@@ -126,7 +126,6 @@ public class GameBoardController extends Ludo {
     
     private void setRoot(Stage stageroot) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void setConnection(Socket socket) {
@@ -397,9 +396,13 @@ public class GameBoardController extends Ludo {
 	 */
 	@FXML
 	void throwDice(ActionEvent e) {
+
 		System.out.println("Du har trykket på dice din æss");
 		//try {
 			//ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
+
+		// try {
+			// ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
 			// send a DiceEvent to proc the server to throw a dice
 			// oos.writeObject(new GameEvent(gameID, new DiceEvent(this, activePlayer, 0)));
 			
@@ -539,6 +542,7 @@ public class GameBoardController extends Ludo {
 		if(e.getEventType() == MouseEvent.MOUSE_CLICKED) {
 			int moveFromTile = corners.findTile(e.getSceneX(), e.getSceneY());
 			int i = 0;
+			
 			
 			// gets which piece is selected
 			while(playerPieces[activePlayer][i].equals(moveFrom) && i++ < PIECES);

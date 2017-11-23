@@ -121,18 +121,36 @@ public class ServerController extends JFrame {
                     		msg = newClient.read();
                     	}
                     	
+                    	// REGISTER,username,password
+                		// LOGIN,username,token
+                		
+                		// REGISTER,TRUE,userid
+                		// REGISTER,FALSE
+                		// LOGIN,TRUE,id,token
+                		// LOGIN,FALSE
+                    	
                     	
                     	String[] parts = msg.split(",");   
-                    	String type = parts[0];
-	                    String operation = parts[1];
-	                    String userName = parts[2];
-	                    String pwd = parts[3];
-	                    System.out.println("0. Inne i login listener for user: "+ userName);
+                    	String action = parts[0];
+	                    String username = parts[1];
+	                    String password = parts[2];
+	                    System.out.println("0. Inne i login listener for user: "+ username);
+	                    
+	                    if(action.equals("REGISTER")) {
+	                    	String message = "";
+	                    	if(db.addUser(username, password)) {
+	                    		message = "REGISTER,TRUE," + db.getUserID(username);
+	                    	} else {
+	                    		message = "REGISTER,FALSE";
+	                    	}
+	                    	
+	                    	newClient.sendText(msg);
+	                    }
                     	
 	                	if(type.equals("LOGIN")) {
 	                		if(operation.equals("0")) {		// Registrer new user 
-	                			if(db.addUser(userName, pwd)) {				// sends report back to client: 
-	                				int newId = db.getUserID(userName);		// henter ID i db
+	                			if(db.addUser(username, password)) {				// sends report back to client: 
+	                				int newId = db.getUserID(username);		// henter ID i db
 	                														// Går ikke pga ligger ikke i clients liste messages.put(
 	                				try {
 	                					newClient.sendText("LOGIN,0,"+newId+",Du er registret og kan nå logge inn");	// !! I18N
@@ -148,13 +166,13 @@ public class ServerController extends JFrame {
 	                			}
 	                		}
 		                	else if(operation.equals("1")) {		// Log in
-		                		int idClient = db.checkLogin(userName, pwd);
+		                		int idClient = db.checkLogin(username, password);
 		                		if(idClient != -1) {
 		                			newClient.setId(idClient);
 		                			clients.add(newClient);
 		                			chats.get(0).addParticipantToChat(newClient);	// Legger Klient til i masterChat 
 		                			// newClient.sendText("LOGIN,1,TRUE");		// sends report back to client:s
-		                			messages.put("LOGIN,1,"+idClient+","+userName+ " (Du) er logget inn");
+		                			messages.put("LOGIN,1,"+idClient+","+username+ " (Du) er logget inn");
 		                			// Token 
 		                			/*
 		                			 * Brukernavn 
@@ -164,12 +182,14 @@ public class ServerController extends JFrame {
 		                			 * tid 
 		                			 * session 
 		                			 */
+
+		                			messages.put("CHAT,JOIN,");
 			                		Iterator<Client> i = clients.iterator();
 				                    while (i.hasNext()) {					// Send message to all clients that a new person has joined
 				                        Client c1 = i.next(); 
 				                        int notifyClient = c1.getId();
 				                        try {
-				                        	messages.put("CHAT,1,"+notifyClient+","+userName+" har blitt med i MasterChat");	
+				                        	messages.put("CHAT,1,"+notifyClient+","+username+" har blitt med i MasterChat");	
 				                        } catch (InterruptedException e) {
 				                            e.printStackTrace();
 				                        }
@@ -193,7 +213,71 @@ public class ServerController extends JFrame {
             }
         });
     }
+		
 	
+	private void startMessageListener1() {
+		executorService.execute(() ->{
+			while(!shutdown) {
+				synchronized(clients) {
+					clients.parallelStream().forEach(client -> {
+						
+						String msg = "";
+						try {
+							msg = client.read();
+						}
+						catch (IOException ioe) {
+							// TODO: handle exception
+						}
+						
+						
+						String[] str = msg.split(",", 4);
+						
+						switch(str[0]) {
+						case "CHAT":
+							handleChatMessage(str);
+							break;
+							
+						case "GAME":
+							handleGameMessage(str);
+							break;
+							
+						case "REQUEST":
+							handleListRequest(str);
+							break;
+						}
+					});
+				}
+			}
+		});
+	}
+	
+	
+	private void startMessageSender1() {
+		executorService.execute(() ->{
+			while(!shutdown) {
+				String str = "";
+				try {
+					str = messages.take();
+				}
+				catch(InterruptedException ie) {
+					//TODO
+				}
+				
+				if(str.startsWith("CHAT")) {
+					sendChatMessage(str);
+				}
+				else if (str.startsWith("GAME")) {
+					sendGameMessage(str);
+				}
+				else if (str.startsWith("REQUEST")) {
+					sendListRequestAnswearMessages(str);
+				}
+				
+			}
+		});
+	}
+	
+
 	private void startMessageListener() {	
 		// Listener = gå igjennom alle clientene for å finne ut OM det er en meldingen som er sendt
         executorService.execute(() -> {			// Thread 
@@ -272,7 +356,7 @@ public class ServerController extends JFrame {
 			                        			int currentGameID  = gameID++; 			// Tildeler game id 
 				    	                		Chat newChat = newChat("ChatForGame"+currentGameID);
 				    	                		int newChatId = newChat.getId();
-				    	                		Game newGame = new Game(currentGameID, newChatId);		// Oppretter ny chat i server
+				    	                		Game newGame = new Game(currentGameID);		// Oppretter ny chat i server
 				    	                		games.add(newGame);						// Legger denne til i serverens chat liste 
 				    	                		System.out.println("Game id:" +currentGameID+ "New Chat id "+ newChatId);
 				    	                		System.out.println("ant Games: " +games.size()+ "  ant Chats: "+ chats.size());
@@ -481,11 +565,12 @@ private void startMessageSender() {
 		// CHAT,JOIN,chatname,userid			-- Join a new chat
 		// CHAT,CREATE,chatname,userid			-- Create a new chat
 		
-		
-		String action = str[1];
+		String chatname = null;
+		Client client = null;
 		
 		try {
-			if(action.equals("SAY")) {
+			switch(str[1]) {
+			case "SAY":
 				StringBuilder sb = new StringBuilder();
 				for(String s : str) {
 					sb.append(s + ",");
@@ -494,6 +579,32 @@ private void startMessageSender() {
 				// since 'SAY's don't need special treament
 				// send it straight to 
 				messages.put(sb.toString());
+				break;
+				
+			case "JOIN":
+				chatname = str[2];
+				int chatid = db.getChatID(chatname);
+				client = getClient(Integer.parseInt(str[3]));
+				
+				if(chatid != -1) {
+					getChat(chatid).addParticipantToChat(client);
+				} else {
+					// creates a new chat and adds the user
+					Chat chat = newChat(chatname);
+					chat.addParticipantToChat(client);
+					chatid = chat.getId();
+				}
+				
+				messages.put("CHAT,JOIN," + chatid + "," + db.getUserName(client.getId()) + " joined the chat!");
+				break;
+				
+			case "CREATE":
+				chatname = str[2];
+				client = getClient(Integer.parseInt(str[3]));
+				Chat chat = newChat(chatname);
+				chat.addParticipantToChat(client);
+				
+				messages.put("CHAT,CREATE," + chat.getId() + "," + chatname + " created!");
 			}
 		}
 		catch (InterruptedException ie) {
@@ -504,16 +615,21 @@ private void startMessageSender() {
 	
 	private void sendChatMessage(String str) {
 		
-		String[] arr = str.split(",");
-		
 		// CHAT,SAY,chatid,userid,message
+		// CHAT,JOIN,chatid,'username' joined the chat!
+		// CHAT,CREATE,chatid,'chatname' created!
 		
+		String[] arr = str.split(",", 4);
 		
-		
-		switch(arr[1]) {
-		case "SAY":
-			
-		}
+		getChat(Integer.parseInt(arr[2])).getParticipants()
+		.parallelStream().forEach(client -> {
+			try {
+				client.sendText(str);
+			}
+			catch(IOException ioe) {
+				// TODO: log
+			}
+		});
 	}
 	
 	
@@ -570,18 +686,45 @@ private void startMessageSender() {
 			break;
 			
 		case "CREATE":
-			// sjekk om nok spilere
-			// hente 2 - 4 spillere
-			// starte et spill med disse
-			// games.add(new Game(gameid, players))
-			// chatid = db.newChat(chatname)
-			// chat = new Chat(cahtid)
-			// chats.add(chat)
 			
-			// if nok spillere
-			// messages.put(GAME,CREATE,TRUE,gameid,players)
-			// else
-			// messages.put(GAME,CREATE,WAIT)
+			String message = null;
+			Client client = getClient(Integer.parseInt(str[3]));
+			ArrayList<String> players = new ArrayList<>();
+			
+			waitingClients.add(client);
+			
+			if(waitingClients.size() <= 1) {
+				game = new Game(gameID++);
+				Chat chat = newChat("Game #" + gameID + " chat");
+				
+				int i = 0;
+				while(waitingClients.size() > 1 && i < 4) {
+					Client c = waitingClients.remove(0);
+					String name = db.getUserName(c.getId());
+					chat.addParticipantToChat(c);
+					
+					players.add(name);
+					game.addPlayer(name);
+					
+					waitingClients.trimToSize();
+					i++;
+				}
+				
+				games.add(game);
+				chats.add(chat);
+				
+				message = "GAME,CREATE,TRUE," + game.getId() + "," + players.toString();
+			}
+			else {
+				message = "GAME,CREATE,FALSE,WAIT";
+			}
+			
+			try {
+				messages.put(message);
+			}
+			catch (InterruptedException ie) {
+				// TODO
+			}
 		}
 	}
 	
@@ -596,9 +739,8 @@ private void startMessageSender() {
 		String[] arr = str.split(",");
 		String action = arr[1];
 		
-		switch(action) {
-		case "THROW":
-			getGame(Integer.parseInt(arr[2])).getParticipants()
+		if(action.equals("CREATE")) {
+			getGame(Integer.parseInt(arr[3])).getParticipants()
 			.parallelStream().forEach(client -> {
 				try {
 					client.sendText(str);
@@ -606,21 +748,9 @@ private void startMessageSender() {
 					// TODO log
 				}
 			});
-			break;
-			
-		case "MOVE":
-			getGame(Integer.parseInt(arr[2]))
-			.getParticipants().parallelStream().forEach(client -> {
-				try {
-					client.sendText(str);
-				} catch (IOException e) {
-					// TODO log
-				}
-			});
-			break;
-			
-		case "CREATE":
-			getGame(Integer.parseInt(arr[3])).getParticipants()
+		}
+		else {
+			getGame(Integer.parseInt(arr[2])).getParticipants()
 			.parallelStream().forEach(client -> {
 				try {
 					client.sendText(str);
@@ -631,8 +761,65 @@ private void startMessageSender() {
 		}
 	}
 	
-	
 
+	private void handleListRequest(String[] str) {
+		// This should recieve all special requests
+		// and should all have str[0] = 'REQUEST'
+		
+		// INN:
+		// REQUEST,LISTPLAYERS,userid
+		// REQUEST,LISTCHATS,userid
+		
+		// OUT:
+		// REQUEST,LISTPLAYERS,userid,players
+		// REQUEST,LISTCHATS,userid,chats
+		
+		try {
+			switch(str[1]) {
+			case "LISTPLAYERS":
+				StringBuilder sb = new StringBuilder();
+				
+				clients.parallelStream().forEach(client -> {
+					sb.append(db.getUserName(client.getId()) + ",");
+				});
+				
+				messages.put("REQUEST,LISTPLAYERS," + Integer.parseInt(str[2]) + "," + sb.toString());
+				break;
+				
+			case "LISTCHATS":
+				StringBuilder sb1 = new StringBuilder();
+				
+				clients.parallelStream().forEach(client -> {
+					sb1.append(db.getUserName(client.getId()));
+				});
+				
+				messages.put("REQUEST,LISTCHATS," + Integer.parseInt(str[2]) + "," + sb1.toString());
+				break;
+			}
+		}
+		catch (InterruptedException ie) {
+			// TODO log
+		}
+	}
+	
+	
+	private void sendListRequestAnswearMessages(String str) {
+		
+		// REQUEST,LISTPLAYERS,userid,players
+		// REQUEST,LISTCHATS,userid,chats
+		
+		String[] arr = str.split(",", 4);
+		
+		try {
+			getClient(Integer.parseInt(arr[2])).sendText(str);
+		}
+		catch (IOException ioe) {
+			// TODO log
+		}
+	}
+
+		
+	
 	/**
      * --Borrowed code from okolloen--
      * A new object of this class is created for all new clients.
@@ -798,17 +985,15 @@ private void startMessageSender() {
      */
     class Game extends Ludo{
     	private int ID;
-    	private int relatedChatId;
     	private Vector<Client> participantsGame;
     	
     	/**
     	 * Construct a game of Ludo supplied with a game-ID
     	 * @param ID 
     	 */
-    	public Game(int gameId, int chatID ) {
+    	public Game(int gameId) {
     		super();
-    		this.ID = gameId; 	
-    		this.relatedChatId = chatID;
+    		this.ID = gameId;
     		participantsGame = new Vector<>();
     	}
     	
@@ -829,9 +1014,10 @@ private void startMessageSender() {
         	return ID; 
         }     
     	
+        /*
     	public int getThisGamerelatedChatId() {
     		return relatedChatId; 	
-    	}
+    	}*/
     	
     	public void addParticipantToGame(Client c) {
     		participantsGame.add(c);
