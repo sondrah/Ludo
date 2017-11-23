@@ -13,7 +13,7 @@
       <HBox prefHeight="43.0" prefWidth="419.0">
          <children>
             <TextField fx:id="toSay" prefHeight="38.0" prefWidth="339.0" />
-            <Button mnemonicParsing="false" onAction="#talkToYourFriends" prefHeight="37.0" prefWidth="80.0" text="%ludogameboard.saybutton" />
+            <Button mnemonicParsing="false" onAction="#sendText" prefHeight="37.0" prefWidth="80.0" text="%ludogameboard.saybutton" />
          </children>
       </HBox>
    </children>

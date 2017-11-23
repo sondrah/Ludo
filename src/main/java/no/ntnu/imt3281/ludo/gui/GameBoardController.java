@@ -496,7 +496,7 @@ public class GameBoardController extends Ludo {
 	 * @param b
 	 */
 	private void changePlayerState(int player, boolean b) {		// Ka e tanken her?
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub						// Nei, ka E tanken her, Bjønn?
 		
 	}
 

@@ -443,14 +443,14 @@ public class LudoController {
      * @param e button click caused by the say button in ludo
      */
     @FXML		// OBS brukes bare for masterchat i Ludo Home
-    public void saySomething(ActionEvent e) {
+    public void sendText(ActionEvent e) {
     	
     	String txt = toSay.getText();
     	if(!txt.equals("") && txt !=null) {
     		try {								
     			
     			
-    			System.out.println("1. Client: SaySomething fra/ på client: "+txt);
+    			System.out.println("1. Client: sendText fra/ på client: "+txt);
     			output.write("CHAT,1,"+ clientId +"," +txt);
 				output.newLine();
 				output.flush();
@@ -467,9 +467,9 @@ public class LudoController {
      * @param e enter click caused by the say button in ludo
      */
     @FXML
-    public void saySomethingKey(KeyEvent e) {
+    public void sendTextKey(KeyEvent e) {
     	if(e.getCode() == KeyCode.ENTER)
-    		saySomething(new ActionEvent());
+    		sendText(new ActionEvent());
     }
     
     /**
