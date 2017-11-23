@@ -12,6 +12,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.concurrent.Executors;
 
 import javax.naming.CommunicationException;
@@ -25,6 +26,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
@@ -74,7 +76,6 @@ public class GameBoardController extends Ludo {
     private Socket socket;
     private int clientId;
     
-    // change this plz?
 	private TilePositions corners = new TilePositions();
 	
 	/** Holds the piece images for each players */
@@ -93,11 +94,13 @@ public class GameBoardController extends Ludo {
 	private boolean shouldMove = false; 
 	private int movePlayerPieceFrom = -1;
 	private int diceValue = -1;
-	private int gameID;
+	//private int gameID;
 	//private static int SQUARE = 48;
 	private Socket connection;
 	
-	
+	public int gameId;
+	public int chatId;
+    
     public void setUserId(int id) {
     	this.clientId = id;
     }
@@ -125,7 +128,7 @@ public class GameBoardController extends Ludo {
 	 * Start the game gui for this game
 	 */
 	public void StartGameBoard(GameInfo gameInfo){
-		this.gameID = gameInfo.getGameID();
+		// this.gameID = gameInfo.getGameID();
 		
 		// find the connection somhow
 		// connection
@@ -867,21 +870,48 @@ public class GameBoardController extends Ludo {
 		}
 	} // TilePositions end
 	
+	/**
+	 * Sends message from game-chat to server
+	 * @param e client pressed to send a chat message in game-chat
+	 */
     @FXML
-    public void sendText(ActionEvent e) {
-    	System.err.println("tull");
+    public void sendText(ActionEvent e) {		// TODO socket connection?
+    	
     	String txt = textToSay.getText();
-    	if(!txt.equals("") && txt !=null) {
-    		try {								
-    			output.write("CHAT,1,"+ clientId +"," +txt);
+    	if(!txt.equals("") && txt !=null) { 
+    		try {			
+    			output.write("CHAT,"+chatId+","+clientId +"," +txt);
 				output.newLine();
 				output.flush();
-
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
     	}
     }
+    
+    /**
+     * Gives this game an Id
+     * @param gameId Id of game
+     */
+    public void setGameId(int gameId) {
+    	this.gameId = gameId;
+    }
+    
+    /**
+     * Gives game-chat an Id
+     * @param chatId Id of game-chat
+     */
+    public void setChatId(int chatId) {
+    	this.chatId = chatId;
+    }
+    
+    /**
+     * Gives this game the clients Id 
+     * @param clientId Id of client
+     */
+    public void setClientId(int clientId) {
+    	this.clientId = clientId;
+    }
+    
 
 } // GameBoardController end
