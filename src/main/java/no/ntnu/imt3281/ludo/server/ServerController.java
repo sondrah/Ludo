@@ -100,8 +100,8 @@ public class ServerController extends JFrame {
             serverSocket = new ServerSocket(12345);
             executorService = Executors.newCachedThreadPool();
             startLoginMonitor();		// Handle login requests in a separate thread
-            startMessageSender();		// Send same message to all clients, handled in a separate thread
-            startMessageListener();		// Check clients for new messages
+            startMessageSender1();		// Send same message to all clients, handled in a separate thread
+            startMessageListener1();		// Check clients for new messages
             
             executorService.shutdown();
         } catch (IOException ioe) {
