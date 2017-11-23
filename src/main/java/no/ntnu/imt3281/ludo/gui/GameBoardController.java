@@ -369,7 +369,6 @@ public class GameBoardController extends Ludo {
 	 */
 	@FXML
 	void throwDice(ActionEvent e) {
-		System.out.println("Du har trykket på dice din æss");
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
 			// send a DiceEvent to proc the server to throw a dice

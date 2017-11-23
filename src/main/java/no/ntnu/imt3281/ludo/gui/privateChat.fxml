@@ -7,13 +7,13 @@
 <?import javafx.scene.layout.VBox?>
 
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="501.0" prefWidth="419.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="501.0" prefWidth="419.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.ntnu.imt3281.ludo.gui.ChatController">
    <children>
       <TextArea prefHeight="472.0" prefWidth="419.0" />
       <HBox prefHeight="43.0" prefWidth="419.0">
          <children>
-            <TextField prefHeight="38.0" prefWidth="339.0" />
-            <Button mnemonicParsing="false" prefHeight="37.0" prefWidth="80.0" text="%ludogameboard.saybutton" />
+            <TextField fx:id="toSay" prefHeight="38.0" prefWidth="339.0" />
+            <Button mnemonicParsing="false" onAction="#talkToYourFriends" prefHeight="37.0" prefWidth="80.0" text="%ludogameboard.saybutton" />
          </children>
       </HBox>
    </children>
