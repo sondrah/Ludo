@@ -22,6 +22,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -103,7 +104,6 @@ public class GameBoardController extends Ludo {
     
     private void setRoot(Stage stageroot) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void setConnection(Socket socket) {
@@ -507,6 +507,7 @@ public class GameBoardController extends Ludo {
 		if(e.getEventType() == MouseEvent.MOUSE_CLICKED) {
 			int moveFromTile = corners.findTile(e.getSceneX(), e.getSceneY());
 			int i = 0;
+			
 			
 			// gets which piece is selected
 			while(playerPieces[activePlayer][i].equals(moveFrom) && i++ < PIECES);
