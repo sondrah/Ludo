@@ -213,9 +213,7 @@ public class ServerController extends JFrame {
             }
         });
     }
-	
-<<<<<<< HEAD
-	
+		
 	
 	private void startMessageListener1() {
 		executorService.execute(() ->{
@@ -279,8 +277,7 @@ public class ServerController extends JFrame {
 		});
 	}
 	
-=======
->>>>>>> 84a9ac70cc8056de821d00227120d90ba71da1d8
+
 	private void startMessageListener() {	
 		// Listener = gå igjennom alle clientene for å finne ut OM det er en meldingen som er sendt
         executorService.execute(() -> {			// Thread 
@@ -764,8 +761,7 @@ private void startMessageSender() {
 		}
 	}
 	
-	
-<<<<<<< HEAD
+
 	private void handleListRequest(String[] str) {
 		// This should recieve all special requests
 		// and should all have str[0] = 'REQUEST'
@@ -824,9 +820,6 @@ private void startMessageSender() {
 
 		
 	
-=======
-
->>>>>>> 84a9ac70cc8056de821d00227120d90ba71da1d8
 	/**
      * --Borrowed code from okolloen--
      * A new object of this class is created for all new clients.

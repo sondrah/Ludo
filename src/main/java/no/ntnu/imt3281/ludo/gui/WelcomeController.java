@@ -175,8 +175,7 @@ public class WelcomeController {
 	
 					    	root = loader.load();
 					    	LudoController controller = loader.getController();
-					    	loader.setController(controller);
-					    
+					    					    
 				            Stage stage = new Stage();
 				            stage.setTitle("Ludo- Alea-iacta-est");
 				            stage.setScene(new Scene(root, 1050, 800));

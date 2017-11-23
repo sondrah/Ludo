@@ -219,7 +219,8 @@ public class LudoController {
 			                		alert.showAndWait();
 			                	}
 			                	else if (message.startsWith("99BEGINGAME") && actionId !=0) { // Nyopprettet forespørsel game, MED suksess
-			                		makeNewGameTab(actionId);
+			                		
+									// makeNewGameTab(actionId, gameID, players[3]); // chatId må også kalles her 
 			                	// Mappe game id til fane
 			                	}
 			                	// Innkommende ("GAME,"+currentGameID+","+notifyClient+",99 HAR STARTET"+message);
@@ -285,18 +286,20 @@ public class LudoController {
      */
     private void routeGameMessage(int gameId, String receivedClientId, String message) {
     	
+    	// gameBoards. vinne riktig gameBoaard
+    	// Så finne riktig tab
     	Integer tabId = gameToTab.get(gameId);
-    	System.out.println("6. GAME routeGame M: " +message+ " Tab id til Game: " + tabId );
+    	System.out.println("6.routeGameM: " +message+ " Tab id til Game: " + tabId );
     	if(tabId != null) {	 
-    				// Henter ut riktig Anchor Pane for riktig chatterom
+    										// Henter ut riktig Anchor Pane for riktig chatterom
 	    	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(tabId).getContent();
 	    	if (tabRoot != null) {
-	    			// Finner alle elementene i dette chattevinduet 
+	    									// Finner alle elementene i dette chattevinduet 
 	    		TextArea textA = (TextArea)tabRoot.lookup("#ChatArea");  // "#gameChatArea" eller likt??
-	    	
-	    	// Her må vi antagelig ha flere mtp chat og board
-	    	
-	    		textA.appendText(message+ "\n");		// Legg til meldingen 
+	    		if(textA != null) {    		// Her må vi antagelig ha flere mtp chat og board
+	    			textA.appendText(message+ "\n");		// Legg til meldingen 
+	    		}
+	    		else System.out.println("5. CHAT routeGameMes ERR FANT IKKE textArea!!");
 	    	}
 	    	else System.out.println("5. CHAT routeGameMes ERR FANT IKKE TAB ROOT!!");
     	}
@@ -364,7 +367,7 @@ public class LudoController {
     	// Traditional way to get the response value.
     	Optional<String> result = dialog.showAndWait();
     	if (result.isPresent()){
-    	    System.out.println("Chat name: " + result.get());
+    	    System.out.println("0,ChatChat  name: " + result.get());
     	    try {
 	    	    String txt = "CHAT,CREATE," + result.get() + ","+clientId;
 	    		output.write(txt); 
@@ -449,14 +452,13 @@ public class LudoController {
     	if(!txt.equals("") && txt !=null) {
     		try {								
     			
-    			
     			System.out.println("1. Client: sendText fra/ på client: "+txt);
     			output.write("CHAT,1,"+ clientId +"," +txt);
 				output.newLine();
 				output.flush();
 
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
+				System.out.println("1. Client say somthing ENTER kasnkje??");// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
     	}
@@ -479,7 +481,7 @@ public class LudoController {
      */
     @FXML
     public void joinRandomGame(ActionEvent e) {  
-    	Parent root;
+    	// Parent root;
     	// TODO, hvilken tab id kommer dette fra 
 		try {								// Client sier jeg vil spille 
 			System.out.println("1. Client Trykket på knapp rand game, skal sende nå");
@@ -501,14 +503,18 @@ public class LudoController {
 	 * This is how a layout is loaded and added to a tab pane.
      * @param gameId
      */
-    public void makeNewGameTab(int gameId) {
-
+    public void makeNewGameTab(int gameId, int chatId, String[] players ) {
+    	
     	FXMLLoader gameLoader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
 		gameLoader.setResources(I18N.getRsb());
-    	GameBoardController gameController = gameLoader.getController();
-
+    	
 		try {
 			AnchorPane gameBoard = gameLoader.load();
+			GameBoardController gameController = gameLoader.getController();
+	    	if (gameController != null) {
+		    	gameController.StartGameBoard(gameId, chatId, clientId, players, socket);
+		    } else System.out.println("7. Make Game tab, fant ikke game controller! gameloader: "+ gameLoader);
+
         	Tab tab = new Tab("Game" + gameId);
     		tab.setContent(gameBoard);
         	tabbedPane.getTabs().add(tab);
@@ -536,10 +542,12 @@ public class LudoController {
 
     	FXMLLoader chatLoader = new FXMLLoader(getClass().getResource("PrivateChat.fxml"));
 		chatLoader.setResources(I18N.getRsb());
-		ChatController chatController = chatLoader.getController();
-
+		
 		try {
-			AnchorPane chatWindow = chatLoader.load();
+			VBox chatWindow = chatLoader.load();
+			ChatController chatController = chatLoader.getController();
+			chatController.setChatId(chatId, clientId);
+			chatController.setConnection(socket);  // TODO sjekk Bjønn ok?? 
 	       	Tab tab = new Tab("Chat" + chatId);
 	   		tab.setContent(chatWindow);
 	       	tabbedPane.getTabs().add(tab);
