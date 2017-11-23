@@ -128,7 +128,7 @@
                                  </image>
                               </ImageView>
                               <Pane prefHeight="50.0" prefWidth="31.0" />
-                              <Button fx:id="throwTheDice" mnemonicParsing="false" prefHeight="50.0" prefWidth="172.0" text="%ludogameboard.throwDiceButton">
+                              <Button fx:id="throwTheDice" mnemonicParsing="false" onAction="#throwDice" prefHeight="50.0" prefWidth="172.0" text="%ludogameboard.throwDiceButton">
                                  <font>
                                     <Font name="System Bold" size="13.0" />
                                  </font>
@@ -142,7 +142,7 @@
                         <HBox>
                            <children>
                               <TextField fx:id="textToSay" prefHeight="27.0" prefWidth="228.0" />
-                              <Button fx:id="sendTextButton" mnemonicParsing="false" prefHeight="27.0" prefWidth="67.0" text="%ludogameboard.saybutton" />
+                              <Button fx:id="sendTextButton" mnemonicParsing="false" onAction="#sendText" prefHeight="27.0" prefWidth="67.0" text="%ludogameboard.saybutton" />
                            </children>
                         </HBox>
                      </children>
