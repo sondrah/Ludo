@@ -3,32 +3,23 @@ package no.ntnu.imt3281.ludo.gui;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Optional;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
-import org.apache.derby.impl.sql.catalog.SYSUSERSRowFactory;
-
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -49,13 +40,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.stage.Modality;	
-import javafx.stage.Stage;
-import javafx.stage.Window;
 import no.ntnu.imt3281.i18n.I18N;
-import no.ntnu.imt3281.ludo.server.ServerController;
 
 /**
  * Controlls all actions on the homepage
@@ -109,8 +95,6 @@ public class LudoController {
     private boolean shutdown = false;
     private int userId;
     private int listTab = 0;
-    
-    // public LudoController() {} // tom constructor for load fxml
     
     /**
      * TODO
@@ -182,7 +166,76 @@ public class LudoController {
 		            try {
 		                if (input.ready()) {					// TimeUnit.MILLISECONDS.sleep(10);
 			                
-			                String retMessage = input.readLine();	
+		                	String response = input.readLine();
+		                	
+		                	String[] arr = response.split(",");
+		                	int chatid = 0;
+		                	
+		                	switch(arr[0]) {
+		                	case "CHAT":
+		                		
+		                		// CHAT,SAY,chatid,clientid,message
+		                		// CHAT,CREATE,chatid,message
+		                		chatid = Integer.parseInt(arr[2]);
+		                		
+		                		if(arr[1].equals("CREATE")) {
+		                			makeNewChatTab(chatid);
+		                		} else {
+		                			routeChatMessage(arr[4], chatid);
+		                		}
+		                		break;
+		                		
+		                	case "GAME":
+		                		// GAME,CREATE,TRUE,uid,cid,players[]
+		                		int gameid = Integer.parseInt(arr[3]);
+		                		chatid = Integer.parseInt(arr[4]);
+		                		GameBoardController gameBoard = null;
+		                		
+		                		if(arr[1].equals("CREATE")) {
+		                			chatid = Integer.parseInt(arr[4]);
+		                			
+		                			if(arr[2].equals("TRUE")) {
+			                			// arr[5].split(",") should return an array with
+			                			// the players in this game
+			                			makeNewGameTab(gameid, chatid, arr[5].split(":"));
+			                		}
+			                		else {
+			                			JOptionPane.showConfirmDialog(null, "Nytt spill starter når tre andre har joina");
+			                		}
+		                		}
+		                		else if(arr[1].equals("THROW")) {
+		                			gameBoard = getGameBoard(gameid);
+		                			gameBoard.throwDice(Integer.parseInt(arr[3]));
+		                		}
+		                		else if(arr[1].equals("MOVE")) {
+		                			gameBoard = getGameBoard(gameid);
+		                			
+		                			if(arr[3].equals("TRUE")) {
+		                				int player = Integer.parseInt(arr[4]);
+		                				int from = Integer.parseInt(arr[5]);
+		                				int to = Integer.parseInt(arr[6]);
+		                				
+		                				gameBoard.movePiece(player, from, to);
+		                			}
+		                			else {
+		                				// player wasn't allowed to move
+		                				// todo: feilmelding
+		                			}
+		                		}
+		                		break;
+		                		
+		                	case "LISTPLAYERS":
+		                		break;
+		                		
+		                	case "LISTCHATS":
+		                		break;
+		                		
+		                	}
+		                }
+		                	
+		                	/*
+			                String retMessage = input.readLine();
+			                
 							String[] returnMessage = retMessage.split(",");
 							String type = returnMessage[0];
 							int actionId = Integer.parseInt(returnMessage[1]);	
@@ -219,8 +272,12 @@ public class LudoController {
 			                		alert.showAndWait();
 			                	}
 			                	else if (message.startsWith("99BEGINGAME") && actionId !=0) { // Nyopprettet forespørsel game, MED suksess
+<<<<<<< HEAD
+			                		makeNewGameTab(actionId, chatid);
+=======
 			                		
 									// makeNewGameTab(actionId, gameID, players[3]); // chatId må også kalles her 
+>>>>>>> b0cd994d6131298622ff321bfadd3d5e46001b0b
 			                	// Mappe game id til fane
 			                	}
 			                	// Innkommende ("GAME,"+currentGameID+","+notifyClient+",99 HAR STARTET"+message);
@@ -241,7 +298,7 @@ public class LudoController {
 			                } else { // All other messages
 			                    System.out.println("Noe feil har skjedd i prosessConnection ");
 			                }
-		                }
+		                }*/
 		            } catch (IOException ioe) {
 		            	System.err.println("Error receiving data: ");
 		            }
@@ -568,7 +625,17 @@ public class LudoController {
     }
     
     
-    
+    private GameBoardController getGameBoard(int gameid) {
+    	GameBoardController board = null;
+    	
+    	for(GameBoardController gameBoard : gameBoards) {
+    		if(gameBoard.getGameId() == gameid) {
+    			board = gameBoard;
+    		}
+    	}
+    	
+    	return board;
+    }
     
     
     

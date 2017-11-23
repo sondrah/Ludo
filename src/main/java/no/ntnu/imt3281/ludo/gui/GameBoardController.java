@@ -920,6 +920,10 @@ public class GameBoardController extends Ludo {
 			}
     	}
     }
+
+	public int getGameId() {
+		return gameId;
+	}
     
     /**
      * Gives this game an Id

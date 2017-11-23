@@ -7,9 +7,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
-import javax.crypto.CipherInputStream;
-
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -153,22 +150,28 @@ public class WelcomeController {
 				Socket socket = new Socket("localhost", 12345);
 				BufferedWriter bw = new BufferedWriter(
 						new OutputStreamWriter(socket.getOutputStream()));
+				
+				
 				BufferedReader br = new BufferedReader(
 						new InputStreamReader(socket.getInputStream()));
 				String hashedPwd = MD5Encrypt.cryptWithMD5(pwd);
 				
-				// sends login-request: LOGIN,1,usr,pwd
-				bw.write("LOGIN,1," + usr + "," + hashedPwd);
+				// sends LOGIN request
+				bw.write("LOGIN," + usr + "," + hashedPwd);
 				bw.newLine();
 				bw.flush();
 				
-				// gets the true/false of: LOGIN,1,true/false
+				// answear from server:
+				// LOGIN,TRUE,clientid
+				// -- OR: LOGIN,FALSE
+				
 				String res = br.readLine();
 				if(res != null) {
-					res = res.split(",")[2];
+					String[] arr = res.split(",");
 					
-					int id = Integer.parseInt(res);
-					if(id != 0) {
+					
+					if(arr[1].equals("TRUE")) {
+						int id = Integer.parseInt(arr[2]);
 						try {
 							FXMLLoader loader = new FXMLLoader(getClass().getResource("Ludo.fxml"));
 					    	loader.setResources(I18N.getRsb());
@@ -177,7 +180,7 @@ public class WelcomeController {
 					    	LudoController controller = loader.getController();
 					    					    
 				            Stage stage = new Stage();
-				            stage.setTitle("Ludo- Alea-iacta-est");
+				            stage.setTitle("Ludo - Alea-iacta-est");
 				            stage.setScene(new Scene(root, 1050, 800));
 				            stage.show();
 				            
@@ -218,7 +221,6 @@ public class WelcomeController {
 		usr = txtFieldUsername.getText();
 		pwd = txtFieldPassword.getText();
 		pwd2 = txtFieldPassword2.getText();
-		Parent root;
 	
 		if(usr.length() <= 0 || usr.length() > 20 || pwd.length() <= 0) {
 			lblError.setVisible(true);
@@ -230,7 +232,6 @@ public class WelcomeController {
 		}
 		else {
 			try {
-				// TODO Bjonn close registrer socket
 				Socket socket = new Socket("localhost", 12345);
 				BufferedWriter bw = new BufferedWriter(
 						new OutputStreamWriter(socket.getOutputStream()));
@@ -239,27 +240,30 @@ public class WelcomeController {
 				
 				String hashedPwd = MD5Encrypt.cryptWithMD5(pwd);
 				
-				// sends register-request: LOGIN,0,usr,pwd
-				// REMEMBER! LOGIN is a message type which is 0 for register
-				bw.write("LOGIN,0," + usr + "," + hashedPwd);
+				// sends register-request: REGISTER,usr,pwd
+				bw.write("REGISTER," + usr + "," + hashedPwd);
 				bw.newLine();
 				bw.flush();
 				
-				// gets the true/false of: LOGIN(Register),0,true/false
+				// response:
+				// REGISTER,TRUE or
+				// REGISTER,FALSE
 				String res = br.readLine();
-				res = res.split(",")[2];
+				String[] arr = res.split(",");
 				
-				if(Integer.parseInt(res) != 0) {
+				if(arr[1].equals("TRUE")) {
 					lblError.setVisible(false);	 
 					lblInfo.setVisible(true);
 					lblInfo.setText(I18N.tr("register.success"));
 					txtFieldUsername.setText("");
 					btnRegister.setVisible(false);
-					} 
-				else {
+					
+				} else {
 					lblError.setVisible(true);
 					lblError.setText(I18N.tr("errors.notValidUserOrPassword"));
 				}
+				
+				socket.close();
 			}
 			catch(IOException ioe) {
 				ioe.printStackTrace();
@@ -267,6 +271,7 @@ public class WelcomeController {
 				lblError.setText(I18N.tr("errors.connectionError"));
 			} 
 		}
+		
 		txtFieldPassword.setText("");
 		txtFieldPassword2.setText("");
 	}
