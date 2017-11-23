@@ -222,12 +222,13 @@ public class ServerController extends JFrame {
 		    	                    }
 		    	                    											// 	eks CHAT,3,0,msg   type idRom/game, info??trengs?, melding
 		    	                	if (type.equals("CHAT")) {					// Hvis meldingen er av typen CHAT
-		    	                		    	                		
+		    	                		// output.write("CHAT,0,"+ clientId +",NEWCHAT" );
+		    	            					
 		    	                		if(actionId ==0) {							// New Chat
 		    	                			Chat newChat = newChat(message);
 		    	                			int newChatId = newChat.getId();
 		    	                			newChat.addParticipantToChat(curClient);		// addParticipant - seg selv ved oprettelse av ny chat 
-		    	                			messages.put("CHAT,"+newChatId+","+fromClientID+",0"+message);	
+		    	                			messages.put("CHAT,"+newChatId+","+fromClientID+",99NEWCHAT"+message);	
 		    	                		} else {											// Chatte rom eksisterer allerede	 
 		    	                			Iterator<Chat> chatNri = chats.iterator();		// Iterer gjennom alle chatte rom
 		    	                			while (chatNri.hasNext()) {						// hvis flere
@@ -265,7 +266,7 @@ public class ServerController extends JFrame {
 			                        			// TODO wait for more playser 5 sek 
 			                        			// If not, start anyway
 			                        			System.out.println("Ikke nok spillere enda("+waitingClients.size()+") , venter på flere spillere");
-			                        			messages.put("GAME,0,"+curClient.getId()+",Ikke nok spillere enda("+waitingClients.size()+") , venter på flere spillere");
+			                        			messages.put("GAME,0,"+curClient.getId()+",99NOTENOUGHIkke nok spillere enda("+waitingClients.size()+") , venter på flere spillere");
 			                        		}else {			// New game and enough playser
 			                        			System.out.println("Nok spillere ("+waitingClients.size()+") , oppretter new game");
 			                        			int currentGameID  = gameID++; 			// Tildeler game id 
@@ -288,13 +289,13 @@ public class ServerController extends JFrame {
 					    		                        // TODO guro, newGame er den gyllene port til ludo.
 					    		                        // Melding som skal plukkes opp og fysisk starte board i gui
 
-					    		                        messages.put("GAME,"+currentGameID+","+notifyClient+",99 HAR STARTET"+message);
+					    		                        messages.put("GAME,"+currentGameID+","+notifyClient+",99BEGINGAME HAR STARTET"+message);
 					    		                        
 					    		                        // TODO SONDRE, her er nytt chatt til game vindu - må testes 
-						    	                		messages.put("CHAT,"+newChatId+","+notifyClient+", Game id:"+currentGameID+" > " +message);
+						    	                		messages.put("CHAT,"+newChatId+","+notifyClient+",99NEWCHAT Game id:"+currentGameID+" > " +message);
 						    	                		
 						    	                		// TODO linje (til master chat" under fjernes når nytt chatterom er oppe å går
-						    	                		messages.put("CHAT,1,"+notifyClient+","+userName+" > Game id: "+currentGameID+" opprettet via > " +message);
+						    	                		//messages.put("CHAT,1,"+notifyClient+","+userName+" > Game id: "+currentGameID+" opprettet via > " +message);
 						    	                								// Sender tilbake riktig chat nr til client som oprettet den
 				    		                        }
 				    		                    }
