@@ -26,6 +26,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -187,19 +188,17 @@ public class LudoController {
 								inviteName = returnMessage[4];
 							}
 							
-			                if (type.equals("CHAT")) { 				// Message er av typen CHAT
+			                if (type.equals("CHAT")) { 				// Message er av typen CHAT:
 			                	if (message.startsWith("0") && actionId !=0) {		// Nyopprettet chat, med suksess
 			                		addNewTabToChatMapping(actionId); 				// Legg den til i mapping 
 			                	}
-			                	else if(inviteName != null) {
-			                		// TODO Sondre - HÆ? hva skal gjøres her// joins client with name 'inviteName' to chat 'actionId'							
-			                	
+			                	else if(inviteName != null) {						// informs that client with name 'inviteName' joined chat = 'actionId'
+			                		routeChatMessage("Joined chat: "+inviteName, actionId);			
+			                	} else {
+			                		routeChatMessage(message, actionId);			// message in chat-room
 			                	}
-			                	routeChatMessage(message, actionId);	// message in chat-room
-			                	
-
 			                } 
-			                else if (type.equals("GAME")) {
+			                else if (type.equals("GAME")) {			// Message er av typen GAME:
 			                	if (message.startsWith("0") && actionId ==0) {		// Nyopprettet forespørsel game, UTEN suksess
 			                		// Innkommende melding 
 			                		// "GAME,0,"+curClient.getId()+",Ikke nok spillere enda("+waitingClients.size()+") , venter på flere spillere"
@@ -428,8 +427,8 @@ public class LudoController {
      */
     @FXML
     public void joinRandomGame(ActionEvent e) {  
-    	
-    	
+    	Parent root;
+    	// TODO, hvilken tab id kommer dette fra 
 		try {								// Client sier jeg vil spille 
 			System.out.println("1. Client Trykket på knapp rand game, skal sende nå");
 			output.write("GAME,0,"+ clientId +",Random Game trykket på");
@@ -440,7 +439,6 @@ public class LudoController {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-	
 		
      }
     
@@ -451,13 +449,13 @@ public class LudoController {
     	FXMLLoader gameLoader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
 		gameLoader.setResources(I18N.getRsb());
     	GameBoardController gameController = gameLoader.getController();
-    	gameLoader.setController(gameController);
+    	// Unødvendig gameLoader.setController(gameController);
 		// Use controller to set up communication for this game.
 		// Note, a new game tab would be created due to some communication from the server
 		// This is how a layout is loaded and added to a tab pane.
 
-    	try {
-    		AnchorPane gameBoard = gameLoader.load();
+		try {
+			AnchorPane gameBoard = gameLoader.load();
         	Tab tab = new Tab("Game" + gameId);
     		tab.setContent(gameBoard);
         	tabbedPane.getTabs().add(tab);
@@ -468,9 +466,7 @@ public class LudoController {
 		}
     	
     	ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs
-    	// gameBoards.add("Game board")
-    	//mapGame.put(gameId, tabs.size());						// adds chatId to mapping
-		
+
 		// TODO lage egen funk mtp "user generatet new game også
 	
     }
@@ -480,7 +476,7 @@ public class LudoController {
      * @param chatName
      * @param clientId
      */
-    public void newPrivateChat(String chatName, String clientId) {
+    public void newPrivateChat(String chatName) {
 		try {								
 			output.write("CHAT,0,"+ clientId +"," +chatName);
 			output.newLine();

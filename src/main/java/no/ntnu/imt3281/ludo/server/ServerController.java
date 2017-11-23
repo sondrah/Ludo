@@ -287,6 +287,7 @@ public class ServerController extends JFrame {
 					    		                        int notifyClient = newPlayer.getId();
 					    		                        // TODO guro, newGame er den gyllene port til ludo.
 					    		                        // Melding som skal plukkes opp og fysisk starte board i gui
+
 					    		                        messages.put("GAME,"+currentGameID+","+notifyClient+",99 HAR STARTET"+message);
 					    		                        
 					    		                        // TODO SONDRE, her er nytt chatt til game vindu - må testes 
@@ -437,7 +438,200 @@ private void startMessageSender() {
 		return waitingClients.size();
 	}
 	
+
+	private Chat getChat(int chatid) {
+		Chat theChat = null;
+		for(Chat chat : chats) {
+			if(chat.getId() == chatid) theChat = chat;
+		}
+		
+		return theChat;
+	}
 	
+	
+	private Client getClient(int clientid) {
+		Client theClient = null;
+		
+		for(Client client : clients) {
+			if(client.getId() == clientid) theClient = client;
+		}
+		
+		return theClient;
+	}
+	
+	
+	private Game getGame(int gameId) {
+		Game theGame = null;
+		
+		for(Game game : games) {
+			if(game.getId() == gameId) theGame = game;
+		}
+		
+		return theGame;
+	}
+	
+	
+	
+	private void handleChatMessage(String[] str) {
+		// All strings in the given array has CHAT in str[0]
+		// Possible received messages
+		// CHAT,SAY,chatid,userid,message		-- Say something
+		// CHAT,JOIN,chatid,userid				-- Join a known chat
+		// CHAT,JOIN,chatname,userid			-- Join a new chat
+		// CHAT,CREATE,chatname,userid			-- Create a new chat
+		
+		
+		String action = str[1];
+		
+		try {
+			if(action.equals("SAY")) {
+				StringBuilder sb = new StringBuilder();
+				for(String s : str) {
+					sb.append(s + ",");
+				}
+				
+				// since 'SAY's don't need special treament
+				// send it straight to 
+				messages.put(sb.toString());
+			}
+		}
+		catch (InterruptedException ie) {
+			// TODO: log
+		}
+	}
+	
+	
+	private void sendChatMessage(String str) {
+		
+		String[] arr = str.split(",");
+		
+		// CHAT,SAY,chatid,userid,message
+		
+		
+		
+		switch(arr[1]) {
+		case "SAY":
+			
+		}
+	}
+	
+	
+	private void handleGameMessage(String[] str) {
+		
+		// All string arrays that come here have GAME in str[0]
+		// possible recieved messages
+		// GAME,THROW,gameid,userid					-- Ask server to make a throw
+		// GAME,MOVE,gameid,userid,player,from,to	-- 	" 	move a piece
+		// GAME,CREATE,userid						-- 	" 	create new game
+		
+		Game game = null;
+		
+		switch(str[1]) {
+		case "THROW":
+			game = getGame(Integer.parseInt(str[2]));
+			int userid = Integer.parseInt(str[3]);
+				
+			// if the requesting player is the actual active player
+			if(db.getUserName(userid).equals(game.getPlayerName(game.activePlayer()))) {
+				int dice = game.throwDice();
+				
+				// Sent message
+				// GAME,THROW,gameid,dice
+				try {
+					messages.put("GAME,THROW," + game.getId() + "," + dice);
+				}
+				catch(InterruptedException ie) {
+					// TODO log
+				}
+			}
+			break;
+			
+		case "MOVE":
+			game = getGame(Integer.parseInt(str[2]));
+			
+			int player = 	Integer.parseInt(str[4]);
+			int from   = 	Integer.parseInt(str[5]);
+			int to     = 	Integer.parseInt(str[6]);
+			
+			try {
+				if(game.movePiece(player, from, to)) {
+					// GAME,MOVE,gameid,TRUE,player,from,to
+					messages.put("GAME,MOVE," + game.getId() + ",TRUE,"
+								+ player + "," + from + "," + to);
+				} else {
+					// GAME,MOVE,gameid,FALSE
+					messages.put("GAME,MOVE," + game.getId() + ",FALSE");
+				}
+			}
+			catch (InterruptedException e) {
+				// TODO log
+			}
+			break;
+			
+		case "CREATE":
+			// sjekk om nok spilere
+			// hente 2 - 4 spillere
+			// starte et spill med disse
+			// games.add(new Game(gameid, players))
+			// chatid = db.newChat(chatname)
+			// chat = new Chat(cahtid)
+			// chats.add(chat)
+			
+			// if nok spillere
+			// messages.put(GAME,CREATE,TRUE,gameid,players)
+			// else
+			// messages.put(GAME,CREATE,WAIT)
+		}
+	}
+	
+	
+	private void sendGameMessage(String str) {
+		// GAME,THROW,gameid,dice
+		// GAME,MOVE,gameid,TRUE,player,from,to
+		// GAME,MOVE,gameid,FALSE
+		// GAME,CREATE,TRUE,gameid,players
+		// GAME,CREATE,WAIT
+		
+		String[] arr = str.split(",");
+		String action = arr[1];
+		
+		switch(action) {
+		case "THROW":
+			getGame(Integer.parseInt(arr[2])).getParticipants()
+			.parallelStream().forEach(client -> {
+				try {
+					client.sendText(str);
+				} catch (IOException e) {
+					// TODO log
+				}
+			});
+			break;
+			
+		case "MOVE":
+			getGame(Integer.parseInt(arr[2]))
+			.getParticipants().parallelStream().forEach(client -> {
+				try {
+					client.sendText(str);
+				} catch (IOException e) {
+					// TODO log
+				}
+			});
+			break;
+			
+		case "CREATE":
+			getGame(Integer.parseInt(arr[3])).getParticipants()
+			.parallelStream().forEach(client -> {
+				try {
+					client.sendText(str);
+				} catch (IOException e) {
+					// TODO log
+				}
+			});
+		}
+	}
+	
+	
+
 	/**
      * --Borrowed code from okolloen--
      * A new object of this class is created for all new clients.
@@ -617,9 +811,6 @@ private void startMessageSender() {
     		participantsGame = new Vector<>();
     	}
     	
-    	       
-        
-
 
 		/**
          * Sets ID 
@@ -650,8 +841,28 @@ private void startMessageSender() {
     		participantsGame.removeElement(c);
     		
     	}
-    	public Vector<Client> getParticipant() {
+    	public Vector<Client> getParticipants() {
     		return participantsGame; 
+    	}
+    	
+    	
+    	/**
+    	 * Throws a dice in Ludo
+    	 * @return The dice value
+    	 */
+    	public int throwDice() {
+    		return super.throwDice();
+    	}
+    	
+    	/**
+    	 * Thries to move a playerpice in Ludo
+    	 * @param player The player index
+    	 * @param from The tile to move from
+    	 * @param to The tile to move to
+    	 * @return True if the piece could move
+    	 */
+    	public boolean movePieve(int player, int from, int to) {
+    		return super.movePiece(player, from, to);
     	}
     	
     }

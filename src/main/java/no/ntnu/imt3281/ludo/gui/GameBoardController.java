@@ -1,10 +1,9 @@
 package no.ntnu.imt3281.ludo.gui;
 
-import no.ntnu.imt3281.ludo.logic.*;
+import no.ntnu.imt3281.ludo.logic.*; 
 import no.ntnu.imt3281.ludo.server.GameInfo;
-import java.awt.Event;
+import javafx.event.ActionEvent;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -868,7 +867,8 @@ public class GameBoardController extends Ludo {
 	} // TilePositions end
 	
     @FXML
-    public void sendTextButton(ActionEvent e) {
+    public void sendText(ActionEvent e) {
+    	System.err.println("tull");
     	String txt = textToSay.getText();
     	if(!txt.equals("") && txt !=null) {
     		int currentChatID = 2;
