@@ -39,10 +39,10 @@ import no.ntnu.imt3281.ludo.logic.Ludo;
  */
 public class ServerController extends JFrame {
 
-	Logger logger = Logger.getLogger("BadgerLogg");  
-    FileHandler fileHandler;
-	
-	
+	/** Logs all chat messages*/
+	Logger chatlogger = Logger.getLogger("BadgerLogg");  
+    /** Sets up file for 'chatlogger' to write to */
+	FileHandler fileHandler;
 	/** The 'url' to our database (local) */
 	private String url = "jdbc:derby:BadgerDB;";
 	/** Unique ID for each game, zeroed for each server start */
@@ -112,7 +112,7 @@ public class ServerController extends JFrame {
             startMessageListener1();		// Check clients for new messages
             
             fileHandler = new FileHandler("./src/main/java/no/ntnu/imt3281/ludo/chatlogg.log");	// path to log file
-            logger.addHandler(fileHandler);
+            chatlogger.addHandler(fileHandler);
             
             SimpleFormatter formatter = new SimpleFormatter();
             fileHandler.setFormatter(formatter);
@@ -376,7 +376,7 @@ public class ServerController extends JFrame {
 				logtxt.append(": ");
 				logtxt.append(str[4]);				
 				
-				logger.info(logtxt.toString());		
+				chatlogger.info(logtxt.toString());		
 				
 				// since 'SAY's don't need special treament
 				// send it straight to 

@@ -9,6 +9,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
+import com.sun.media.jfxmedia.logging.Logger;
+
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -152,6 +154,9 @@ public class GameBoardController extends Ludo {
     		
     	}
 		
+    	boardPane.setPickOnBounds(false);
+    	
+    	
 		// Hente ut spillernes navn 
 		for ( String player : players) {
 			addPlayer(player);
@@ -265,8 +270,10 @@ public class GameBoardController extends Ludo {
 		boardPane.getChildren().add(moveTo);
 		
 		// when this rectangle is clicked we initiate to move a piece
-		moveTo.setOnMouseClicked(e->movePiece(e));
-		
+		//moveTo.setOnMouseClicked(e -> moveGraphicalPiece(e));
+		moveTo.setOnMouseClicked(e -> {
+			System.out.println("YOLO");
+		});
 	}
 
 
@@ -385,6 +392,15 @@ public class GameBoardController extends Ludo {
 	void throwDice(ActionEvent e) {
 
 		System.out.println("Du har trykket på dice din æss");
+		try {
+			output.write("GAME,THROW," + gameId + "," + clientId);
+			output.newLine();
+			output.flush();
+		}
+		catch (IOException ioe) {
+			// TODO
+		}
+		
 		//try {
 			//ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
 
@@ -464,41 +480,31 @@ public class GameBoardController extends Ludo {
 					moveFrom.setX(corners.point[tile].getX());
 					moveFrom.setY(corners.point[tile].getY());
 					
-					moveTo.setX(corners.point[tile + dice].getX());
-					moveTo.setY(corners.point[tile + dice].getY());
+					
+					if(tile >= 0 && tile <= 3) {
+						moveTo.setX(corners.point[16].getX());
+						moveTo.setY(corners.point[16].getY());
+					}
+					else if(tile >= 4 && tile <= 7) {
+						moveTo.setX(corners.point[29].getX());
+						moveTo.setY(corners.point[29].getY());
+					}
+					else if(tile >= 8 && tile <= 11) {
+						moveTo.setX(corners.point[42].getX());
+						moveTo.setY(corners.point[42].getY());
+					}
+					else if(tile >= 12 && tile <= 15) {
+						moveTo.setX(corners.point[55].getX());
+						moveTo.setY(corners.point[55].getY());
+					}
+					else {
+						moveTo.setX(corners.point[tile + dice].getX());
+						moveTo.setY(corners.point[tile + dice].getY());
+					}
 				}
 			}
 		}
-			
-		/*	
-			// Skjer bare hvis spiller skal flytte
-			if(shouldMove) {	
-		
-				movePlayerPieceFrom = movePieceFrom(event);
-				
-				if(movePlayerPieceFrom > -1) {	// Dersom bruker trykket på aktiv spiller sin brikke
-					// TODO sjekke brikke eller lignende canMove(movePlayerPieceFrom)
-					
-					if(canMove()) {	// Dersom brikken kan flytte
-						if(movePlayerPieceFrom ==0) {		// Dersom fra start, flytt til 1
-							moveTo.setX(corners.point[userGridToLudoBoardGrid(CurrentPlayer, 1)].getX());
-							moveTo.setY(corners.point[userGridToLudoBoardGrid(CurrentPlayer, 1)].getY());
-						}
-						else {					// TODO skulle vært til? 
-							// flytter brikken til point
-								// Finner riktig ved å hente ut rikitg pos (svart verdi) .get er ukjent hvorfor
-							moveTo.setX(corners.point[userGridToLudoBoardGrid(CurrentPlayer, movePlayerPieceFrom)].getX());
-							moveTo.setY(corners.point[userGridToLudoBoardGrid(CurrentPlayer, movePlayerPieceFrom)].getY());
-						}
-					}
-					else {	// Error?? skal ikke skje?? burde vært ikke gjør noe
-						moveFrom.setX(-100);
-						moveFrom.setY(-100);
-					}
-				}
-				
-			}*/
-		}
+	}
 	
 	
 	/**
@@ -515,9 +521,13 @@ public class GameBoardController extends Ludo {
 	 *  Handle the clickevent to mova a piece
 	 * @param e The event from the click
 	 */
-	private void movePiece(MouseEvent e) { 
+	@FXML
+	private void moveGraphicalPiece(MouseEvent e) { 
 		
+		System.out.println("flytt");
 		if(e.getEventType() == MouseEvent.MOUSE_CLICKED) {
+			System.out.println("flytt");
+			
 			int moveFromTile = corners.findTile(e.getSceneX(), e.getSceneY());
 			int i = 0;
 			
@@ -589,32 +599,6 @@ public class GameBoardController extends Ludo {
 		return i;
 	}
 		
-	/*
-	private int movePieceFrom(MouseEvent event) {
-		int correctValue = -1;
-		int x = (int) event.getX();
-		int y = (int) event.getY(); 
-		
-		Object ob = event.getSource();
-		
-			
-		if( ob.equals(playerPieces[CurrentPlayer][pi])) {
-			int blackPos = userGridToLudoBoardGrid(CurrentPlayer, getPlayerPieces(CurrentPlayer)[i]);
-			int offset = 0;
-			
-			if(getPlayerPieces(CurrentPlayer)[pi] == 0) {
-				offset = pi;
-			}
-			correctValue = getPlayerPieces(CurrentPlayer)[pi];
-			moveFrom.setX(corners.point[blackPos+offset].getX());
-			moveFrom.setY(corners.point[blackPos+offset].getY());
-			// TODO ikke ferdig 
-		}
-		
-		return ;
-	}*/
-	
-	
 	
 	/**
 	 * Holds all the different positions on the board 
