@@ -1,26 +1,15 @@
 package no.ntnu.imt3281.ludo.client;
 
 import java.io.IOException;
-import java.util.ResourceBundle;
-import java.util.logging.FileHandler;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 import javafx.application.Application;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import no.ntnu.imt3281.i18n.I18N;
 import no.ntnu.imt3281.ludo.gui.WelcomeController;
-import javafx.event.ActionEvent;
-import no.ntnu.imt3281.ludo.App;
 import no.ntnu.imt3281.ludo.Logging;
 
 /**
@@ -35,12 +24,12 @@ public class Client extends Application{
 	public Client() {
 		I18N.getResource("no.ntnu.imt3281.i18n.i18n");
 		Logging.setup();
-		// TODO setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
 	/**
 	 * 
 	 * Constructs a new client with the parameters args
+	 * @param args included arguments
 	 */
 	public Client(String[] args) {
 		launch(args);
@@ -64,7 +53,7 @@ public class Client extends Application{
 		
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/no/ntnu/imt3281/ludo/gui/WelcomeScreen.fxml"));
     	loader.setResources(I18N.getRsb());
-    	
+
     	@SuppressWarnings("unused")
 		WelcomeController controller = loader.getController();
 		
@@ -72,14 +61,11 @@ public class Client extends Application{
     		Pane pane = loader.load();
     		root.getChildren().add(pane);
     		
-    		//root.getChildren().remove(pane);
-    		
     		primaryStage.setScene(new Scene(root, 600, 400));
             primaryStage.show();
     	}
     	catch (IOException ioe){
-    		ioe.printStackTrace();
-    		//exceptionlogger.info(ioe.getMessage());
+    		Logging.log(ioe.getStackTrace()); 
     	}
 		
 	}
