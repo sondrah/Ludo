@@ -79,7 +79,5 @@ public class Client extends Application{
     		ioe.printStackTrace();
     		//exceptionlogger.info(ioe.getMessage());
     	}
-		
 	}
-	
 }

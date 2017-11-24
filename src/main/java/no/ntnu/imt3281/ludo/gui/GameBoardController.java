@@ -291,6 +291,7 @@ public class GameBoardController extends Ludo {
 						
 					case PlayerEvent.WAITING:
 						player2Active.setVisible(false);
+						resetSelect();
 						break;
 						
 					case PlayerEvent.LEFTGAME:
@@ -314,6 +315,7 @@ public class GameBoardController extends Ludo {
 						
 					case PlayerEvent.WAITING:
 						player3Active.setVisible(false);
+						resetSelect();
 						break;
 						
 					case PlayerEvent.LEFTGAME:
@@ -337,6 +339,7 @@ public class GameBoardController extends Ludo {
 						
 					case PlayerEvent.WAITING:
 						player4Active.setVisible(false);
+						resetSelect();
 						break;
 						
 					case PlayerEvent.LEFTGAME:
@@ -354,8 +357,8 @@ public class GameBoardController extends Ludo {
 	}
 	
 	private void resetSelect() {
-		moveTo.setX(-100);
-		moveTo.setX(-100);
+		moveFrom.setX(-100);
+		moveFrom.setX(-100);
 		moveTo.setY(-100);
 		moveTo.setX(-100);
 		
