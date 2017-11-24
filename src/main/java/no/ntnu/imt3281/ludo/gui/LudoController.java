@@ -168,20 +168,19 @@ public class LudoController {
 			                
 		                	String response = input.readLine();
 		                	
-		                	System.out.println("3. client prosess: " + response);
+		                	System.out.println("4. client prosess response fra server: " + response);
 		                	
 		                	String[] arr = response.split(",");
 		                	int chatid = 0;
 		                	
 		                	switch(arr[0]) {
 		                	case "CHAT":
-		                		
 		                		// CHAT,SAY,chatid,clientid,message
 		                		// CHAT,CREATE,chatid,message
 		                		chatid = Integer.parseInt(arr[2]);
 		                		
 		                		if(arr[1].equals("CREATE")) {
-		                			makeNewChatTab(chatid);
+		                			makeNewChatTab(arr[3], chatid);
 		                		} else {
 		                			routeChatMessage(arr[4], chatid);
 		                		}
@@ -334,13 +333,16 @@ public class LudoController {
     	if(tabId != null) {	
     		
     				// Henter ut riktig Anchor Pane for riktig chatterom
-	    	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(tabId).getContent();
+    		//if( chatId == 1) {
+    		AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(tabId).getContent();
+    		
 	    				// Finner alle elementene i dette chattevinduet 
 	    	if (tabRoot != null) {
 		    	TextArea textA = (TextArea)tabRoot.lookup("#chatArea");
-		    	
-		    	System.out.println("5. CHAT routeChatMes : tabID: "+tabId+ " melding " +message);
-		    	textA.appendText(message+ "\n");		// Legg til meldingen 
+		    	if (textA != null) {
+		    		System.out.println("5. CHAT routeChatMes : tabID: "+tabId+ " melding " +message);
+		    		textA.appendText(message+ "\n");		// Legg til meldingen 
+		    	}
 		    }
 	    	else System.out.println("5. CHAT routeChatMes ERR FANT IKKE TAB ROOT!!");
 	    		
@@ -478,10 +480,14 @@ public class LudoController {
     	}
     }
     
+    
+    /*
+     * 
+     *OLD !! KAN FJERNES SNART
     /**
      * addNewTabToChatMapping
      * @param chatId
-     */
+     *
     public void addNewTabToChatMapping( int chatId) {					// TODO chatboard.fxml
     	FXMLLoader loader = new FXMLLoader(getClass().getResource("ChatBoard.fxml"));
     	loader.setResources(I18N.getRsb());
@@ -498,9 +504,9 @@ public class LudoController {
     	
     	ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs
     	
-    	chatToTab.put(chatId, tabs.size()-1);						// adds chatId to mapping
+    	chatToTab.put(chatId, tabs.size());						// adds chatId to mapping
 	}
-    
+    */
     /**
      * Displays a nice popup window with a depressing message
      * @param e button click caused by the about menu item
@@ -605,8 +611,9 @@ public class LudoController {
 		}
     	
     	ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs
-    	gameToTab.put(gameId, tabs.size()-1);				// adds gameId to maping
-		
+    	gameToTab.put(gameId, tabs.size());				// adds gameId to maping
+    	chatToTab.put(chatId, tabs.size());				// adds gameId to maping
+   		System.out.println("makeNewChatTab ChatID: "+chatId+ " Får tab: " + (tabs.size()));
 
     }
     
@@ -618,17 +625,17 @@ public class LudoController {
 	* This is how a layout is loaded and added to a tab pane.
     * @param chat id
     */
-   public void makeNewChatTab(int chatId) {
+   public void makeNewChatTab(String chatName, int chatId) {
 
     	FXMLLoader chatLoader = new FXMLLoader(getClass().getResource("PrivateChat.fxml"));
 		chatLoader.setResources(I18N.getRsb());
 		
 		try {
-			VBox chatWindow = chatLoader.load();
+			AnchorPane chatWindow = chatLoader.load();
 			ChatController chatController = chatLoader.getController();
 			chatController.setChatId(chatId, clientId);
 			chatController.setConnection(socket);  // TODO sjekk Bjønn ok?? 
-	       	Tab tab = new Tab("Chat" + chatId);
+	       	Tab tab = new Tab("Chat: " + chatName);
 	   		tab.setContent(chatWindow);
 	   		
 	   		Platform.runLater(() -> {
@@ -644,7 +651,8 @@ public class LudoController {
 		}
    	
 		ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs
-   		chatToTab.put(chatId, tabs.size()-1);				// adds gameId to maping
+   		chatToTab.put(chatId, tabs.size());				// adds gameId to maping
+   		System.out.println("makeNewChatTab ChatID: "+chatId+ " Får tab: " + (tabs.size()));
 	
    }
 	

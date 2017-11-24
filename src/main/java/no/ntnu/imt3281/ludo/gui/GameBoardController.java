@@ -874,7 +874,7 @@ public class GameBoardController extends Ludo {
     	String txt = textToSay.getText();
     	if(!txt.equals("") && txt !=null) { 
     		try {			
-    			output.write("CHAT,"+chatId+","+clientId +"," +txt);
+    			output.write("CHAT,SAY,"+chatId+","+clientId +"," +txt);
 				output.newLine();
 				output.flush();
 			} catch (IOException e1) {

@@ -144,15 +144,12 @@ public class ServerController extends JFrame {
                     		TimeUnit.MILLISECONDS.sleep(1);
                     		msg = newClient.read();
                     	}
-                    	
                     	// REGISTER,username,password
                 		// LOGIN,username,token
-                		
                 		// REGISTER,TRUE
                 		// REGISTER,FALSE
                 		// LOGIN,TRUE,id,token
                 		// LOGIN,FALSE
-                    	
                     	
                     	String[] parts = msg.split(",");   
                     	String action = parts[0];
@@ -411,7 +408,7 @@ public class ServerController extends JFrame {
 				chat.addParticipantToChat(client);
 				chats.add(chat);
 				
-				messages.put("CHAT,CREATE," + chat.getId() + "," + chatname + " created!");
+				messages.put("CHAT,CREATE," + chat.getId() + "," + chatname); // 
 			}
 		}
 		catch (InterruptedException ie) {
@@ -428,7 +425,7 @@ public class ServerController extends JFrame {
 		
 		String[] arr = str.split(",", 4);
 		
-		System.out.println("3.1: Chat id: " + getChat(Integer.parseInt(arr[2])));
+		System.out.println("3.1: Chat id: " + getChat(Integer.parseInt(arr[2])).getId());
 		getChat(Integer.parseInt(arr[2])).getParticipants()
 		.parallelStream().forEach(client -> {
 			try {
@@ -506,7 +503,8 @@ public class ServerController extends JFrame {
 			if(waitingClients.size() >= 1) {
 				System.out.println("2.?? Itererer" +waitingClients.size()+ " gjennom witingclients: game: " + gameID);
 				game = new Game(gameID++);
-				Chat chat = newChat("Game #" + gameID + " chat");
+				String chatName = "Game #" + gameID + " chat";
+				Chat chat = newChat(chatName);
 				
 				int i = 0;
 				while(waitingClients.size() >= 1 && i < 4) {
@@ -517,7 +515,9 @@ public class ServerController extends JFrame {
 					game.addParticipantToGame(c);
 					sb.append(name + ":");
 					game.addPlayer(name);
-					System.out.println("2.4 laget ny chat og game");
+					
+					// 	messages.put("CHAT,JOIN," + chatName + ","+c.getId());
+					
 					waitingClients.trimToSize();
 					i++;
 				}
@@ -526,6 +526,8 @@ public class ServerController extends JFrame {
 				chats.add(chat);
 				
 				message = "GAME,CREATE,TRUE," + game.getId() + "," + chat.getId() + "," + sb.toString();
+				
+				
 			}
 			else {
 				message = "GAME,CREATE,FALSE,WAIT";

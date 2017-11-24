@@ -16,7 +16,6 @@ import javafx.scene.control.TextField;
 public class ChatController {
 	@FXML private TextField toSay;
 	
-   //  private BufferedReader inputChat;
     private BufferedWriter outputChat;
 	private Socket chatSocket;
 	private int chatId;
@@ -59,7 +58,7 @@ public class ChatController {
     	String txt = toSay.getText();
     	if(!txt.equals("") && txt !=null) { 
     		try {			
-    			outputChat.write("CHAT,"+chatId+","+clientId +"," +txt);
+    			outputChat.write("CHAT,SAY,"+chatId+","+clientId +"," +txt);
     			outputChat.newLine();
     			outputChat.flush();
 			} catch (IOException e1) {
