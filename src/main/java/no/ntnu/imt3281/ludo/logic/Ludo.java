@@ -324,7 +324,7 @@ public class Ludo {
 		int locDice = 0;
 		randomGenerator = new Random();
 		
-		locDice = randomGenerator.nextInt(5) + 1;
+		locDice = randomGenerator.nextInt(6) + 1;
 		
 		throwDice(locDice);
 		return locDice;
