@@ -21,6 +21,7 @@ import no.ntnu.imt3281.i18n.I18N;
 import no.ntnu.imt3281.ludo.gui.WelcomeController;
 import javafx.event.ActionEvent;
 import no.ntnu.imt3281.ludo.App;
+import no.ntnu.imt3281.ludo.Logging;
 
 /**
  * Launches the application and creates a welcome screen window.
@@ -33,6 +34,8 @@ public class Client extends Application{
 	 */
 	public Client() {
 		I18N.getResource("no.ntnu.imt3281.i18n.i18n");
+		Logging.setup();
+		// TODO setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
 	/**

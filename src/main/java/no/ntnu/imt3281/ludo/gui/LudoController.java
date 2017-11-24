@@ -42,6 +42,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import no.ntnu.imt3281.i18n.I18N;
+import no.ntnu.imt3281.ludo.Logging;
 
 /**
  * Controlls all actions on the homepage
@@ -127,9 +128,7 @@ public class LudoController {
 			        socket.getOutputStream()));
 			
     	} catch(IOException ioe) {
-    		System.err.println("fikk ikke connection, i ludocontroller");
     		ioe.printStackTrace();
-    		
     	}
     }
 
@@ -193,7 +192,8 @@ public class LudoController {
 		                		
 		                		if(arr[1].equals("CREATE")) {
 		                			gameid = Integer.parseInt(arr[3]);
-		                			chatid = Integer.parseInt(arr[4]);
+		                			
+		                			chatid = Integer.parseInt(arr[4]) ;
 		                			
 		                			if(arr[2].equals("TRUE")) {
 			                			// arr[5].split(",") should return an array with
@@ -201,12 +201,12 @@ public class LudoController {
 			                			makeNewGameTab(gameid, chatid, arr[5].split(":"));
 			                		}
 			                		else {
+			                			// kjøre på FX-thread
 			                			Platform.runLater(() ->{
 			                				Alert alert = new Alert(AlertType.INFORMATION);
 				                			alert.setTitle(I18N.tr("ludo.fyiHeader"));
 				                			alert.setHeaderText(null);
 				                			alert.setContentText(I18N.tr("ludo.fyiContent"));
-
 				                			alert.showAndWait();
 			                			});
 			                		}
@@ -224,26 +224,40 @@ public class LudoController {
 		                			gameBoard = getGameBoard(gameid);
 		                			
 		                			if(arr[3].equals("TRUE")) {
+		                				// GAME,MOVE,TRUE,gameid,player,from,to
 		                				int player = Integer.parseInt(arr[4]);
 		                				int from = Integer.parseInt(arr[5]);
 		                				int to = Integer.parseInt(arr[6]);
 		                				
 		                				gameBoard.movePiece(player, from, to);
 		                			}
-		                			else {
-		                				// player wasn't allowed to move
-		                				// todo: feilmelding
-		                			}
 		                		}
 		                		break;
 		                		
 		                	case "LISTPLAYERS":
+		                		// melding:
+		                		// LISTPLAYERS,clientid,players[]
+		                		
+		                		// finne tab
+		                		// inne i den tabben,
+		                		// lookup(#listView)
+		                		// listView.setItems(array)
 		                		break;
 		                		
 		                	case "LISTCHATS":
-		                		break;
+		                		// melding:
+		                		// LISTCHATS,clientid,players[]
 		                		
+		                		// finne tab
+		                		// inne i den tabben,
+		                		// lookup(#listView)
+		                		// listView.setItems(array)
+		                		break;
+
+		                	default : // logger	
+		                		break;
 		                	}
+		                	
 		                }
 		                	
 		            } catch (IOException ioe) {
@@ -439,17 +453,15 @@ public class LudoController {
     public void sendText(ActionEvent e) {
     	
     	String txt = toSay.getText();
-    	if(!txt.equals("") && txt !=null) {
+    	if(!txt.equals("")) {
     		try {								
     			
-    			System.out.println("1. Client: sendText fra/ på client: "+txt);
-    			
+    		
     			output.write("CHAT,SAY,1," + clientId +"," +txt);
 				output.newLine();
 				output.flush();
 
 			} catch (IOException e1) {
-				System.out.println("1. Client say somthing ENTER kasnkje??");// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
     	}
@@ -472,17 +484,14 @@ public class LudoController {
      */
     @FXML
     public void joinRandomGame(ActionEvent e) {  
-    	// Parent root;
-    	// TODO, hvilken tab id kommer dette fra 
 		try {								// Client sier jeg vil spille 
-			System.out.println("1. Client Trykket på knapp rand game, skal sende nå");
+			
 			output.write("GAME,CREATE,"+ clientId);
 			output.newLine();
 			output.flush();
 
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			// skulle funka..  exceptionlogger info(e1) 
 		}
 		
      }

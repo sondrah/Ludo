@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -80,21 +81,22 @@ public class GameBoardController extends Ludo {
 	/** Reference to a rectangle we are moving to */
 	private Rectangle moveTo = new Rectangle(SQUARE - 2, SQUARE - 2);
 	 
-	private int CurrentPlayer = RED; 
-	private boolean shouldMove = false; 
-	private int movePlayerPieceFrom = -1;
-	private int diceValue = -1;
- //    private BufferedReader input;
     private BufferedWriter output;
-    private Socket gameSocket;
     private int clientId;
     private int gameId;
     private int chatId;
     
     
+<<<<<<< HEAD
     /**
 	 * 
 	 * @param gameId
+=======
+    
+	/**
+	 * Sets the ID of this controllers game
+	 * @param gameId Id of game
+>>>>>>> 0cba65a3aa778ea5c948ce584ad0d71039136267
 	 */
     public void setGameId(int gameId) {
     	this.gameId = gameId;
@@ -115,24 +117,7 @@ public class GameBoardController extends Ludo {
     public void setClientId(int clientId) {
     	this.clientId = clientId;
     }
-    
-    
-    private void setRoot(Stage stageroot) {
-		// TODO Auto-generated method stub
-	}
 
-	public void setConnection(Socket socket) {
-    	try {
-			this.gameSocket = socket;
-			output = new BufferedWriter(new OutputStreamWriter(
-			        socket.getOutputStream()));
-			
-    	} catch(IOException ioe) {
-    		System.err.println("fikk ikke connection, i gameBoardController");
-    		ioe.printStackTrace();
-    		
-    	}
-    }
 	
 	/**
 	 * Start the game gui for this game
@@ -143,7 +128,6 @@ public class GameBoardController extends Ludo {
     	this.clientId = clientId;
     	
     	try {				// Oprette kommunikasjon til Ludo Controller via socket
-			this.gameSocket = socket;
 			output = new BufferedWriter(new OutputStreamWriter(
 			        socket.getOutputStream()));
 			
@@ -152,8 +136,6 @@ public class GameBoardController extends Ludo {
     		ioe.printStackTrace();
     		
     	}
-		
-    	boardPane.setPickOnBounds(false);
     	
     	
 		// Hente ut spillernes navn 
@@ -162,7 +144,6 @@ public class GameBoardController extends Ludo {
 		}
 		
 		// Set the playerlabels to the players in the game
-		// TODO: fix null??
 		player1Name.setText(getPlayerName(RED));
 		player2Name.setText(getPlayerName(BLUE));
 		player3Name.setText(getPlayerName(YELLOW));
@@ -269,10 +250,7 @@ public class GameBoardController extends Ludo {
 		boardPane.getChildren().add(moveTo);
 		
 		// when this rectangle is clicked we initiate to move a piece
-		//moveTo.setOnMouseClicked(e -> moveGraphicalPiece(e));
-		moveTo.setOnMouseClicked(e -> {
-			System.out.println("YOLO");
-		});
+		moveTo.setOnMouseClicked(e -> moveGraphicalPiece(e));
 	}
 
 
@@ -303,7 +281,7 @@ public class GameBoardController extends Ludo {
 						//removePlayer(getPlayerName(RED));
 						break;
 					case PlayerEvent.WON:
-						//endGame();
+						endGame(RED);
 						break;
 						
 					default: break;
@@ -326,7 +304,7 @@ public class GameBoardController extends Ludo {
 						//removePlayer(getPlayerName(BLUE));
 						break;
 					case PlayerEvent.WON:
-						//endGame(YELLOW);
+						endGame(BLUE);
 						break;
 						
 					default: break;
@@ -349,7 +327,7 @@ public class GameBoardController extends Ludo {
 						//removePlayer(getPlayerName(YELLOW));
 						break;
 					case PlayerEvent.WON:
-						//endGame(YELLOW);
+						endGame(YELLOW);
 						break;
 						
 					default: break;	
@@ -372,16 +350,21 @@ public class GameBoardController extends Ludo {
 						//removePlayer(getPlayerName(GREEN));
 						break;
 					case PlayerEvent.WON:
-						//endGame(GREEN);
+						endGame(GREEN);
 						break;
-						
-					default: break;	
-				} // stateswitch
-			// break green
-			break;
+					
+				}	 // stateswitch
+			
 		} // playerswitch
+	
 	}
 	
+	private void endGame(int green) {
+		Platform.runLater(() -> {
+			
+		});
+	}
+
 	/**
 	 * Handles the press on the 'throwDice'-button. Asks
 	 * server to throw a dice
@@ -389,8 +372,6 @@ public class GameBoardController extends Ludo {
 	 */
 	@FXML
 	void throwDice(ActionEvent e) {
-
-		System.out.println("Du har trykket på dice din æss");
 		try {
 			output.write("GAME,THROW," + gameId + "," + clientId);
 			output.newLine();
@@ -399,64 +380,7 @@ public class GameBoardController extends Ludo {
 		catch (IOException ioe) {
 			// TODO
 		}
-		
-		//try {
-			//ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
-
-		// try {
-			// ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream());
-			// send a DiceEvent to proc the server to throw a dice
-			// oos.writeObject(new GameEvent(gameID, new DiceEvent(this, activePlayer, 0)));
-			
-			// TODO: We should be in blockingmode here
-			// TODO: get the events in some listner
-			//ObjectInputStream ois = new ObjectInputStream(connection.getInputStream());
-			// Object obj = ois.readObject();
-			
-			// we only want to handle GameEvents here
-			// if(obj ) { // instanceof GameEvent
-				// GameEvent ge = (GameEvent) obj;
-				
-				// we want to ensure we don't do changes
-				// that isn't for our game
-			/*
-				if(ge.getGameID() == gameID) {
-					
-					// we only want to handle DiceEvents here
-					if(ge.getEvent() instanceof DiceEvent) {
-						DiceEvent de = (DiceEvent) obj;
-						
-						// check if we are synched
-						if(de.getPlayer() == activePlayer) {
-							
-							// throw the dice in this instance
-							// of the game and change the view
-							super.throwDice(de.getDice());
-							diceThrown.setImage(new Image(getClass()
-									.getResourceAsStream("/images/dice" + dice + ".png")));
-						} // if player
-					} // if diceEvent
-				} // if gameid
-			} // if gameEvent
-			
-		}
-		catch(IOException ioe) {
-			// TODO: socket not found?
-		}
-		catch(ClassNotFoundException cnfe) {
-			// TODO: invalid class
-		}
-		*/
 	}
-	
-	
-	/**
-	 * 
-	 */
-	public void updateBoard(){
-		// TODO 
-	}
-	
 	
 	/**
 	 * Handles mouseclicks on the board
@@ -471,103 +395,100 @@ public class GameBoardController extends Ludo {
 		for (int pi = 0; pi < PIECES; pi++) {
 			if(obj.equals(playerPieces[activePlayer][pi])) {
 				
+				// Y is offsett with about 60 px
+				// we want the tile - 1
 				tile = corners.findTile(event.getSceneX(), event.getSceneY() - 60) - 1;
-				System.out.println("X: " + event.getSceneX() + ", Y: " + (event.getSceneY() - 60));
-				System.out.println(tile);
 				
 				if(tile != -1) {
-					
 					moveFrom.setX(corners.point[tile].getX());
 					moveFrom.setY(corners.point[tile].getY());
 					
 					
-					switch(activePlayer) {
-					case RED:
-						if(tile >= 0 && tile <= 3) {
-							moveTo.setX(corners.point[16].getX());
-							moveTo.setY(corners.point[16].getY());
-						}
-						else if(tile - dice > 73) {
-							moveTo.setX(-100);
-							moveTo.setY(-100);
-						} else {
-							moveTo.setX(corners.point[tile + dice].getX());
-							moveTo.setY(corners.point[tile + dice].getY());
-						}
-						break;
-						
-					case BLUE:
-						if(tile >= 4 && tile <= 7) {
-							moveTo.setX(corners.point[29].getX());
-							moveTo.setY(corners.point[29].getY());
-						}
-						else if(tile - dice > 79) {
-							moveTo.setX(-100);
-							moveTo.setY(-100);
-						} else {
-							moveTo.setX(corners.point[tile + dice].getX());
-							moveTo.setY(corners.point[tile + dice].getY());
-						}
-						break;
-						
-					case YELLOW:
-						if(tile >= 12 && tile <= 15) {
-							moveTo.setX(corners.point[55].getX());
-							moveTo.setY(corners.point[55].getY());
-						}
-						else if(tile - dice > 85) {
-							moveTo.setX(-100);
-							moveTo.setY(-100);
-						} else {
-							moveTo.setX(corners.point[tile + dice].getX());
-							moveTo.setY(corners.point[tile + dice].getY());
-						}
-						break;
-						
-					case GREEN:
-						if(tile >= 12 && tile <= 15) {
-							moveTo.setX(corners.point[55].getX());
-							moveTo.setY(corners.point[55].getY());
-						}
-						else if(tile - dice > 91) {
-							moveTo.setX(-100);
-							moveTo.setY(-100);
-						} else {
-							moveTo.setX(corners.point[tile + dice].getX());
-							moveTo.setY(corners.point[tile + dice].getY());
-						}
-						break;
+					if(tile >= 0 && tile <= 3) {
+						moveTo.setX(corners.point[16].getX());
+						moveTo.setY(corners.point[16].getY());
+					}
+					else if(tile >= 4 && tile <= 7) {
+						moveTo.setX(corners.point[29].getX());
+						moveTo.setY(corners.point[29].getY());
+					}
+					else if(tile >= 8 && tile <= 11) {
+						moveTo.setX(corners.point[42].getX());
+						moveTo.setY(corners.point[42].getY());
+					}
+					else if(tile >= 12 && tile <= 15) {
+						moveTo.setX(corners.point[55].getX());
+						moveTo.setY(corners.point[55].getY());
+					}
+					else {
+						moveTo.setX(corners.point[tile + dice].getX());
+						moveTo.setY(corners.point[tile + dice].getY());
 					}
 				}
 			}
 		}
 	}
 	
-
 	/**
-	 *  Handle the clickevent to mova a piece
-	 * @param e The event from the click
+	 * Handles clicks on the moveTo rectangle
+	 * so we can actually move the piece
+	 * @param e The event
 	 */
 	@FXML
 	private void moveGraphicalPiece(MouseEvent e) { 
+
+		System.out.println("flytt");
+		if(e.getEventType() == MouseEvent.MOUSE_CLICKED) {
+			System.out.println("flytt");
 			
-		int moveFromTile = corners.findTile(e.getSceneX(), e.getSceneY() - 60);
-		int i = 0;
+			int moveFromTile = corners.findTile(e.getSceneX(), e.getSceneY());
+			int i = 0;
+			
+			
+			// gets which piece is selected
+			while(playerPieces[activePlayer][i].equals(moveFrom) && i++ < PIECES);
+			
+			int piece = getPieceAt(activePlayer, moveFromTile);
+			int from = getPosition(activePlayer, piece);
+			
+			if(super.movePiece(activePlayer, from, from + dice)) {
+				// TODO: call the function that moves the piece
+				// on the screen
+				// OR
+				// just do this?
+				// playerPieces[activePlayer][i].setX(moveTo.getX());
+				// playerPieces[activePlayer][i].setY(moveTo.getY());
+				/*
+				try {
+					// send the info to the server
+					// ObjectOutputStream oos = new ObjectOutputStream(gameSocket.getOutputStream());
+					// oos.writeObject(new GameEvent(gameID, new PieceEvent(this, activePlayer, piece, from, from + dice)));
+					//connection.send(new MovePiece(gameId, activePlayer, from, from + dice));
+					
+					//playerPieces[activePlayer][i].setX();
+				}
+				catch(IOException ioe) {
+					// TODO: log?
+				}
+			*/
+			}else {
+					// If we can't move, remove destination selection
+					// as indicator that the user can't move (with that piece)
+					moveTo.setX(-100);
+					moveTo.setY(-100);
+			}
+			
+			
+			try {
+				output.write("GAME,MOVE," + gameId + "," + clientId + ","
+							+ activePlayer + "," + from + "," + from + dice);
+			}
+			catch(IOException ioe) {
+				//TODO
+			}
+			
+		}	// ELSE do nothing
 		
-		
-		// gets which piece is selected
-		while(playerPieces[activePlayer][i].equals(moveFrom) && i++ < PIECES);
-		
-		int piece = getPieceAt(activePlayer, moveFromTile);
-		int from = getPosition(activePlayer, piece);
-		
-		try {
-			output.write("GAME,MOVE," + gameId + "," + clientId + ","
-						+ activePlayer + "," + from + "," + from+dice	);
-		}
-		catch(IOException ioe) {
-			//TODO
-		}
 	}
 	
 	
@@ -884,14 +805,31 @@ public class GameBoardController extends Ludo {
     	}
     }
 
+    /**
+     * Gets the ID of this game
+     * @return gamid
+     */
 	public int getGameId() {
 		return gameId;
 	}
-    
-    /**
-     * Gives this game an Id
-     * @param gameId Id of game
-     */
+	
+	
+	/**
+	 * Override Ludo's movePiece so that we can
+	 * move at the graphical level
+	 * @see Ludo#movePiece(int, int, int)
+	 */
+	@Override
+	public boolean movePiece(int player, int from, int to) {
+		
+		int i = 0;
+		while(playerPieces[activePlayer][i].equals(moveFrom) && i++ < PIECES);
+		
+		playerPieces[activePlayer][i].setX(moveTo.getX());
+		playerPieces[activePlayer][i].setY(moveTo.getY());
+		
+		return super.movePiece(player, from, to);
+	}
 
 
 } // GameBoardController end
