@@ -87,10 +87,16 @@ public class GameBoardController extends Ludo {
     private int chatId;
     
     
+<<<<<<< HEAD
+    /**
+	 * 
+	 * @param gameId
+=======
     
 	/**
 	 * Sets the ID of this controllers game
 	 * @param gameId Id of game
+>>>>>>> 0cba65a3aa778ea5c948ce584ad0d71039136267
 	 */
     public void setGameId(int gameId) {
     	this.gameId = gameId;

@@ -961,7 +961,11 @@ public class Ludo {
 		return (PIECES - homeOrDone);
 	}
 	
-	
+	/**
+	 * Checks if a player is active
+	 * @param player player id
+	 * @return true/false active/inactive
+	 */
 	private boolean isActive(int player) {
 		String pl = players.get(player);
 		return ((pl != null) && (!pl.startsWith(INACTIVE)));

@@ -61,10 +61,6 @@ public class PlayerEvent extends java.util.EventObject {
 		}
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
 	@Override
     public int hashCode() {
 		// makes a hash put of the given paramenters
@@ -103,6 +99,7 @@ public class PlayerEvent extends java.util.EventObject {
 		this.state = state;
 	}
 	
+
 	@Override
 	public String toString() {
 		StringBuilder playerstring = new StringBuilder();
