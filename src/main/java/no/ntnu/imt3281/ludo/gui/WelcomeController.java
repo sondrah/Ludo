@@ -52,6 +52,7 @@ public class WelcomeController {
 	@FXML private PasswordField txtFieldPassword2;
 	
 	private static String usrname;
+	private Socket socket;
 	
 	
 	/**
@@ -163,7 +164,7 @@ public class WelcomeController {
 			
 		} else {
 			try {
-				Socket socket = new Socket("localhost", 12345);
+				socket = new Socket("localhost", 12345);
 				BufferedWriter bw = new BufferedWriter(
 						new OutputStreamWriter(socket.getOutputStream()));
 				
@@ -291,5 +292,4 @@ public class WelcomeController {
 		txtFieldPassword.setText("");
 		txtFieldPassword2.setText("");
 	}
-
 }

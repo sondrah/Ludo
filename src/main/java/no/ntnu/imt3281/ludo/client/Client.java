@@ -62,7 +62,5 @@ public class Client extends Application{
     	} catch (IOException ioe){
     		Logging.log(ioe.getStackTrace()); 
     	}
-		
 	}
-	
 }

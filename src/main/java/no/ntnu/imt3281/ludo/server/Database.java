@@ -1,5 +1,6 @@
 package no.ntnu.imt3281.ludo.server;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -122,9 +123,10 @@ public class Database {
 	public boolean addUser(String username, String password) {
 		
 		boolean added = true;
+		Statement stmt = null;
 		
 		try {
-			Statement stmt = con.createStatement();
+			stmt = con.createStatement();
 			
 			System.err.println("addUser");
 			stmt.execute( "INSERT INTO usertable (username, password)"
@@ -141,10 +143,12 @@ public class Database {
 		}
 		finally {
             try {
-            con.close();
+            	if(stmt != null) {
+            		stmt.close();
+            	}
             } 
             catch (SQLException sqle) {
-            	 Logging.log(ioe.getStackTrace());
+            	 Logging.log(sqle.getStackTrace());
     		}
            
         }
@@ -162,8 +166,10 @@ public class Database {
 		System.err.println("logMessage");
 		System.err.println(userId + ", " + chatId);
 		
+		Statement stmt = null;
+		
 		try {
-			Statement stmt = con.createStatement();
+			stmt = con.createStatement();
 			
 			stmt.execute("INSERT INTO message ("
 						+ "chatId, userId, time, message)"
@@ -180,6 +186,17 @@ public class Database {
 		catch (SQLException sqle) {
 			Logging.log(sqle.getStackTrace());
 		}
+		finally {
+            try {
+            	if(stmt != null) {
+            		stmt.close();
+            	}
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 	}
 	
 	
@@ -197,10 +214,10 @@ public class Database {
 	public String getUserName(int id) {
 		String userName = null;
 		
+		Statement stmt = null;
 		try {
-			Statement stmt = con.createStatement();
+			stmt = con.createStatement();
 		
-			//System.err.println("getUser1");
 			ResultSet resultSet = stmt.executeQuery("SELECT ID, USERNAME FROM usertable");
 			
 			while(resultSet.next()) {
@@ -213,7 +230,17 @@ public class Database {
 			Logging.log(sqle.getStackTrace());
 			
 		}
-		
+		finally {
+            try {
+            	if(stmt != null) {
+            		stmt.close();
+            	}
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+            
+        }
 		return userName;
 	}
 	
@@ -231,9 +258,10 @@ public class Database {
 	public String[] getUser(String username) {
 		String[] userdata = new String[3];
 		
+		Statement stmt = null;
 		
 		try {
-			Statement stmt = con.createStatement();
+			stmt = con.createStatement();
 		
 			System.err.println("getUser2");
 			ResultSet resultSet = stmt.executeQuery("SELECT * FROM usertable");
@@ -253,7 +281,17 @@ public class Database {
 			Logging.log(sqle.getStackTrace());
 			userdata = null;
 		} // catch
-		
+		finally {
+            try {
+            	if(stmt != null) {
+            		stmt.close();
+            	}
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 		return userdata;
 	} // func end
 	
@@ -266,8 +304,9 @@ public class Database {
 	public int getUserID(String username) {
 		int userId = -1;
 		
+		Statement stmt = null;
 		try {
-			Statement stmt = con.createStatement();
+			stmt = con.createStatement();
 			
 			ResultSet res = stmt.executeQuery("SELECT id, username FROM usertable "
 										+ "WHERE username = '" + username + "'");
@@ -280,7 +319,17 @@ public class Database {
 		catch(SQLException sqle) {
 			Logging.log(sqle.getStackTrace());
 		}
-		
+		finally {
+            try {
+            	if(stmt != null) {
+            		stmt.close();
+            	}
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 		return userId;
 	}
 	
@@ -292,8 +341,9 @@ public class Database {
 	public int getChatID(String chatname) {
 		int chatid = -1;
 		
+		Statement stmt = null;
 		try {
-			Statement stmt = con.createStatement();
+			stmt = con.createStatement();
 			
 			ResultSet res = stmt.executeQuery("SELECT id, chatname FROM chat "
 									+ "WHERE chatname = '" + chatname + "'");
@@ -309,7 +359,17 @@ public class Database {
 		catch(SQLException sqle) {
 			Logging.log(sqle.getStackTrace());
 		}
-		
+		finally {
+            try {
+            	if(stmt != null) {
+            		stmt.close();
+            	}
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 		return chatid;
 	}
 	
@@ -323,8 +383,9 @@ public class Database {
 		
 		int userid = -1;
 		
+		Statement stmt = null;
 		try {
-			Statement stmt = con.createStatement();
+			stmt = con.createStatement();
 			
 			ResultSet res = stmt.executeQuery("SELECT id FROM usertable "
 									+ "WHERE username = '" + username + "'"
@@ -338,7 +399,17 @@ public class Database {
 		catch (SQLException sqle) {
 			Logging.log(sqle.getStackTrace());
 		}
-		
+		finally {
+            try {
+            	if(stmt != null) {
+            		stmt.close();
+            	}
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 		return userid;
 	}
 	
@@ -361,8 +432,10 @@ public class Database {
 	 * @param chatname The name of the chat
 	 */
 	public void addChat(String chatname) {
+		Statement stmt = null;
+		
 		try {
-			Statement stmt = con.createStatement();
+			stmt = con.createStatement();
 			stmt.execute("INSERT INTO chat (chatname)"
 					+ "VALUES ('" + chatname + "')");
 			
@@ -370,6 +443,15 @@ public class Database {
 		}
 		catch (SQLException sqle) {
 			Logging.log(sqle.getStackTrace());
+		}
+		finally {
+			try {
+				if(stmt != null) {
+            		stmt.close();
+            	}
+			} catch (SQLException sqle) {
+				Logging.log(sqle.getStackTrace());
+			}
 		}
 	}
 	
@@ -382,8 +464,10 @@ public class Database {
 	 */
 	private void display() {
 		System.err.println("DISPLAY\n");
+		Statement stmt = null;
+		
 		try {
-			Statement stmt = con.createStatement();
+			stmt = con.createStatement();
 			
 			ResultSet res = stmt.executeQuery("SELECT * FROM message");
 			
@@ -428,6 +512,14 @@ public class Database {
 		catch (SQLException sqle) {
 			Logging.log(sqle.getStackTrace());
 		}
-		
+		finally {
+			try {
+				if(stmt != null) {
+            		stmt.close();
+            	}
+			} catch (SQLException sqle) {
+				Logging.log(sqle.getStackTrace());
+			}
+		}
 	}
 }
