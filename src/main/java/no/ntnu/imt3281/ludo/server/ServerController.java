@@ -449,7 +449,7 @@ public class ServerController extends JFrame {
 		
 		Game game = null;
 		
-		System.err.println("2.2 Handle Game: " + str[2]);
+		System.err.println("3. Handle Game: " + str[2]);
 		
 		switch(str[1]) {
 		case "THROW":
@@ -494,30 +494,28 @@ public class ServerController extends JFrame {
 			break;
 			
 		case "CREATE":
-			
+			int clientID = Integer.parseInt(str[2]);
 			String message = null;
-			Client client = getClient(Integer.parseInt(str[2]));
+			Client client = getClient(clientID);
 			StringBuilder sb = new StringBuilder();
 			
 			waitingClients.add(client);
-			if(waitingClients.size() >= 1) {
-				System.out.println("2.?? Itererer" +waitingClients.size()+ " gjennom witingclients: game: " + gameID);
+			System.out.println("3.0 Ant ventende: "+ waitingClients.size() );
+			if(waitingClients.size() >= 2) {
+				System.out.println("3.1 Itererer gjennom  " +waitingClients.size()+ " witingclients: game: " + gameID);
 				game = new Game(gameID++);
 				String chatName = "Game #" + gameID + " chat";
 				Chat chat = newChat(chatName);
 				
 				int i = 0;
 				while(waitingClients.size() >= 1 && i < 4) {
-					System.out.println("2.4.1 starten laget ny chat og game");
+					System.out.println("3.2 for hver spiller: "+ waitingClients.size());
 					Client c = waitingClients.remove(0);
 					String name = db.getUserName(c.getId());
 					chat.addParticipantToChat(c);
 					game.addParticipantToGame(c);
 					sb.append(name + ":");
 					game.addPlayer(name);
-					
-					// 	messages.put("CHAT,JOIN," + chatName + ","+c.getId());
-					
 					waitingClients.trimToSize();
 					i++;
 				}
@@ -527,10 +525,9 @@ public class ServerController extends JFrame {
 				
 				message = "GAME,CREATE,TRUE," + game.getId() + "," + chat.getId() + "," + sb.toString();
 				
-				
 			}
 			else {
-				message = "GAME,CREATE,FALSE,WAIT";
+				message = "GAME,CREATE,FALSE,"+clientID;
 			}
 			
 			try {
@@ -548,20 +545,34 @@ public class ServerController extends JFrame {
 		// GAME,MOVE,gameid,TRUE,player,from,to
 		// GAME,MOVE,gameid,FALSE
 		// GAME,CREATE,TRUE,gameid,players
-		// GAME,CREATE,WAIT
+		// GAME,CREATE,FALSE,clientId
 		
 		String[] arr = str.split(",");
 		String action = arr[1];
 		
 		if(action.equals("CREATE")) {
-			getGame(Integer.parseInt(arr[3])).getParticipants()
-			.parallelStream().forEach(client -> {
+			if(arr[2].equals("TRUE")) {			// Dersom Game er laget
+				getGame(Integer.parseInt(arr[3])).getParticipants()
+				.parallelStream().forEach(client -> {
+					try {
+						
+							client.sendText(str);
+						
+					} catch (IOException e) {
+						// TODO log
+					}
+				});
+			}
+			else {
+				// MSG = GAME,CREATE,FALSE,clientId
+				Client c = getClient(Integer.parseInt(arr[3])); 
 				try {
-					client.sendText(str);
+					c.sendText(str);
 				} catch (IOException e) {
-					// TODO log
+					// TODO Auto-generated catch block
+					
 				}
-			});
+			}
 		}
 		else {
 			getGame(Integer.parseInt(arr[2])).getParticipants()
