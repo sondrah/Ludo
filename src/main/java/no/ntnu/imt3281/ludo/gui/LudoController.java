@@ -201,6 +201,7 @@ public class LudoController {
 			                			makeNewGameTab(gameid, chatid, arr[5].split(":"));
 			                		}
 			                		else {
+			                			// kjøre på FX-thread
 			                			Platform.runLater(() ->{
 			                				Alert alert = new Alert(AlertType.INFORMATION);
 				                			alert.setTitle(I18N.tr("ludo.fyiHeader"));
@@ -224,25 +225,35 @@ public class LudoController {
 		                			gameBoard = getGameBoard(gameid);
 		                			
 		                			if(arr[3].equals("TRUE")) {
+		                				// GAME,MOVE,TRUE,gameid,player,from,to
 		                				int player = Integer.parseInt(arr[4]);
 		                				int from = Integer.parseInt(arr[5]);
 		                				int to = Integer.parseInt(arr[6]);
 		                				
 		                				gameBoard.movePiece(player, from, to);
 		                			}
-		                			else {
-		                				// player wasn't allowed to move
-		                				// todo: feilmelding
-		                			}
 		                		}
 		                		break;
 		                		
 		                	case "LISTPLAYERS":
+		                		// melding:
+		                		// LISTPLAYERS,clientid,players[]
+		                		
+		                		// finne tab
+		                		// inne i den tabben,
+		                		// lookup(#listView)
+		                		// listView.setItems(array)
 		                		break;
 		                		
 		                	case "LISTCHATS":
-		                		break;
+		                		// melding:
+		                		// LISTCHATS,clientid,players[]
 		                		
+		                		// finne tab
+		                		// inne i den tabben,
+		                		// lookup(#listView)
+		                		// listView.setItems(array)
+		                		break;
 		                	}
 		                }
 		                	
