@@ -42,6 +42,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import no.ntnu.imt3281.i18n.I18N;
+import no.ntnu.imt3281.ludo.Logging;
 
 /**
  * Controlls all actions on the homepage
@@ -127,9 +128,7 @@ public class LudoController {
 			        socket.getOutputStream()));
 			
     	} catch(IOException ioe) {
-    		System.err.println("fikk ikke connection, i ludocontroller");
     		ioe.printStackTrace();
-    		
     	}
     }
 

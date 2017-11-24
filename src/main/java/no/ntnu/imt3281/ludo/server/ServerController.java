@@ -32,6 +32,7 @@ import org.apache.derby.impl.sql.catalog.SYSROUTINEPERMSRowFactory;
 import org.apache.derby.tools.sysinfo;
 
 import no.ntnu.imt3281.ludo.logic.Ludo;
+import no.ntnu.imt3281.ludo.Logging;
 
 /**
  * Master-server who controls DB, chats & games  
@@ -109,7 +110,7 @@ public class ServerController extends JFrame {
             executorService = Executors.newCachedThreadPool();
             startLoginMonitor();		// Handle login requests in a separate thread
             startMessageSender1();		// Send same message to all clients, handled in a separate thread
-            startMessageListener1();		// Check clients for new messages
+            startMessageListener1();		// Check clients for new messages      
             
             fileHandler = new FileHandler("./src/main/java/no/ntnu/imt3281/ludo/chatlogg.log");	// path to log file
             chatlogger.addHandler(fileHandler);
