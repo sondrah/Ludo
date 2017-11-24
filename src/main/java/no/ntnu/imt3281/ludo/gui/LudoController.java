@@ -12,15 +12,12 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -142,7 +139,7 @@ public class LudoController {
 
     /**
      * Set user id in constructor
-     * @param id
+     * @param id id of user
      */
     public void setUserId(int id) {
     	this.clientId = id;
@@ -267,14 +264,11 @@ public class LudoController {
     	});
     }
     
-   
-
-	
-
-	/**
+    
+     /**
      * Used to add messages to the message area in a thread safe manner
-     * 
-     * @param text the text to be added
+     * @param chatId id of a given chat
+     * @param message the text to be added
      */
     private void routeChatMessage(String message, int chatId) {
     	Integer tabId = chatToTab.get(chatId);
@@ -300,16 +294,15 @@ public class LudoController {
     
     /**
      * routeGameMessage
-     * @param actionId
-     * @param receivedClientId
-     * @param message
+     * @param gameId id of given game
+     * @param receivedClientId id of the client from which the message originated
+     * @param message text that is to be routed
      */
     private void routeGameMessage(int gameId, String receivedClientId, String message) {
     	
     	// gameBoards. vinne riktig gameBoaard
     	// Så finne riktig tab
     	Integer tabId = gameToTab.get(gameId);
-    	System.out.println("6.routeGameM: " +message+ " Tab id til Game: " + tabId );
     	if(tabId != null) {	 
     										// Henter ut riktig Anchor Pane for riktig chatterom
 	    	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(tabId).getContent();
@@ -318,10 +311,8 @@ public class LudoController {
 	    		TextArea textA = (TextArea)tabRoot.lookup("#ChatArea");  // "#gameChatArea" eller likt??
 	    		if(textA != null) {    		// Her må vi antagelig ha flere mtp chat og board
 	    			textA.appendText(message+ "\n");		// Legg til meldingen 
-	    		}
-	    		else System.out.println("5. CHAT routeGameMes ERR FANT IKKE textArea!!");
-	    	}
-	    	else System.out.println("5. CHAT routeGameMes ERR FANT IKKE TAB ROOT!!");
+	    		} else System.out.println("5. CHAT routeGameMes ERR FANT IKKE textArea!!");
+	    	} else System.out.println("5. CHAT routeGameMes ERR FANT IKKE TAB ROOT!!");
     	}
 		
 	}
@@ -333,7 +324,6 @@ public class LudoController {
     public void close(ActionEvent e) {
     	Platform.exit();
     }
-    
     
     
     /**
