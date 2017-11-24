@@ -144,7 +144,7 @@ public class Database {
             con.close();
             } 
             catch (SQLException sqle) {
-            	 Logging.log(ioe.getStackTrace());
+            	 Logging.log(sqle.getStackTrace());
     		}
            
         }
@@ -180,6 +180,15 @@ public class Database {
 		catch (SQLException sqle) {
 			Logging.log(sqle.getStackTrace());
 		}
+		finally {
+            try {
+            con.close();
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 	}
 	
 	
@@ -200,7 +209,6 @@ public class Database {
 		try {
 			Statement stmt = con.createStatement();
 		
-			//System.err.println("getUser1");
 			ResultSet resultSet = stmt.executeQuery("SELECT ID, USERNAME FROM usertable");
 			
 			while(resultSet.next()) {
@@ -213,7 +221,15 @@ public class Database {
 			Logging.log(sqle.getStackTrace());
 			
 		}
-		
+		finally {
+            try {
+            con.close();
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+            
+        }
 		return userName;
 	}
 	
@@ -253,7 +269,15 @@ public class Database {
 			Logging.log(sqle.getStackTrace());
 			userdata = null;
 		} // catch
-		
+		finally {
+            try {
+            con.close();
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 		return userdata;
 	} // func end
 	
@@ -280,7 +304,15 @@ public class Database {
 		catch(SQLException sqle) {
 			Logging.log(sqle.getStackTrace());
 		}
-		
+		finally {
+            try {
+            con.close();
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 		return userId;
 	}
 	
@@ -309,7 +341,15 @@ public class Database {
 		catch(SQLException sqle) {
 			Logging.log(sqle.getStackTrace());
 		}
-		
+		finally {
+            try {
+            con.close();
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 		return chatid;
 	}
 	
@@ -338,7 +378,15 @@ public class Database {
 		catch (SQLException sqle) {
 			Logging.log(sqle.getStackTrace());
 		}
-		
+		finally {
+            try {
+            con.close();
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 		return userid;
 	}
 	
@@ -428,6 +476,14 @@ public class Database {
 		catch (SQLException sqle) {
 			Logging.log(sqle.getStackTrace());
 		}
-		
+		finally {
+            try {
+            con.close();
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 	}
 }
