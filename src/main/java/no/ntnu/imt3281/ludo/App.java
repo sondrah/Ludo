@@ -21,5 +21,6 @@ public class App {
 	public static void main(String[] args) {	
 		ServerController servercontroller = new ServerController();
 		Client c = new Client(args);
+		
 	}
 }
