@@ -8,6 +8,7 @@ public class User {
 	private String username;
 	private String password;
 	private Vector <Integer> friendlist;
+	// TOKEN?
 
 	public User() {
 		super();
@@ -18,7 +19,7 @@ public class User {
 		setUsername(uname);
 		setPassword(pwd);
 		friendlist = new Vector<>();
-		// TODO databasekall som spør etter en id (egen funksjon i databaseklassen?)
+		
 	}
 
 	public void setPassword(String pwd) {
