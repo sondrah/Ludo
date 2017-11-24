@@ -201,12 +201,14 @@ public class LudoController {
 			                			makeNewGameTab(gameid, chatid, arr[5].split(":"));
 			                		}
 			                		else {
-			                			Alert alert = new Alert(AlertType.INFORMATION);
-			                			alert.setTitle(I18N.tr("ludo.fyiHeader"));
-			                			alert.setHeaderText(null);
-			                			alert.setContentText(I18N.tr("ludo.fyiContent"));
+			                			Platform.runLater(() ->{
+			                				Alert alert = new Alert(AlertType.INFORMATION);
+				                			alert.setTitle(I18N.tr("ludo.fyiHeader"));
+				                			alert.setHeaderText(null);
+				                			alert.setContentText(I18N.tr("ludo.fyiContent"));
 
-			                			alert.showAndWait();
+				                			alert.showAndWait();
+			                			});
 			                		}
 		                		}
 		                		else if(arr[1].equals("THROW")) {

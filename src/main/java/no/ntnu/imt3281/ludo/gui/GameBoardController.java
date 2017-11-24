@@ -477,45 +477,73 @@ public class GameBoardController extends Ludo {
 				System.out.println(tile);
 				
 				if(tile != -1) {
+					
 					moveFrom.setX(corners.point[tile].getX());
 					moveFrom.setY(corners.point[tile].getY());
 					
 					
-					if(tile >= 0 && tile <= 3) {
-						moveTo.setX(corners.point[16].getX());
-						moveTo.setY(corners.point[16].getY());
-					}
-					else if(tile >= 4 && tile <= 7) {
-						moveTo.setX(corners.point[29].getX());
-						moveTo.setY(corners.point[29].getY());
-					}
-					else if(tile >= 8 && tile <= 11) {
-						moveTo.setX(corners.point[42].getX());
-						moveTo.setY(corners.point[42].getY());
-					}
-					else if(tile >= 12 && tile <= 15) {
-						moveTo.setX(corners.point[55].getX());
-						moveTo.setY(corners.point[55].getY());
-					}
-					else {
-						moveTo.setX(corners.point[tile + dice].getX());
-						moveTo.setY(corners.point[tile + dice].getY());
+					switch(activePlayer) {
+					case RED:
+						if(tile >= 0 && tile <= 3) {
+							moveTo.setX(corners.point[16].getX());
+							moveTo.setY(corners.point[16].getY());
+						}
+						else if(tile - dice > 73) {
+							moveTo.setX(-100);
+							moveTo.setY(-100);
+						} else {
+							moveTo.setX(corners.point[tile + dice].getX());
+							moveTo.setY(corners.point[tile + dice].getY());
+						}
+						break;
+						
+					case BLUE:
+						if(tile >= 4 && tile <= 7) {
+							moveTo.setX(corners.point[29].getX());
+							moveTo.setY(corners.point[29].getY());
+						}
+						else if(tile - dice > 79) {
+							moveTo.setX(-100);
+							moveTo.setY(-100);
+						} else {
+							moveTo.setX(corners.point[tile + dice].getX());
+							moveTo.setY(corners.point[tile + dice].getY());
+						}
+						break;
+						
+					case YELLOW:
+						if(tile >= 12 && tile <= 15) {
+							moveTo.setX(corners.point[55].getX());
+							moveTo.setY(corners.point[55].getY());
+						}
+						else if(tile - dice > 85) {
+							moveTo.setX(-100);
+							moveTo.setY(-100);
+						} else {
+							moveTo.setX(corners.point[tile + dice].getX());
+							moveTo.setY(corners.point[tile + dice].getY());
+						}
+						break;
+						
+					case GREEN:
+						if(tile >= 12 && tile <= 15) {
+							moveTo.setX(corners.point[55].getX());
+							moveTo.setY(corners.point[55].getY());
+						}
+						else if(tile - dice > 91) {
+							moveTo.setX(-100);
+							moveTo.setY(-100);
+						} else {
+							moveTo.setX(corners.point[tile + dice].getX());
+							moveTo.setY(corners.point[tile + dice].getY());
+						}
+						break;
 					}
 				}
 			}
 		}
 	}
 	
-	
-	/**
-	 * 
-	 * @param player
-	 * @param b
-	 */
-	private void changePlayerState(int player, boolean b) {		// Ka e tanken her?
-		// TODO Auto-generated method stub						// Nei, ka E tanken her, Bjønn?
-		
-	}
 
 	/**
 	 *  Handle the clickevent to mova a piece
@@ -523,50 +551,24 @@ public class GameBoardController extends Ludo {
 	 */
 	@FXML
 	private void moveGraphicalPiece(MouseEvent e) { 
+			
+		int moveFromTile = corners.findTile(e.getSceneX(), e.getSceneY() - 60);
+		int i = 0;
 		
-		System.out.println("flytt");
-		if(e.getEventType() == MouseEvent.MOUSE_CLICKED) {
-			System.out.println("flytt");
-			
-			int moveFromTile = corners.findTile(e.getSceneX(), e.getSceneY());
-			int i = 0;
-			
-			
-			// gets which piece is selected
-			while(playerPieces[activePlayer][i].equals(moveFrom) && i++ < PIECES);
-			
-			int piece = getPieceAt(activePlayer, moveFromTile);
-			int from = getPosition(activePlayer, piece);
-			
-			if(super.movePiece(activePlayer, from, from + dice)) {
-				// TODO: call the function that moves the piece
-				// on the screen
-				// OR
-				// just do this?
-				// playerPieces[activePlayer][i].setX(moveTo.getX());
-				// playerPieces[activePlayer][i].setY(moveTo.getY());
-				
-				try {
-					// send the info to the server
-					ObjectOutputStream oos = new ObjectOutputStream(gameSocket.getOutputStream());
-					// oos.writeObject(new GameEvent(gameID, new PieceEvent(this, activePlayer, piece, from, from + dice)));
-					//connection.send(new MovePiece(gameId, activePlayer, from, from + dice));
-					
-					//playerPieces[activePlayer][i].setX();
-				}
-				catch(IOException ioe) {
-					// TODO: log?
-				}
-			}
-			else {
-				// If we can't move, remove destination selection
-				// as indicator that the user can't move (with that piece)
-				moveTo.setX(-100);
-				moveTo.setY(-100);
-			}
+		
+		// gets which piece is selected
+		while(playerPieces[activePlayer][i].equals(moveFrom) && i++ < PIECES);
+		
+		int piece = getPieceAt(activePlayer, moveFromTile);
+		int from = getPosition(activePlayer, piece);
+		
+		try {
+			output.write("GAME,MOVE," + gameId + "," + clientId + ","
+						+ activePlayer + "," + from + "," + from+dice	);
 		}
-		// ELSE do nothing
-		
+		catch(IOException ioe) {
+			//TODO
+		}
 	}
 	
 	
