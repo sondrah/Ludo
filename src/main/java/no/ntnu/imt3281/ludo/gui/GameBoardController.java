@@ -92,8 +92,7 @@ public class GameBoardController extends Ludo {
     private int chatId;
     
     
-    
-	/**
+    /**
 	 * 
 	 * @param gameId
 	 */

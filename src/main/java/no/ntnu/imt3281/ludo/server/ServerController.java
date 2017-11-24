@@ -587,6 +587,9 @@ public class ServerController extends JFrame {
 	}
 	
 
+	/**
+	 * @param str
+	 */
 	private void handleListRequest(String[] str) {
 		// This should recieve all special requests
 		// and should all have str[0] = 'REQUEST'
@@ -628,6 +631,9 @@ public class ServerController extends JFrame {
 	}
 	
 	
+	/**
+	 * @param str
+	 */
 	private void sendListRequestAnswearMessages(String str) {
 		
 		// REQUEST,LISTPLAYERS,userid,players
@@ -737,11 +743,8 @@ public class ServerController extends JFrame {
     
     /**
      * Each object of this class represent a chat-room.
-     * 
-     *
      */
     class Chat {
-    	// private String chatName;
     	private int ID;
     	private Vector<Client> participantsChat;
     	
@@ -785,29 +788,15 @@ public class ServerController extends JFrame {
     	public Vector<Client> getParticipants() {
     		return participantsChat; 
     	}
+    }
     	
-    	/* 	public boolean sendChatMessage(String msg) {
-    		Iterator<Client> i = participants.iterator();
-    		while(i.hasNext()) {
-    			Client client = i.next();
-    			try {
-    				client.sendText(msg);
-    			} catch(IOException ioe) {
-    				i.remove();
-                	messages.add("LOGOUT:"+client.ID);
-                	messages.add(client.ID+" got lost in hyperspace");
-    			}
-    		}
-    		    }*/
-    	}
-    	
-
+   
     /**
      * Each object of this class represents the servers version
      * of a Ludo game. 
      *
      */
-    class Game extends Ludo{
+    class Game extends Ludo {
     	private int ID;
     	private Vector<Client> participantsGame;
     	
@@ -821,8 +810,7 @@ public class ServerController extends JFrame {
     		participantsGame = new Vector<>();
     	}
     	
-
-		/**
+    	/**
          * Sets ID 
          * @param ID
          */
@@ -838,20 +826,28 @@ public class ServerController extends JFrame {
         	return ID; 
         }     
     	
-        /*
-    	public int getThisGamerelatedChatId() {
-    		return relatedChatId; 	
-    	}*/
-    	
+    	/**
+    	 * adds a participant to a given game
+    	 * @param c the client that is to be added
+    	 */
     	public void addParticipantToGame(Client c) {
     		participantsGame.add(c);
     		
     	}
     	
+    	/**
+    	 * removes a participant from a given game
+    	 * @param c the client that is to be removed
+    	 */
     	public void removeParticipant(Client c) {
     		participantsGame.removeElement(c);
     		
     	}
+    	
+    	/**
+    	 * gets a list of participants in a given game 
+    	 * @return a list of clients
+    	 */
     	public Vector<Client> getParticipants() {
     		return participantsGame; 
     	}
@@ -866,7 +862,7 @@ public class ServerController extends JFrame {
     	}
     	
     	/**
-    	 * Thries to move a playerpice in Ludo
+    	 * Tries to move a player piece in Ludo
     	 * @param player The player index
     	 * @param from The tile to move from
     	 * @param to The tile to move to
@@ -875,8 +871,6 @@ public class ServerController extends JFrame {
     	public boolean movePieve(int player, int from, int to) {
     		return super.movePiece(player, from, to);
     	}
-    	
+    
     }
-	
-	
 }

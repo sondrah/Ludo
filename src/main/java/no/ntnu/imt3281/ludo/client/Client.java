@@ -33,7 +33,6 @@ public class Client extends Application{
 	 */
 	public Client() {
 		I18N.getResource("no.ntnu.imt3281.i18n.i18n");
-		// TODO setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
 	/**
@@ -41,10 +40,7 @@ public class Client extends Application{
 	 * Constructs a new client with the parameters args
 	 */
 	public Client(String[] args) {
-		//Stage primaryStage = new Stage();
-		//start(primaryStage);
 		launch(args);
-		
 	}
 	
 	/**
@@ -55,7 +51,7 @@ public class Client extends Application{
 		Client c = new Client(args);
 	}
 	
-	// Launches the initial window of the application (Welcome screen)
+	// Launches the initial window of the application (Welcome screen) into a scene
 	@Override
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("Ludo-Alea-iacta-est");
