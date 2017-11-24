@@ -201,12 +201,14 @@ public class LudoController {
 			                			makeNewGameTab(gameid, chatid, arr[5].split(":"));
 			                		}
 			                		else {
-			                			Alert alert = new Alert(AlertType.INFORMATION);
-			                			alert.setTitle(I18N.tr("ludo.fyiHeader"));
-			                			alert.setHeaderText(null);
-			                			alert.setContentText(I18N.tr("ludo.fyiContent"));
+			                			Platform.runLater(() ->{
+			                				Alert alert = new Alert(AlertType.INFORMATION);
+				                			alert.setTitle(I18N.tr("ludo.fyiHeader"));
+				                			alert.setHeaderText(null);
+				                			alert.setContentText(I18N.tr("ludo.fyiContent"));
 
-			                			alert.showAndWait();
+				                			alert.showAndWait();
+			                			});
 			                		}
 		                		}
 		                		else if(arr[1].equals("THROW")) {
@@ -244,72 +246,6 @@ public class LudoController {
 		                	}
 		                }
 		                	
-		                	/*
-			                String retMessage = input.readLine();
-			                
-							String[] returnMessage = retMessage.split(",");
-							String type = returnMessage[0];
-							int actionId = Integer.parseInt(returnMessage[1]);	
-							String receivedClientId = returnMessage[2];	
-							String message = returnMessage[3];
-							String inviteName = null;
-							System.out.println("4. Client listener innkommende melding" + retMessage);
-							
-							if(returnMessage.length == 5) {
-								inviteName = returnMessage[4];
-							}
-							
-			                if (type.equals("CHAT")) { 				// Message er av typen CHAT:
-			                	if (message.startsWith("99NEWCHAT") && actionId !=0) {		// Nyopprettet chat, med suksess
-			                		makeNewChatTab(actionId);			// Legg den til i mapping 
-			                	}
-			                	else if(inviteName != null) {						// informs that client with name 'inviteName' joined chat = 'actionId'
-			                		routeChatMessage("Joined chat: "+inviteName, actionId);			
-			                	} else {
-			                		routeChatMessage(message, actionId);			// message in chat-room
-			                	}
-			                } 
-			                else if (type.equals("GAME")) {			// Message er av typen GAME:
-			                	
-			                	if (message.startsWith("99NOTENOUGH") && actionId == 0) {		// Nyopprettet forespørsel game, UTEN suksess
-			                		// Innkommende melding 
-			                		// "GAME,0,"+curClient.getId()+",Ikke nok spillere enda("+waitingClients.size()+") , venter på flere spillere"
-			                		// TODO Snorre, innkommende melding er du må vente litt, vises " i en popup??"
-			                		Alert alert = new Alert(AlertType.INFORMATION);
-			                		alert.setTitle("FYI");
-			                		alert.setHeaderText("You've been placed in queue");
-			                		alert.setContentText("A new game will begin after three other players have joined the same game");
-
-			                		alert.showAndWait();
-			                	}
-			                	else if (message.startsWith("99BEGINGAME") && actionId !=0) { // Nyopprettet forespørsel game, MED suksess
-<<<<<<< HEAD
-			                		makeNewGameTab(actionId, chatid);
-=======
-			                		
-									// makeNewGameTab(actionId, gameID, players[3]); // chatId må også kalles her 
->>>>>>> b0cd994d6131298622ff321bfadd3d5e46001b0b
-			                	// Mappe game id til fane
-			                	}
-			                	// Innkommende ("GAME,"+currentGameID+","+notifyClient+",99 HAR STARTET"+message);
-			                	routeGameMessage(actionId, receivedClientId, message );
-			                	
-			                }
-			                else if (type.equals("LISTPLAYERS")) {
-			                	 String[] returntemp = retMessage.split(",", 3);
-			                	 String[] names = returntemp[2].split(",");
-			                	 
-			                	 System.err.println(names[0]);
-			                	 
-			                	 AnchorPane pane = (AnchorPane) tabbedPane.getTabs().get(listTab).getContent();
-			                	 ListView<String> list = (ListView<String>) pane.lookup("#listPlayers");
-			                	 
-			                	 list.setItems(FXCollections.observableArrayList(names));
-			                	 
-			                } else { // All other messages
-			                    System.out.println("Noe feil har skjedd i prosessConnection ");
-			                }
-		                }*/
 		            } catch (IOException ioe) {
 		            	System.err.println("Error receiving data: ");
 		            }
