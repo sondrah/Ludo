@@ -24,7 +24,7 @@ public final class Logging {
 	 */
 	public static void setup() {
 		try {
-			fh  = new FileHandler("./src/main/java/no/ntnu/imt3281/ludo/exceptionlogg.log");	// path to log file
+			fh  = new FileHandler("./src/main/java/no/ntnu/imt3281/ludo/logs/exceptionlogg.log");	// path to log file
 			exceptionlogger.addHandler(fh);
 			    
 			SimpleFormatter formatter = new SimpleFormatter();
