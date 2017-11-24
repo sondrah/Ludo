@@ -19,10 +19,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import java.util.logging.FileHandler;
 
 import javax.swing.JFrame;
@@ -41,8 +39,10 @@ import no.ntnu.imt3281.ludo.logic.Ludo;
  */
 public class ServerController extends JFrame {
 
-	//private static final Logger LOGGER = Logger.getLogger(ServerController.class.getName());
-	//Handler fileHandler  = null;
+	Logger logger = Logger.getLogger("BadgerLogg");  
+    FileHandler fileHandler;
+	
+	
 	/** The 'url' to our database (local) */
 	private String url = "jdbc:derby:BadgerDB;";
 	/** Unique ID for each game, zeroed for each server start */
@@ -111,14 +111,19 @@ public class ServerController extends JFrame {
             startMessageSender1();		// Send same message to all clients, handled in a separate thread
             startMessageListener1();		// Check clients for new messages
             
-           // fileHandler = new FileHandler("~/src/no/ntnu/imt3281/ludo/grevlingLogg.log");
-            //fileHandler.setLevel(Level.ALL);
+            fileHandler = new FileHandler("./src/main/java/no/ntnu/imt3281/ludo/chatlogg.log");	// path to log file
+            logger.addHandler(fileHandler);
+            
+            SimpleFormatter formatter = new SimpleFormatter();
+            fileHandler.setFormatter(formatter);
             
             executorService.shutdown();
         } catch (IOException ioe) {
         	System.err.println("No ServerSocket"); 
             ioe.printStackTrace();
             System.exit(1);
+        } catch (SecurityException e) {  
+            e.printStackTrace();  
         }
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -358,6 +363,7 @@ public class ServerController extends JFrame {
 			switch(str[1]) {
 			case "SAY":
 				StringBuilder sb = new StringBuilder();
+				StringBuilder logtxt = new StringBuilder();	
 				
 				sb.append(str[0] + ",");
 				sb.append(str[1] + ",");
@@ -368,8 +374,12 @@ public class ServerController extends JFrame {
 				
 				System.out.println("2.1.1: " + sb.toString());
 				
-				//logging:
-				//LOGGER.finer(sb.toString());
+				// logs on this format -> "username: message"
+				logtxt.append(db.getUserName(Integer.parseInt(str[3])));	
+				logtxt.append(": ");
+				logtxt.append(str[4]);				
+				
+				logger.info(logtxt.toString());		
 				
 				// since 'SAY's don't need special treament
 				// send it straight to 
