@@ -9,8 +9,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
-import com.sun.media.jfxmedia.logging.Logger;
-
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -85,6 +83,7 @@ public class GameBoardController extends Ludo {
     private int clientId;
     private int gameId;
     private int chatId;
+    private String username;
     
     
     
@@ -268,6 +267,7 @@ public class GameBoardController extends Ludo {
 						
 					case PlayerEvent.WAITING:
 						player1Active.setVisible(false);
+						resetSelect();
 						break;
 						
 					case PlayerEvent.LEFTGAME:
@@ -353,6 +353,14 @@ public class GameBoardController extends Ludo {
 	
 	}
 	
+	private void resetSelect() {
+		moveTo.setX(-100);
+		moveTo.setX(-100);
+		moveTo.setY(-100);
+		moveTo.setX(-100);
+		
+	}
+
 	private void endGame(int green) {
 		Platform.runLater(() -> {
 			
@@ -366,13 +374,15 @@ public class GameBoardController extends Ludo {
 	 */
 	@FXML
 	void throwDice(ActionEvent e) {
-		try {
-			output.write("GAME,THROW," + gameId + "," + clientId);
-			output.newLine();
-			output.flush();
-		}
-		catch (IOException ioe) {
-			// TODO
+		if(getPlayerName(activePlayer).equals(username)){
+			try {
+				output.write("GAME,THROW," + gameId + "," + clientId);
+				output.newLine();
+				output.flush();
+			}
+			catch (IOException ioe) {
+				// TODO
+			}
 		}
 	}
 	
@@ -393,7 +403,8 @@ public class GameBoardController extends Ludo {
 				// we want the tile - 1
 				tile = corners.findTile(event.getSceneX(), event.getSceneY() - 60) - 1;
 				
-				if(tile != -1) {
+				// if a tile was found and player is active
+				if(tile != -1 && getPlayerName(activePlayer).equals(username)) {
 					moveFrom.setX(corners.point[tile].getX());
 					moveFrom.setY(corners.point[tile].getY());
 					
@@ -432,57 +443,24 @@ public class GameBoardController extends Ludo {
 	private void moveGraphicalPiece(MouseEvent e) { 
 
 		System.out.println("flytt");
-		if(e.getEventType() == MouseEvent.MOUSE_CLICKED) {
-			System.out.println("flytt");
 			
-			int moveFromTile = corners.findTile(e.getSceneX(), e.getSceneY());
-			int i = 0;
-			
-			
-			// gets which piece is selected
-			while(playerPieces[activePlayer][i].equals(moveFrom) && i++ < PIECES);
-			
-			int piece = getPieceAt(activePlayer, moveFromTile);
-			int from = getPosition(activePlayer, piece);
-			
-			if(super.movePiece(activePlayer, from, from + dice)) {
-				// TODO: call the function that moves the piece
-				// on the screen
-				// OR
-				// just do this?
-				// playerPieces[activePlayer][i].setX(moveTo.getX());
-				// playerPieces[activePlayer][i].setY(moveTo.getY());
-				/*
-				try {
-					// send the info to the server
-					// ObjectOutputStream oos = new ObjectOutputStream(gameSocket.getOutputStream());
-					// oos.writeObject(new GameEvent(gameID, new PieceEvent(this, activePlayer, piece, from, from + dice)));
-					//connection.send(new MovePiece(gameId, activePlayer, from, from + dice));
-					
-					//playerPieces[activePlayer][i].setX();
-				}
-				catch(IOException ioe) {
-					// TODO: log?
-				}
-			*/
-			}else {
-					// If we can't move, remove destination selection
-					// as indicator that the user can't move (with that piece)
-					moveTo.setX(-100);
-					moveTo.setY(-100);
-			}
-			
-			
-			try {
-				output.write("GAME,MOVE," + gameId + "," + clientId + ","
-							+ activePlayer + "," + from + "," + from + dice);
-			}
-			catch(IOException ioe) {
-				//TODO
-			}
-			
-		}	// ELSE do nothing
+		int moveFromTile = corners.findTile(e.getSceneX(), e.getSceneY());
+		int i = 0;
 		
+		
+		// gets which piece is selected
+		while(playerPieces[activePlayer][i].equals(moveFrom) && i++ < PIECES);
+		
+		int piece = getPieceAt(activePlayer, moveFromTile);
+		int from = getPosition(activePlayer, piece);
+		
+		try {
+			output.write("GAME,MOVE," + gameId + "," + clientId + ","
+						+ activePlayer + "," + from + "," + from + dice);
+		}
+		catch(IOException ioe) {
+			//TODO
+		}
 	}
 	
 	
@@ -823,6 +801,10 @@ public class GameBoardController extends Ludo {
 		playerPieces[activePlayer][i].setY(moveTo.getY());
 		
 		return super.movePiece(player, from, to);
+	}
+
+	public void setUserName(String text) {
+		this.username = text;
 	}
 
 

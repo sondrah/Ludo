@@ -539,6 +539,7 @@ public class LudoController {
 			GameBoardController gameController = gameLoader.getController();
 	    	if (gameController != null) {
 		    	gameController.StartGameBoard(gameId, chatId, clientId, players, socket);
+		    	gameController.setUserName(userName.getText());
 		    } else System.out.println("7. Make Game tab, fant ikke game controller! gameloader: "+ gameLoader);
 
         	Tab tab = new Tab("Game" + gameId);
