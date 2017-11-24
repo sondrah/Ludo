@@ -193,7 +193,8 @@ public class LudoController {
 		                		
 		                		if(arr[1].equals("CREATE")) {
 		                			gameid = Integer.parseInt(arr[3]);
-		                			chatid = Integer.parseInt(arr[4]);
+		                			
+		                			chatid = Integer.parseInt(arr[4]) ;
 		                			
 		                			if(arr[2].equals("TRUE")) {
 			                			// arr[5].split(",") should return an array with
@@ -201,6 +202,7 @@ public class LudoController {
 			                			makeNewGameTab(gameid, chatid, arr[5].split(":"));
 			                		}
 			                		else {
+			                			System.out.println("GAME,CREATE,: "+ arr[2]);
 			                			Alert alert = new Alert(AlertType.INFORMATION);
 			                			alert.setTitle(I18N.tr("ludo.fyiHeader"));
 			                			alert.setHeaderText(null);
@@ -240,8 +242,9 @@ public class LudoController {
 		                		
 		                	case "LISTCHATS":
 		                		break;
-		                		
+		                	default : // logger	
 		                	}
+		                	
 		                }
 		                	
 		            } catch (IOException ioe) {

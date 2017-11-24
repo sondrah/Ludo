@@ -527,7 +527,7 @@ public class ServerController extends JFrame {
 				
 			}
 			else {
-				message = "GAME,CREATE,FALSE,"+clientID;
+				message = "GAME,CREATE,FALSE,"+clientID+",0";
 			}
 			
 			try {
