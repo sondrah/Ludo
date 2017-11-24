@@ -18,7 +18,7 @@ public class MD5Encrypt {
     * @param pass password to be encrypted 
     * @return cryptated string of password
     */
-   public static String cryptWithMD5(String pass){
+   public static String cryptWithMD5(String pass) {
     try {
         md = MessageDigest.getInstance("MD5");
         byte[] passBytes = pass.getBytes();
@@ -33,7 +33,5 @@ public class MD5Encrypt {
     	Logging.log(ex.getStackTrace());
     }
         return null;
-
-
    }
 }

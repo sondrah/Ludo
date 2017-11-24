@@ -113,10 +113,16 @@ public class GameBoardController extends Ludo {
     }
 
 	
+
 	/**
-	 * Start the game gui for this game
+	 * start the game gui for this game
+	 * @param gameId id of game
+	 * @param chatId id of chat
+	 * @param clientId id of clients
+	 * @param players players in a game
+	 * @param socket socket connection to server
 	 */
-	public void StartGameBoard(int gameId, int chatId, int clientId, String [] players, Socket socket){
+	public void StartGameBoard(int gameId, int chatId, int clientId, String [] players, Socket socket) {
 		this.gameId = gameId;
     	this.chatId = chatId;
     	this.clientId = clientId;
@@ -224,7 +230,6 @@ public class GameBoardController extends Ludo {
 		}
 		
 		// Set up tiles used for showing selected piece and target square
-		//moveFrom.setFill(new ImagePattern(new Image(getClass().getResourceAsStream("/images/selected.png"))));
 		moveFrom.setFill(null);
 		moveFrom.setStroke(Color.BLACK);
 		moveFrom.setStrokeWidth(3.0);
@@ -232,8 +237,6 @@ public class GameBoardController extends Ludo {
 		moveFrom.setY(-100);
 		boardPane.getChildren().add(moveFrom);
 		
-		
-		//moveTo.setFill(new ImagePattern(new Image(getClass().getResourceAsStream("/images/selected.png"))));
 		moveTo.setFill(null);
 		moveTo.setStroke(Color.BLACK);
 		moveTo.setStrokeWidth(3.0);
@@ -271,8 +274,8 @@ public class GameBoardController extends Ludo {
 						
 					case PlayerEvent.LEFTGAME:
 						// kommer bare hit om RED har blitt REMOVED
-						//removePlayer(getPlayerName(RED));
 						break;
+						
 					case PlayerEvent.WON:
 						endGame(RED);
 						break;
@@ -294,8 +297,8 @@ public class GameBoardController extends Ludo {
 						
 					case PlayerEvent.LEFTGAME:
 						// kommer bare hit om BLUE har blitt REMOVED
-						//removePlayer(getPlayerName(BLUE));
 						break;
+						
 					case PlayerEvent.WON:
 						endGame(BLUE);
 						break;
@@ -317,8 +320,8 @@ public class GameBoardController extends Ludo {
 						
 					case PlayerEvent.LEFTGAME:
 						// kommer bare hit om YELLOW har blitt REMOVED
-						//removePlayer(getPlayerName(YELLOW));
 						break;
+						
 					case PlayerEvent.WON:
 						endGame(YELLOW);
 						break;
@@ -340,11 +343,13 @@ public class GameBoardController extends Ludo {
 						
 					case PlayerEvent.LEFTGAME:
 						// kommer bare hit om GREEN har blitt REMOVED
-						//removePlayer(getPlayerName(GREEN));
 						break;
+						
 					case PlayerEvent.WON:
 						endGame(GREEN);
 						break;
+						
+					default: break;
 					
 				}	 // stateswitch
 			
@@ -360,9 +365,13 @@ public class GameBoardController extends Ludo {
 		
 	}
 
+	/**
+	 * Displays a popup
+	 * @param green index of current player green
+	 */
 	private void endGame(int green) {
 		Platform.runLater(() -> {
-			
+			// Legge inn pop-up
 		});
 	}
 
@@ -378,8 +387,7 @@ public class GameBoardController extends Ludo {
 				output.write("GAME,THROW," + gameId + "," + clientId);
 				output.newLine();
 				output.flush();
-			}
-			catch (IOException ioe) {
+			} catch (IOException ioe) {
 				Logging.log(ioe.getStackTrace());
 			}
 		}
@@ -411,20 +419,16 @@ public class GameBoardController extends Ludo {
 					if(tile >= 0 && tile <= 3) {
 						moveTo.setX(corners.point[16].getX());
 						moveTo.setY(corners.point[16].getY());
-					}
-					else if(tile >= 4 && tile <= 7) {
+					} else if(tile >= 4 && tile <= 7) {
 						moveTo.setX(corners.point[29].getX());
 						moveTo.setY(corners.point[29].getY());
-					}
-					else if(tile >= 8 && tile <= 11) {
+					} else if(tile >= 8 && tile <= 11) {
 						moveTo.setX(corners.point[42].getX());
 						moveTo.setY(corners.point[42].getY());
-					}
-					else if(tile >= 12 && tile <= 15) {
+					} else if(tile >= 12 && tile <= 15) {
 						moveTo.setX(corners.point[55].getX());
 						moveTo.setY(corners.point[55].getY());
-					}
-					else {
+					} else {
 						moveTo.setX(corners.point[tile + dice].getX());
 						moveTo.setY(corners.point[tile + dice].getY());
 					}
@@ -440,8 +444,6 @@ public class GameBoardController extends Ludo {
 	 */
 	@FXML
 	private void moveGraphicalPiece(MouseEvent e) { 
-
-		System.out.println("flytt");
 			
 		int moveFromTile = corners.findTile(e.getSceneX(), e.getSceneY());
 		int i = 0;
@@ -456,8 +458,7 @@ public class GameBoardController extends Ludo {
 		try {
 			output.write("GAME,MOVE," + gameId + "," + clientId + ","
 						+ activePlayer + "," + from + "," + from + dice);
-		}
-		catch(IOException ioe) {
+		} catch(IOException ioe) {
 			Logging.log(ioe.getStackTrace());
 		}
 	}
@@ -658,7 +659,6 @@ public class GameBoardController extends Ludo {
 			
 			// TODO: må kanskje sette 52 annerledes pga
 			// pixel > 0
-			// point[52].setLocation(x, y);
 			
 			// move to 53
 			x += SQUARE;
@@ -695,7 +695,6 @@ public class GameBoardController extends Ludo {
 			
 			// TODO: må kanskje sette 65 annerledes pga
 			// pixel > 0
-			// point[65].setLocation(x, y);
 			
 			// move to 66
 			x += SQUARE;
