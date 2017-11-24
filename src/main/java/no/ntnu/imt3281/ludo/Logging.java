@@ -42,4 +42,23 @@ public final class Logging {
 		exceptionlogger.info(msg);
 	}
 	
+	
+	public static void log(StackTraceElement[] stel) {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append(  "clasName" + "\t"
+				  + "fileName" + "\t"
+				  + "lineNumber" + "\t"
+				  + "methodName" + "\n");
+		
+		for(StackTraceElement el : stel){
+			sb.append("\t" + el.getClassName()
+					+ "\t" + el.getFileName()
+					+ "\t" + el.getLineNumber()
+					+ "\t" + el.getMethodName() + "\n");
+		}
+		
+		// log this as msg
+		log(sb.toString());
+	}
 }
