@@ -208,7 +208,7 @@ public class WelcomeController {
 				            ((Node)(event.getSource())).getScene().getWindow().hide();
 				        }
 				        catch (IOException e) {
-				            e.printStackTrace();
+				        	Logging.log(e.getStackTrace());
 				        }
 					}	
 				} else {
@@ -217,7 +217,7 @@ public class WelcomeController {
 				}
 			}
 			catch(IOException ioe) {
-				ioe.printStackTrace();
+				Logging.log(ioe.getStackTrace());
 				lblError.setVisible(true);
 				lblError.setText(I18N.tr("errors.connectionError"));
 			} 
@@ -264,25 +264,26 @@ public class WelcomeController {
 				// response:
 				// REGISTER,TRUE or
 				// REGISTER,FALSE
-				String res = br.readLine();
-				String[] arr = res.split(",");
-				
-				if(arr[1].equals("TRUE")) {
-					lblError.setVisible(false);	 
-					lblInfo.setVisible(true);
-					lblInfo.setText(I18N.tr("register.success"));
-					txtFieldUsername.setText("");
-					btnRegister.setVisible(false);
+				if (br.ready()) {
+					String res = br.readLine();
+					String[] arr = res.split(",");
 					
-				} else {
-					lblError.setVisible(true);
-					lblError.setText(I18N.tr("errors.notValidUserOrPassword"));
-				}
-				
+					if(arr[1].equals("TRUE")) {
+						lblError.setVisible(false);	 
+						lblInfo.setVisible(true);
+						lblInfo.setText(I18N.tr("register.success"));
+						txtFieldUsername.setText("");
+						btnRegister.setVisible(false);
+						
+					} else {
+						lblError.setVisible(true);
+						lblError.setText(I18N.tr("errors.notValidUserOrPassword"));
+					}
+				}		// Dersom linje ikke ble lest
 				socket.close();
 			}
 			catch(IOException ioe) {
-				ioe.printStackTrace();
+				Logging.log(ioe.getStackTrace());
 				lblError.setVisible(true);
 				lblError.setText(I18N.tr("errors.connectionError"));
 			} 

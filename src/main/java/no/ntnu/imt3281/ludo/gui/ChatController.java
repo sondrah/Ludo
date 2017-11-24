@@ -7,6 +7,7 @@ import java.net.Socket;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
+import no.ntnu.imt3281.ludo.Logging;
 
 
 /**
@@ -42,8 +43,7 @@ public class ChatController {
 			        socket.getOutputStream()));
 			
     	} catch(IOException ioe) {
-    		System.err.println("fikk ikke connection, i chatController");
-    		ioe.printStackTrace();
+    		Logging.log(ioe.getStackTrace());
     		
     	}
     }
@@ -61,8 +61,8 @@ public class ChatController {
     			outputChat.write("CHAT,SAY,"+chatId+","+clientId +"," +txt);
     			outputChat.newLine();
     			outputChat.flush();
-			} catch (IOException e1) {
-				e1.printStackTrace();
+			} catch (IOException ioe) {
+				Logging.log(ioe.getStackTrace());
 			}
     	}
 	}

@@ -9,6 +9,8 @@ import java.sql.Timestamp;
 
 import org.apache.derby.shared.common.error.DerbySQLIntegrityConstraintViolationException;
 
+import no.ntnu.imt3281.ludo.Logging;
+
 /**
  * Database class that handles the interaction with the database
  * for storing userdata and chatlogs
@@ -60,8 +62,7 @@ public class Database {
 			System.err.println("User table created!");
 		}
 		catch (SQLException sqle) {
-			System.err.println("Table excists!");
-			//sqle.printStackTrace();
+			Logging.log(sqle.getStackTrace());
 		}
 		
 		/* Create the chat table
@@ -79,8 +80,7 @@ public class Database {
 			System.err.println("Chat table created!");
 		}	
 		catch (SQLException sqle) {
-			System.err.println("Chat already exists!");
-			//sqle.printStackTrace();
+			Logging.log(sqle.getStackTrace());
 		}
 		
 		/* Create the message table. This is our actual log-entries
@@ -106,8 +106,7 @@ public class Database {
 			System.err.println("Message table created!");
 		}
 		catch (SQLException sqle) {
-			//sqle.printStackTrace();
-			System.err.println("Message already exitsts");
+			Logging.log(sqle.getStackTrace());
 		}
 		
 		//con.close();
@@ -134,13 +133,21 @@ public class Database {
 			System.err.println("added: " + username);
 		}
 		catch (DerbySQLIntegrityConstraintViolationException dicve) {
-			System.err.println("Constraint error: " + dicve.getMessage());
+			Logging.log(dicve.getStackTrace());
 			added = false;
 		}
 		catch (SQLException sqle) {
-			sqle.printStackTrace();
+			Logging.log(sqle.getStackTrace());
 		}
-		
+		finally {
+            try {
+            con.close();
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 		return added;
 	}
 	
@@ -168,11 +175,20 @@ public class Database {
 			
 		}
 		catch (DerbySQLIntegrityConstraintViolationException dicve) {
-			System.err.println("Constraint error: " + dicve.getMessage());
+			Logging.log(dicve.getStackTrace());
 		}
 		catch (SQLException sqle) {
-			sqle.printStackTrace();
+			Logging.log(sqle.getStackTrace());
 		}
+		finally {
+            try {
+            con.close();
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 	}
 	
 	
@@ -193,7 +209,6 @@ public class Database {
 		try {
 			Statement stmt = con.createStatement();
 		
-			//System.err.println("getUser1");
 			ResultSet resultSet = stmt.executeQuery("SELECT ID, USERNAME FROM usertable");
 			
 			while(resultSet.next()) {
@@ -203,10 +218,18 @@ public class Database {
 			}
 		}
 		catch (SQLException sqle) {
-			sqle.printStackTrace();
+			Logging.log(sqle.getStackTrace());
 			
 		}
-		
+		finally {
+            try {
+            con.close();
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+            
+        }
 		return userName;
 	}
 	
@@ -243,10 +266,18 @@ public class Database {
 			} // while
 		} // try
 		catch (SQLException sqle) {
-			sqle.printStackTrace();
+			Logging.log(sqle.getStackTrace());
 			userdata = null;
 		} // catch
-		
+		finally {
+            try {
+            con.close();
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 		return userdata;
 	} // func end
 	
@@ -271,9 +302,17 @@ public class Database {
 			userId = res.getInt("id");
 		}
 		catch(SQLException sqle) {
-			sqle.printStackTrace();
+			Logging.log(sqle.getStackTrace());
 		}
-		
+		finally {
+            try {
+            con.close();
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 		return userId;
 	}
 	
@@ -300,9 +339,17 @@ public class Database {
 			}
 		}
 		catch(SQLException sqle) {
-			sqle.printStackTrace();
+			Logging.log(sqle.getStackTrace());
 		}
-		
+		finally {
+            try {
+            con.close();
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 		return chatid;
 	}
 	
@@ -329,9 +376,17 @@ public class Database {
 			else System.out.println("Login unsseccsssfull");
 		}
 		catch (SQLException sqle) {
-			sqle.printStackTrace();
+			Logging.log(sqle.getStackTrace());
 		}
-		
+		finally {
+            try {
+            con.close();
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 		return userid;
 	}
 	
@@ -344,7 +399,7 @@ public class Database {
 			con.close();
 		}
 		catch (SQLException sqle) {
-			
+			Logging.log(sqle.getStackTrace());
 		}
 	}
 	
@@ -362,7 +417,7 @@ public class Database {
 			System.err.println("added chat: " + chatname);
 		}
 		catch (SQLException sqle) {
-			sqle.printStackTrace();
+			Logging.log(sqle.getStackTrace());
 		}
 	}
 	
@@ -419,8 +474,16 @@ public class Database {
 			}
 		}
 		catch (SQLException sqle) {
-			sqle.printStackTrace();
+			Logging.log(sqle.getStackTrace());
 		}
-		
+		finally {
+            try {
+            con.close();
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(sqle.getStackTrace());
+    		}
+           
+        }
 	}
 }

@@ -1,5 +1,6 @@
 package no.ntnu.imt3281.ludo.gui;
 
+import no.ntnu.imt3281.ludo.Logging;
 import no.ntnu.imt3281.ludo.logic.*; 
 import javafx.event.ActionEvent;
 import java.awt.Point;
@@ -125,9 +126,7 @@ public class GameBoardController extends Ludo {
 			        socket.getOutputStream()));
 			
     	} catch(IOException ioe) {
-    		System.err.println("fikk ikke connection, i gameBoardController");
-    		ioe.printStackTrace();
-    		
+    		Logging.log(ioe.getStackTrace());
     	}
     	
     	
@@ -384,7 +383,7 @@ public class GameBoardController extends Ludo {
 				output.flush();
 			}
 			catch (IOException ioe) {
-				// TODO
+				Logging.log(ioe.getStackTrace());
 			}
 		}
 	}
@@ -462,7 +461,7 @@ public class GameBoardController extends Ludo {
 						+ activePlayer + "," + from + "," + from + dice);
 		}
 		catch(IOException ioe) {
-			//TODO
+			Logging.log(ioe.getStackTrace());
 		}
 	}
 	
@@ -774,8 +773,8 @@ public class GameBoardController extends Ludo {
     			output.write("CHAT,SAY,"+chatId+","+clientId +"," +txt);
 				output.newLine();
 				output.flush();
-			} catch (IOException e1) {
-				e1.printStackTrace();
+			} catch (IOException ioe) {
+				Logging.log(ioe.getStackTrace());
 			}
     	}
     }
