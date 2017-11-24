@@ -1,32 +1,24 @@
 package no.ntnu.imt3281.ludo.gui;
 
 import no.ntnu.imt3281.ludo.logic.*; 
-import no.ntnu.imt3281.ludo.server.GameInfo;
 import javafx.event.ActionEvent;
 import java.awt.Point;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.concurrent.Executors;
-
-import javax.naming.CommunicationException;
 
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
@@ -239,11 +231,13 @@ public class GameBoardController extends Ludo {
 				 *     pi = 3: 2 + 3 * 2 = 8
 				 */
 				
+				
 				playerPieces[pl][pi].setX(corners.point[pl * 4 + pi].getX() - 8 + pi * 4);
-				playerPieces[pl][pi].setY(corners.point[pl * 4 + pi].getX() - 2 + pi * 2);
+				playerPieces[pl][pi].setY(corners.point[pl * 4 + pi].getY() - 2 + pi * 2);
 				
 				// add a mouseListner to the rectangles of the pieces
 				playerPieces[pl][pi].setOnMouseClicked(e->clickOnPiece(e));
+				
 				
 				// adds the rectangles to the boardPanes nodelist over
 				// updateable components 
@@ -254,18 +248,25 @@ public class GameBoardController extends Ludo {
 		
 		// Set up tiles used for showing selected piece and target square
 		//moveFrom.setFill(new ImagePattern(new Image(getClass().getResourceAsStream("/images/selected.png"))));
+		moveFrom.setFill(null);
+		moveFrom.setStroke(Color.BLACK);
+		moveFrom.setStrokeWidth(3.0);
 		moveFrom.setX(-100);
 		moveFrom.setY(-100);
 		boardPane.getChildren().add(moveFrom);
 		
 		
 		//moveTo.setFill(new ImagePattern(new Image(getClass().getResourceAsStream("/images/selected.png"))));
+		moveTo.setFill(null);
+		moveTo.setStroke(Color.BLACK);
+		moveTo.setStrokeWidth(3.0);
 		moveTo.setX(-100);
 		moveTo.setY(-100);
 		boardPane.getChildren().add(moveTo);
 		
 		// when this rectangle is clicked we initiate to move a piece
 		moveTo.setOnMouseClicked(e->movePiece(e));
+		
 	}
 
 
@@ -433,21 +434,6 @@ public class GameBoardController extends Ludo {
 		*/
 	}
 	
-	/*
-	@Override 
-	public int throwDice(int dice) {
-		super.throwDice(dice);
-		shouldMove = false;
-		if(CurrentPlayer == activePlayer() && shouldMove()) {
-			diceValue = dice;
-			shouldMove = true;
-			Platform.runLater(()-> {
-				throwTheDice.setText("Nå flyttes brikke!!");	// TODO I18N
-				throwTheDice.setDisable(true);
-			});	
-		}
-	}*/
-	
 	
 	/**
 	 * 
@@ -469,12 +455,18 @@ public class GameBoardController extends Ludo {
 				
 		for (int pi = 0; pi < PIECES; pi++) {
 			if(obj.equals(playerPieces[activePlayer][pi])) {
-				tile = corners.findTile(event.getSceneX(), event.getSceneY());
-				moveFrom.setX(corners.point[tile].getX());
-				moveFrom.setY(corners.point[tile].getY());
 				
-				moveTo.setX(corners.point[tile + dice].getX());
-				moveTo.setY(corners.point[tile + dice].getY());
+				tile = corners.findTile(event.getSceneX(), event.getSceneY() - 60) - 1;
+				System.out.println("X: " + event.getSceneX() + ", Y: " + (event.getSceneY() - 60));
+				System.out.println(tile);
+				
+				if(tile != -1) {
+					moveFrom.setX(corners.point[tile].getX());
+					moveFrom.setY(corners.point[tile].getY());
+					
+					moveTo.setX(corners.point[tile + dice].getX());
+					moveTo.setY(corners.point[tile + dice].getY());
+				}
 			}
 		}
 			
@@ -632,14 +624,14 @@ public class GameBoardController extends Ludo {
 		private static final int MAX_TILES = 92;
 		private Point point[] = new Point[MAX_TILES];
 		
-		/** Specifies the common Y-coord of postions to the left*/
+		/** Specifies the common X-coord of postions to the left*/
 		private static final int LEFT_COLUMN_TILE = 122;
-		/** Specifies the common Y-coord of postions to the right*/
+		/** Specifies the common X-coord of postions to the right*/
 		private static final int RIGHT_COLUMN_TILE = 554;
 		
-		/** Specifies the common X-coord of positions to the top*/
+		/** Specifies the common Y-coord of positions to the top*/
 		private static final int TOP_COLUMN_TILE = 74;
-		/** Specifies the common X-coord of positions to the bottom*/
+		/** Specifies the common Y-coord of positions to the bottom*/
 		private static final int BOTTOM_COLUMN_TILE = 506;
 		
 		
