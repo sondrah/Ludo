@@ -24,6 +24,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import no.ntnu.imt3281.i18n.I18N;
+import no.ntnu.imt3281.ludo.Logging;
 import no.ntnu.imt3281.ludo.client.MD5Encrypt;
 
 
@@ -206,7 +207,7 @@ public class WelcomeController {
 				            ((Node)(event.getSource())).getScene().getWindow().hide();
 				        }
 				        catch (IOException e) {
-				            e.printStackTrace();
+				        	Logging.log(e.getStackTrace());
 				        }
 					}	
 				} else {
@@ -215,7 +216,7 @@ public class WelcomeController {
 				}
 			}
 			catch(IOException ioe) {
-				ioe.printStackTrace();
+				Logging.log(ioe.getStackTrace());
 				lblError.setVisible(true);
 				lblError.setText(I18N.tr("errors.connectionError"));
 			} 
@@ -280,7 +281,7 @@ public class WelcomeController {
 				socket.close();
 			}
 			catch(IOException ioe) {
-				ioe.printStackTrace();
+				Logging.log(ioe.getStackTrace());
 				lblError.setVisible(true);
 				lblError.setText(I18N.tr("errors.connectionError"));
 			} 
