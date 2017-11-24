@@ -25,6 +25,7 @@ public class ChatController {
 	  /**
      * Gives game-chat an Id
      * @param chatId Id of game-chat
+     * @param clientId Id for client
      */
     public void setChatId(int chatId, int clientId) {
     	this.chatId = chatId;
