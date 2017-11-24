@@ -39,7 +39,8 @@ public class ChatController {
      */
     public void setConnection(Socket socket) {
     	try {
-			this.chatSocket = socket;
+			chatSocket = socket;
+			
 			outputChat = new BufferedWriter(new OutputStreamWriter(
 			        socket.getOutputStream()));
 			
