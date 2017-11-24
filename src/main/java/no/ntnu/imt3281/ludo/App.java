@@ -18,22 +18,7 @@ public class App {
 	/**
 	 * Starts server and client simultaneously
 	 */
-	public static void main(String[] args) {
-		
-		try {
-			/** Logs all exceptions */
-			Logger exceptionlogger = Logger.getLogger("ExceptionLogg");  
-		    /** Sets up file for 'exceptionlogger' to write to */
-			FileHandler fh = new FileHandler("./src/main/java/no/ntnu/imt3281/ludo/exceptionlogg.log");	// path to log file
-	        exceptionlogger.addHandler(fh);
-	        
-	        SimpleFormatter formatter = new SimpleFormatter();
-	        fh.setFormatter(formatter);
-		} catch(IOException ioe) {
-			ioe.printStackTrace();
-		}
-		
-		
+	public static void main(String[] args) {	
 		ServerController servercontroller = new ServerController();
 		Client c = new Client(args);
 		
