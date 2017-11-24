@@ -76,8 +76,7 @@ public class Client extends Application{
             primaryStage.show();
     	}
     	catch (IOException ioe){
-    		ioe.printStackTrace();
-    		//exceptionlogger.info(ioe.getMessage());
+    		Logging.log(ioe.getStackTrace()); 
     	}
 		
 	}
