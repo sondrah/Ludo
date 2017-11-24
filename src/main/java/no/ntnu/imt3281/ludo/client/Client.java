@@ -51,6 +51,7 @@ public class Client extends Application{
 	 * @param args command line arguments
 	 */
 	public static void main(String[] args) {
+		@SuppressWarnings("unused")
 		Client c = new Client(args);
 	}
 	
@@ -64,7 +65,8 @@ public class Client extends Application{
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/no/ntnu/imt3281/ludo/gui/WelcomeScreen.fxml"));
     	loader.setResources(I18N.getRsb());
     	
-    	WelcomeController controller = loader.getController();
+    	@SuppressWarnings("unused")
+		WelcomeController controller = loader.getController();
 		
     	try {
     		Pane pane = loader.load();
@@ -76,7 +78,10 @@ public class Client extends Application{
             primaryStage.show();
     	}
     	catch (IOException ioe){
-    		Logging.log(ioe.getStackTrace()); 
+    		ioe.printStackTrace();
+    		//exceptionlogger.info(ioe.getMessage());
     	}
+		
 	}
+	
 }

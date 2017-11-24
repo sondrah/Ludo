@@ -90,11 +90,8 @@ public class LudoController {
     private Socket socket;
     private BufferedReader input;
     private BufferedWriter output;
-    
-    private DefaultListModel<String> participantsModel;
     private ExecutorService executorService;
     private boolean shutdown = false;
-    private int userId;
     private int listTab = 0;
     
     /**
@@ -165,8 +162,6 @@ public class LudoController {
 		            try {
 		                if (input.ready()) {				
 		                	String response = input.readLine();
-		                	
-		                	System.out.println("4. client prosess response fra server: " + response);
 		                	
 		                	String[] arr = response.split(",");
 		                	int chatid = 0;
@@ -282,49 +277,20 @@ public class LudoController {
     	if(tabId != null) {	
     		
     				// Henter ut riktig Anchor Pane for riktig chatterom
-    		//if( chatId == 1) {
     		AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(tabId).getContent();
     		
 	    				// Finner alle elementene i dette chattevinduet 
 	    	if (tabRoot != null) {
 		    	TextArea textA = (TextArea)tabRoot.lookup("#chatArea");
 		    	if (textA != null) {
-		    		System.out.println("5. CHAT routeChatMes : tabID: "+tabId+ " melding " +message);
 		    		textA.appendText(message+ "\n");		// Legg til meldingen 
 		    	}
 		    }
-	    	else System.out.println("5. CHAT routeChatMes ERR FANT IKKE TAB ROOT!!");
-	    		
+	    	   		
     	}
     } 
     
-    /**
-     * routeGameMessage
-     * @param actionId
-     * @param receivedClientId
-     * @param message
-     */
-    private void routeGameMessage(int gameId, String receivedClientId, String message) {
-    	
-    	// gameBoards. vinne riktig gameBoaard
-    	// Så finne riktig tab
-    	Integer tabId = gameToTab.get(gameId);
-    	System.out.println("6.routeGameM: " +message+ " Tab id til Game: " + tabId );
-    	if(tabId != null) {	 
-    										// Henter ut riktig Anchor Pane for riktig chatterom
-	    	AnchorPane tabRoot = (AnchorPane) tabbedPane.getTabs().get(tabId).getContent();
-	    	if (tabRoot != null) {
-	    									// Finner alle elementene i dette chattevinduet 
-	    		TextArea textA = (TextArea)tabRoot.lookup("#ChatArea");  // "#gameChatArea" eller likt??
-	    		if(textA != null) {    		// Her må vi antagelig ha flere mtp chat og board
-	    			textA.appendText(message+ "\n");		// Legg til meldingen 
-	    		}
-	    		else System.out.println("5. CHAT routeGameMes ERR FANT IKKE textArea!!");
-	    	}
-	    	else System.out.println("5. CHAT routeGameMes ERR FANT IKKE TAB ROOT!!");
-    	}
-		
-	}
+    
     /** 
      * Closes the application
      * @param e button click caused by the close menu item
@@ -365,7 +331,6 @@ public class LudoController {
     		tab.setContent(vbox);
     		tabbedPane.getTabs().add(tab);
     		
-    		listTab = tabbedPane.getTabs().size() - 1;
     	}
     	catch (IOException ioe) {
     		Logging.log(ioe.getStackTrace());
@@ -552,7 +517,7 @@ public class LudoController {
 			AnchorPane chatWindow = chatLoader.load();
 			ChatController chatController = chatLoader.getController();
 			chatController.setChatId(chatId, clientId);
-			chatController.setConnection(socket);  // TODO sjekk Bjønn ok?? 
+			chatController.setConnection(socket);  
 	       	Tab tab = new Tab("Chat: " + chatName);
 	   		tab.setContent(chatWindow);
 	   		
