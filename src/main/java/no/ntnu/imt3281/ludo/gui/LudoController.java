@@ -467,17 +467,15 @@ public class LudoController {
     public void sendText(ActionEvent e) {
     	
     	String txt = toSay.getText();
-    	if(!txt.equals("") && txt !=null) {
+    	if(!txt.equals("")) {
     		try {								
     			
-    			System.out.println("1. Client: sendText fra/ på client: "+txt);
-    			
+    		
     			output.write("CHAT,SAY,1," + clientId +"," +txt);
 				output.newLine();
 				output.flush();
 
 			} catch (IOException e1) {
-				System.out.println("1. Client say somthing ENTER kasnkje??");// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
     	}
@@ -500,17 +498,14 @@ public class LudoController {
      */
     @FXML
     public void joinRandomGame(ActionEvent e) {  
-    	// Parent root;
-    	// TODO, hvilken tab id kommer dette fra 
 		try {								// Client sier jeg vil spille 
-			System.out.println("1. Client Trykket på knapp rand game, skal sende nå");
+			
 			output.write("GAME,CREATE,"+ clientId);
 			output.newLine();
 			output.flush();
 
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			// skulle funka..  exceptionlogger info(e1) 
 		}
 		
      }
