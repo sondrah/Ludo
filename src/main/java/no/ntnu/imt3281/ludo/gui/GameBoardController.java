@@ -389,9 +389,9 @@ public class GameBoardController extends Ludo {
 		for (int pi = 0; pi < PIECES; pi++) {
 			if(obj.equals(playerPieces[activePlayer][pi])) {
 				
+				// Y is offsett with about 60 px
+				// we want the tile - 1
 				tile = corners.findTile(event.getSceneX(), event.getSceneY() - 60) - 1;
-				System.out.println("X: " + event.getSceneX() + ", Y: " + (event.getSceneY() - 60));
-				System.out.println(tile);
 				
 				if(tile != -1) {
 					moveFrom.setX(corners.point[tile].getX());
