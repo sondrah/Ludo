@@ -128,7 +128,7 @@ public class LudoController {
 			        socket.getOutputStream()));
 			
     	} catch(IOException ioe) {
-    		ioe.printStackTrace();
+    		Logging.log(ioe.getStackTrace());
     	}
     }
 
@@ -260,7 +260,7 @@ public class LudoController {
 		                }
 		                	
 		            } catch (IOException ioe) {
-		            	System.err.println("Error receiving data: ");
+		            	Logging.log(ioe.getStackTrace());
 		            }
 		        }		// While true end
             }
@@ -368,7 +368,7 @@ public class LudoController {
     		listTab = tabbedPane.getTabs().size() - 1;
     	}
     	catch (IOException ioe) {
-    		ioe.printStackTrace();
+    		Logging.log(ioe.getStackTrace());
     	}
     }
     
@@ -394,7 +394,7 @@ public class LudoController {
 	    		output.newLine();
 	    		output.flush();
     	    } catch(IOException ioe) {
-    	    	ioe.printStackTrace();
+    	    	Logging.log(ioe.getStackTrace());
     	    }
     	}
     }
@@ -425,7 +425,7 @@ public class LudoController {
     		dialog.show();
     	}
     	catch (IOException ioe) {
-    		ioe.printStackTrace();
+    		Logging.log(ioe.getStackTrace());
     	}
     }
     
@@ -460,8 +460,8 @@ public class LudoController {
 				output.newLine();
 				output.flush();
 
-			} catch (IOException e1) {
-				e1.printStackTrace();
+			} catch (IOException ioe) {
+				Logging.log(ioe.getStackTrace());
 			}
     	}
     }
@@ -489,8 +489,8 @@ public class LudoController {
 			output.newLine();
 			output.flush();
 
-		} catch (IOException e1) {
-			// skulle funka..  exceptionlogger info(e1) 
+		} catch (IOException ioe) {
+			Logging.log(ioe.getStackTrace());
 		}
 		
      }
@@ -524,9 +524,8 @@ public class LudoController {
     		});
     		
         	gameBoards.add(gameController);
-    	} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+    	} catch (IOException ioe) {
+    		Logging.log(ioe.getStackTrace());
 		}
     	
     	ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs
@@ -564,9 +563,8 @@ public class LudoController {
 	   		
 	       	chatWindows.add(chatController);
 	       	
-	   	} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+	   	} catch (IOException ioe) {
+	   		Logging.log(ioe.getStackTrace());
 		}
    	
 		ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs

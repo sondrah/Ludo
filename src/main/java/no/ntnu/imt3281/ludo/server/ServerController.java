@@ -88,12 +88,11 @@ public class ServerController extends JFrame {
 			db = new Database(url);		// tries to connect to DB	
 		} catch(SQLException sqle) {			
 			url += "create=true";				
-			sqle.printStackTrace();
+			Logging.log(sqle.getStackTrace());
 			try {
 				db = new Database(url);	// if DB not found, adds "create=true" to make DB
 			} catch(SQLException sqle2) {
-				System.err.println("No DB after 2nd try"); 
-				sqle2.printStackTrace();
+				Logging.log(sqle.getStackTrace());
 			}
 		}
 		
@@ -122,11 +121,10 @@ public class ServerController extends JFrame {
             
             executorService.shutdown();
         } catch (IOException ioe) {
-        	System.err.println("No ServerSocket"); 
-            ioe.printStackTrace();
+        	Logging.log(ioe.getStackTrace());
             System.exit(1);
         } catch (SecurityException e) {  
-            e.printStackTrace();  
+        	Logging.log(e.getStackTrace()); 
         }
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -187,7 +185,7 @@ public class ServerController extends JFrame {
 	                    						+ username + " har logget inn!");
 	                    			}
 	                    			catch(IOException ioe) {
-	                    				//TODO
+	                    				Logging.log(ioe.getStackTrace());
 	                    			}
 	                    		});
 	                    	}
@@ -195,10 +193,10 @@ public class ServerController extends JFrame {
                     } // synch
                 } 
                 catch (IOException ioe) {
-					// TODO: handle exception
+                	Logging.log(ioe.getStackTrace());
 				}
                 catch (InterruptedException ie) {
-                	// TODO
+                	Logging.log(ie.getStackTrace());
                 }
             }
         });
@@ -216,7 +214,7 @@ public class ServerController extends JFrame {
 							msg = client.read();
 						}
 						catch (IOException ioe) {
-							// TODO: handle exception
+							Logging.log(ioe.getStackTrace());
 						}
 						
 						if(msg != null) {
@@ -256,7 +254,7 @@ public class ServerController extends JFrame {
 					System.out.println("3. MessageSender: " + str);
 				}
 				catch(InterruptedException ie) {
-					//TODO
+					Logging.log(ie.getStackTrace());
 				}
 				
 				if(str.startsWith("CHAT")) {
@@ -307,7 +305,7 @@ public class ServerController extends JFrame {
 		try{
 			waitingClients.add(newClient);
 		} catch (IllegalArgumentException moreThanFourPlayers) {
-			// TODO: handle exception start new game!
+			Logging.log(moreThanFourPlayers.getStackTrace());
 		}
 		return waitingClients.size();
 	}
@@ -415,7 +413,7 @@ public class ServerController extends JFrame {
 			}
 		}
 		catch (InterruptedException ie) {
-			// TODO: log
+			Logging.log(ie.getStackTrace());
 		}
 	}
 	
@@ -436,7 +434,7 @@ public class ServerController extends JFrame {
 				client.sendText(str);
 			}
 			catch(IOException ioe) {
-				// TODO: log
+				Logging.log(ioe.getStackTrace());
 			}
 		});
 	}
@@ -469,7 +467,7 @@ public class ServerController extends JFrame {
 					messages.put("GAME,THROW," + game.getId() + "," + dice);
 				}
 				catch(InterruptedException ie) {
-					// TODO log
+					Logging.log(ie.getStackTrace());
 				}
 			}
 			break;
@@ -492,7 +490,7 @@ public class ServerController extends JFrame {
 				}
 			}
 			catch (InterruptedException e) {
-				// TODO log
+				Logging.log(e.getStackTrace());
 			}
 			break;
 			
@@ -537,7 +535,7 @@ public class ServerController extends JFrame {
 				messages.put(message);
 			}
 			catch (InterruptedException ie) {
-				// TODO
+				Logging.log(ie.getStackTrace());
 			}
 		}
 	}
@@ -561,8 +559,8 @@ public class ServerController extends JFrame {
 						
 							client.sendText(str);
 						
-					} catch (IOException e) {
-						// TODO log
+					} catch (IOException ioe) {
+						Logging.log(ioe.getStackTrace());
 					}
 				});
 			}
@@ -571,8 +569,8 @@ public class ServerController extends JFrame {
 				Client c = getClient(Integer.parseInt(arr[3])); 
 				try {
 					c.sendText(str);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
+				} catch (IOException ioe) {
+					Logging.log(ioe.getStackTrace());
 					
 				}
 			}
@@ -582,8 +580,8 @@ public class ServerController extends JFrame {
 			.parallelStream().forEach(client -> {
 				try {
 					client.sendText(str);
-				} catch (IOException e) {
-					// TODO log
+				} catch (IOException ioe) {
+					Logging.log(ioe.getStackTrace());
 				}
 			});
 		}
@@ -629,7 +627,7 @@ public class ServerController extends JFrame {
 			}
 		}
 		catch (InterruptedException ie) {
-			// TODO log
+			Logging.log(ie.getStackTrace());
 		}
 	}
 	
@@ -648,7 +646,7 @@ public class ServerController extends JFrame {
 			getClient(Integer.parseInt(arr[2])).sendText(str);
 		}
 		catch (IOException ioe) {
-			// TODO log
+			Logging.log(ioe.getStackTrace());
 		}
 	}
 

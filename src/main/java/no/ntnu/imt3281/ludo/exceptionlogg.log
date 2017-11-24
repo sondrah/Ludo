@@ -1,0 +1,45 @@
+Nov 24, 2017 11:53:09 AM no.ntnu.imt3281.ludo.Logging log
+INFO: clasName	fileName	lineNumber	methodName
+	org.apache.derby.impl.jdbc.SQLExceptionFactory	null	-1	getSQLException
+	org.apache.derby.impl.jdbc.Util	null	-1	generateCsSQLException
+	org.apache.derby.impl.jdbc.TransactionResourceImpl	null	-1	wrapInSQLException
+	org.apache.derby.impl.jdbc.TransactionResourceImpl	null	-1	handleException
+	org.apache.derby.impl.jdbc.EmbedConnection	null	-1	handleException
+	org.apache.derby.impl.jdbc.ConnectionChild	null	-1	handleException
+	org.apache.derby.impl.jdbc.EmbedStatement	null	-1	executeStatement
+	org.apache.derby.impl.jdbc.EmbedStatement	null	-1	execute
+	org.apache.derby.impl.jdbc.EmbedStatement	null	-1	execute
+	no.ntnu.imt3281.ludo.server.Database	Database.java	55	<init>
+	no.ntnu.imt3281.ludo.server.ServerController	ServerController.java	88	<init>
+	no.ntnu.imt3281.ludo.App	App.java	22	main
+
+Nov 24, 2017 11:53:09 AM no.ntnu.imt3281.ludo.Logging log
+INFO: clasName	fileName	lineNumber	methodName
+	org.apache.derby.impl.jdbc.SQLExceptionFactory	null	-1	getSQLException
+	org.apache.derby.impl.jdbc.Util	null	-1	generateCsSQLException
+	org.apache.derby.impl.jdbc.TransactionResourceImpl	null	-1	wrapInSQLException
+	org.apache.derby.impl.jdbc.TransactionResourceImpl	null	-1	handleException
+	org.apache.derby.impl.jdbc.EmbedConnection	null	-1	handleException
+	org.apache.derby.impl.jdbc.ConnectionChild	null	-1	handleException
+	org.apache.derby.impl.jdbc.EmbedStatement	null	-1	executeStatement
+	org.apache.derby.impl.jdbc.EmbedStatement	null	-1	execute
+	org.apache.derby.impl.jdbc.EmbedStatement	null	-1	execute
+	no.ntnu.imt3281.ludo.server.Database	Database.java	75	<init>
+	no.ntnu.imt3281.ludo.server.ServerController	ServerController.java	88	<init>
+	no.ntnu.imt3281.ludo.App	App.java	22	main
+
+Nov 24, 2017 11:53:09 AM no.ntnu.imt3281.ludo.Logging log
+INFO: clasName	fileName	lineNumber	methodName
+	org.apache.derby.impl.jdbc.SQLExceptionFactory	null	-1	getSQLException
+	org.apache.derby.impl.jdbc.Util	null	-1	generateCsSQLException
+	org.apache.derby.impl.jdbc.TransactionResourceImpl	null	-1	wrapInSQLException
+	org.apache.derby.impl.jdbc.TransactionResourceImpl	null	-1	handleException
+	org.apache.derby.impl.jdbc.EmbedConnection	null	-1	handleException
+	org.apache.derby.impl.jdbc.ConnectionChild	null	-1	handleException
+	org.apache.derby.impl.jdbc.EmbedStatement	null	-1	executeStatement
+	org.apache.derby.impl.jdbc.EmbedStatement	null	-1	execute
+	org.apache.derby.impl.jdbc.EmbedStatement	null	-1	execute
+	no.ntnu.imt3281.ludo.server.Database	Database.java	95	<init>
+	no.ntnu.imt3281.ludo.server.ServerController	ServerController.java	88	<init>
+	no.ntnu.imt3281.ludo.App	App.java	22	main
+
