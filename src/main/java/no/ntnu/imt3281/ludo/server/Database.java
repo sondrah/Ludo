@@ -140,7 +140,15 @@ public class Database {
 		catch (SQLException sqle) {
 			sqle.printStackTrace();
 		}
-		
+		finally {
+            try {
+            con.close();
+            } 
+            catch (SQLException sqle) {
+            	 Logging.log(ioe.getStackTrace());
+    		}
+           
+        }
 		return added;
 	}
 	

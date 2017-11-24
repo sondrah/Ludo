@@ -163,8 +163,7 @@ public class LudoController {
 		        while (true) {  // Sjekker hele tiden etter innkommende meldinger 
 		        	
 		            try {
-		                if (input.ready()) {					// TimeUnit.MILLISECONDS.sleep(10);
-			                
+		                if (input.ready()) {				
 		                	String response = input.readLine();
 		                	
 		                	System.out.println("4. client prosess response fra server: " + response);
