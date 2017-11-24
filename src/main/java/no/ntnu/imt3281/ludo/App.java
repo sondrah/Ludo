@@ -11,6 +11,7 @@ public class App {
 	
 	/**
 	 * Starts server and client simultaneously
+	 * @param args
 	 */
 	public static void main(String[] args) {	
 		@SuppressWarnings("unused")

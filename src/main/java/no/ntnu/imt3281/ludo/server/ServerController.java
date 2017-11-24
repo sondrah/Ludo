@@ -39,7 +39,6 @@ import no.ntnu.imt3281.ludo.Logging;
  * 
  */
 public class ServerController extends JFrame {
-
 	/** Logs all chat messages*/
 	Logger chatlogger = Logger.getLogger("BadgerLogg");  
     /** Sets up file for 'chatlogger' to write to */

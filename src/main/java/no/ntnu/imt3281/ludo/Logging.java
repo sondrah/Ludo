@@ -46,9 +46,9 @@ public final class Logging {
 	public static void log(StackTraceElement[] stel) {
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append(  "clasName" + "\t"
+		sb.append(  "clasName" + "\t\t\t\t\t"
 				  + "fileName" + "\t"
-				  + "lineNumber" + "\t"
+				  + "lineNumber" + "\t\t\t"
 				  + "methodName" + "\n");
 		
 		for(StackTraceElement el : stel){

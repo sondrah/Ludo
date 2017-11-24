@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 nov 24, 2017 1:34:21 PM no.ntnu.imt3281.ludo.Logging log
+=======
+nov 24, 2017 1:34:05 PM no.ntnu.imt3281.ludo.Logging log
+>>>>>>> 4a6ec0e4c2d15624509b06c1ca10c866492677e0
 INFO: clasName	fileName	lineNumber	methodName
 	org.apache.derby.impl.jdbc.SQLExceptionFactory	null	-1	getSQLException
 	org.apache.derby.impl.jdbc.Util	null	-1	generateCsSQLException
@@ -11,9 +15,15 @@ INFO: clasName	fileName	lineNumber	methodName
 	org.apache.derby.impl.jdbc.EmbedStatement	null	-1	execute
 	no.ntnu.imt3281.ludo.server.Database	Database.java	56	<init>
 	no.ntnu.imt3281.ludo.server.ServerController	ServerController.java	88	<init>
+<<<<<<< HEAD
 	no.ntnu.imt3281.ludo.App	App.java	17	main
 
 nov 24, 2017 1:34:22 PM no.ntnu.imt3281.ludo.Logging log
+=======
+	no.ntnu.imt3281.ludo.App	App.java	24	main
+
+nov 24, 2017 1:34:05 PM no.ntnu.imt3281.ludo.Logging log
+>>>>>>> 4a6ec0e4c2d15624509b06c1ca10c866492677e0
 INFO: clasName	fileName	lineNumber	methodName
 	org.apache.derby.impl.jdbc.SQLExceptionFactory	null	-1	getSQLException
 	org.apache.derby.impl.jdbc.Util	null	-1	generateCsSQLException
@@ -26,9 +36,15 @@ INFO: clasName	fileName	lineNumber	methodName
 	org.apache.derby.impl.jdbc.EmbedStatement	null	-1	execute
 	no.ntnu.imt3281.ludo.server.Database	Database.java	76	<init>
 	no.ntnu.imt3281.ludo.server.ServerController	ServerController.java	88	<init>
+<<<<<<< HEAD
 	no.ntnu.imt3281.ludo.App	App.java	17	main
 
 nov 24, 2017 1:34:22 PM no.ntnu.imt3281.ludo.Logging log
+=======
+	no.ntnu.imt3281.ludo.App	App.java	24	main
+
+nov 24, 2017 1:34:05 PM no.ntnu.imt3281.ludo.Logging log
+>>>>>>> 4a6ec0e4c2d15624509b06c1ca10c866492677e0
 INFO: clasName	fileName	lineNumber	methodName
 	org.apache.derby.impl.jdbc.SQLExceptionFactory	null	-1	getSQLException
 	org.apache.derby.impl.jdbc.Util	null	-1	generateCsSQLException
@@ -41,5 +57,9 @@ INFO: clasName	fileName	lineNumber	methodName
 	org.apache.derby.impl.jdbc.EmbedStatement	null	-1	execute
 	no.ntnu.imt3281.ludo.server.Database	Database.java	96	<init>
 	no.ntnu.imt3281.ludo.server.ServerController	ServerController.java	88	<init>
+<<<<<<< HEAD
 	no.ntnu.imt3281.ludo.App	App.java	17	main
+=======
+	no.ntnu.imt3281.ludo.App	App.java	24	main
+>>>>>>> 4a6ec0e4c2d15624509b06c1ca10c866492677e0
 
