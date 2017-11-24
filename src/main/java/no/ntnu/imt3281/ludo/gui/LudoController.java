@@ -188,11 +188,11 @@ public class LudoController {
 		                		
 		                	case "GAME":
 		                		// GAME,CREATE,TRUE,uid,cid,players[]
-		                		int gameid = Integer.parseInt(arr[3]);
-		                		chatid = Integer.parseInt(arr[4]);
+		                		int gameid = 0; 
 		                		GameBoardController gameBoard = null;
 		                		
 		                		if(arr[1].equals("CREATE")) {
+		                			gameid = Integer.parseInt(arr[3]);
 		                			chatid = Integer.parseInt(arr[4]);
 		                			
 		                			if(arr[2].equals("TRUE")) {
@@ -210,6 +210,11 @@ public class LudoController {
 			                		}
 		                		}
 		                		else if(arr[1].equals("THROW")) {
+			                		// GAME,THROW,gid,cid
+		                			gameid = Integer.parseInt(arr[2]);
+		                			chatid = Integer.parseInt(arr[3]);
+		                			
+		                			
 		                			gameBoard = getGameBoard(gameid);
 		                			gameBoard.throwDice(Integer.parseInt(arr[3]));
 		                		}
