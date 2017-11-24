@@ -431,32 +431,6 @@ public class LudoController {
     }
     
     
-    /*
-     * 
-     *OLD !! KAN FJERNES SNART
-    /**
-     * addNewTabToChatMapping
-     * @param chatId
-     *
-    public void addNewTabToChatMapping( int chatId) {					// TODO chatboard.fxml
-    	FXMLLoader loader = new FXMLLoader(getClass().getResource("ChatBoard.fxml"));
-    	loader.setResources(I18N.getRsb());
-
-    	try {
-    		AnchorPane chatBoard = loader.load();
-        	Tab tab = new Tab("Chat" + chatId);
-    		tab.setContent(chatBoard);
-        	tabbedPane.getTabs().add(tab);
-    	} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-    	
-    	ObservableList<Tab> tabs = tabbedPane.getTabs();	// list of all open tabs
-    	
-    	chatToTab.put(chatId, tabs.size());						// adds chatId to mapping
-	}
-    */
     /**
      * Displays a nice popup window with a depressing message
      * @param e button click caused by the about menu item

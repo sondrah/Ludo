@@ -114,34 +114,6 @@ public class Database {
 	}
 	
 	
-	// ONLY FOR TESTING
-	/*
-	public static void main(String[] args) {
-		User user1 = new User("BobKaare", "123");
-	
-		try {
-			Database db = new Database("jdbc:derby:BadgerDB;");
-			
-			db.addChat("NotSoYoloPary");
-			db.addUser(new User("Sam", "1123"));
-			
-			int u = db.getUserID("Sam");
-			int c = db.getChatID("NotSoYoloPary");
-			
-			db.logMessage(u, c, "Halla på re");
-			
-			db.logMessage(u, c, "Din korthåra lomtjuv");
-	
-			db.addUser(user1);
-			db.display();
-			db.close();
-		} catch(SQLException sqle) {
-			sqle.printStackTrace();
-		}
-	}
-	// */
-	
-	
 	/**
 	 * Tries to add a user to the usertable table
 	 * @param username The username of the user

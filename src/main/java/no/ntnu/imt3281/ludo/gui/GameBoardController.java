@@ -85,11 +85,11 @@ public class GameBoardController extends Ludo {
     private int chatId;
     private String username;
     
-    
-    
+
 	/**
 	 * Sets the ID of this controllers game
 	 * @param gameId Id of game
+
 	 */
     public void setGameId(int gameId) {
     	this.gameId = gameId;
@@ -766,7 +766,7 @@ public class GameBoardController extends Ludo {
     public void sendText(ActionEvent e) {		// TODO socket connection?
     	
     	String txt = textToSay.getText();
-    	if(!txt.equals("") && txt !=null) { 
+    	if(!txt.equals("")) { 
     		try {			
     			output.write("CHAT,SAY,"+chatId+","+clientId +"," +txt);
 				output.newLine();
