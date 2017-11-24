@@ -36,5 +36,6 @@ public class App {
 		
 		ServerController servercontroller = new ServerController();
 		Client c = new Client(args);
+		
 	}
 }
