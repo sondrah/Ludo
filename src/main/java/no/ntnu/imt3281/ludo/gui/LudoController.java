@@ -193,7 +193,8 @@ public class LudoController {
 		                		
 		                		if(arr[1].equals("CREATE")) {
 		                			gameid = Integer.parseInt(arr[3]);
-		                			chatid = Integer.parseInt(arr[4]);
+		                			
+		                			chatid = Integer.parseInt(arr[4]) ;
 		                			
 		                			if(arr[2].equals("TRUE")) {
 			                			// arr[5].split(",") should return an array with
@@ -207,7 +208,6 @@ public class LudoController {
 				                			alert.setTitle(I18N.tr("ludo.fyiHeader"));
 				                			alert.setHeaderText(null);
 				                			alert.setContentText(I18N.tr("ludo.fyiContent"));
-
 				                			alert.showAndWait();
 			                			});
 			                		}
@@ -254,7 +254,11 @@ public class LudoController {
 		                		// lookup(#listView)
 		                		// listView.setItems(array)
 		                		break;
+
+		                	default : // logger	
+		                		break;
 		                	}
+		                	
 		                }
 		                	
 		            } catch (IOException ioe) {
