@@ -3,7 +3,7 @@ Bjørn Ole Myrold, Snorre Rogne, Guro Storlien, Sondre Alghren
 
 # Alea Iacta Est
 
-![UML.png](https://bitbucket.org/repo/MrXk6LB/images/1421190860-UML.png)
+![UML.png](https://github.com/sondrah/Ludo/blob/master/src/main/java/images/UML.png)
 
 ##Main
 
